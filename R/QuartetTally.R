@@ -31,7 +31,7 @@
 #'     quartets 12|34, 13|24, 14|23, 1234 across the trees
 #'     
 #'     
-#' @seealso \code{\link{quartetTableResolved}}, \code{\link{quartetTableDominant}}, \code{\link{taxonNames}}
+#' @seealso \code{\link{quartetTableParallel}}, \code{\link{quartetTableResolved}}, \code{\link{quartetTableDominant}}, \code{\link{taxonNames}}
 #'
 #' @examples
 #' gtrees=read.tree(file=system.file("extdata","dataGeneTreeSample",package="MSCquartets"))
@@ -205,7 +205,8 @@ quartetTable = function(trees,
 #'
 #' @seealso \code{\link{quartetTable}}, \code{\link{quartetTableDominant}}
 #' @export
-quartetTableResolved = function(qt, omit = FALSE) {
+quartetTableResolved = function(qt, 
+                                omit = FALSE) {
   if ("1234" %in% colnames(qt)) { # if unresolved column present
     RT = qt[,-which(colnames(qt) == "1234"), drop = FALSE]  #copy table without unresolved column
     if (omit == FALSE) {
@@ -252,7 +253,8 @@ quartetTableResolved = function(qt, omit = FALSE) {
 #' @seealso \code{\link{quartetTable}}, \code{\link{quartetTableResolved}}
 #' @importFrom stats runif
 #' @export
-quartetTableDominant = function(rqt, bigweights="infinite") {
+quartetTableDominant = function(rqt, 
+                                bigweights="infinite") {
   M = dim(rqt)[1] # number of 4-taxon sets
   N = dim(rqt)[2] - 3 # number of taxa
   taxonnames = colnames(rqt)[1:N] # names of taxaR

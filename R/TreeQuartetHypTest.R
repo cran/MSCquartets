@@ -18,7 +18,9 @@
 #' powerDivStat(obs,expd,0)
 #'
 #' @export
-powerDivStat <- function(obs, expd, lambda) {
+powerDivStat <- function(obs, 
+                         expd, 
+                         lambda) {
   if (is.vector(obs) == FALSE ||
       is.vector(expd) == FALSE ||
       length(obs) != length(expd) ||
@@ -113,7 +115,8 @@ erf.inv <- function(x) {
 #'
 #'@export
 T1density <-
-  function(x, mu0) {
+  function(x, 
+           mu0) {
     (1 / 4) * exp(-(1 / 2) * x) * (sqrt(2 / (pi * x)) * (1 + erf(mu0 / sqrt(2))) +
                                      exp(-(1 / 2) * mu0 ^ 2) * RandomFieldsUtils::I0L0(mu0 * sqrt(x)))
   }
@@ -137,7 +140,10 @@ T1density <-
 #' @seealso \code{\link{T1density}}
 #'
 #' @export
-T3density <- function(x, mu0, alpha0, beta0) {
+T3density <- function(x, 
+                      mu0, 
+                      alpha0, 
+                      beta0) {
   (1 / (2 * sqrt(2 * pi * x))) * (exp(-(1 / 2) * x) * (1 - erf((1 / sqrt(
     2
   )) *
@@ -245,7 +251,10 @@ quartetTreeTest <- function(obs,
   
   # Function to integrate for bias for model T3
   integrand <-
-    function(y, mu02, alpha02, beta02) {
+    function(y, 
+             mu02, 
+             alpha02, 
+             beta02) {
       (1 / sqrt(2 * pi)) * y * (exp(-(1 / 2) * (y - mu02) ^ 2) * erf(y * (1 / tan(beta02)) /
                                                                        sqrt(2)) + exp(-(1 / 2) * (y + mu02 * sin(alpha02)) ^ 2) * (erf((
                                                                          y * (1 / tan(alpha02)) + mu02 * cos(alpha02)
@@ -255,7 +264,9 @@ quartetTreeTest <- function(obs,
     }
   
   # Function for correcting the bias of the mu0 as much as possible for model T3.
-  T3bias <- function(mu02, mu0, n) {
+  T3bias <- function(mu02, 
+                     mu0, 
+                     n) {
     phi02 <-
       min((1 / (4 * (n + mu02 ^ 2))) * (4 * n + 3 * mu02 ^ 2 - mu02 * sqrt(8 *
                                                                              n + 9 * mu02 ^ 2)), 1)
@@ -294,7 +305,7 @@ quartetTreeTest <- function(obs,
     n <- sum(obs)
     if (n < 30) {
       # Provide a warning if there are a small number of gene trees.
-      warning("The total count of quartets on 4 taxa is <30; p-value may be inaccurate.")
+      warning("The number of gene quartets is <30; p-value may be inaccurate.")
     }
     # compute ML estimate for obs
     if (model == "T3") {
@@ -354,60 +365,87 @@ quartetTreeTest <- function(obs,
       # If all observations and expectations are equal, then the p-value must be 1.
       p <- 1
     } else {
-      stat <- powerDivStat(obs, expd, lambda)
+      # Set p = NA so that if a method other than bootstrapping is selected but cannot be performed then a bootstrap p-value is computed.
+      p = NA
       
-      if (method == "bootstrap" ||
-          (method != "bootstrap" &&
-           smallcounts == "bootstrap" &&
-           min(expd) < 5) ||
-          (min(expd) < 5 &&
-           all.equal(sum(abs(
-             obs * 3 - round(obs * 3)
-           )), 0) != TRUE)) {
-        # Perform bootstrap if bootstrap method is selected, or if bootstrap method is not selected but bootstrap for smallcounts is
-        # selected and there are small expected counts.
-        warning(
-          "Bootstrapping has been selected. p-values are approximate. Bootstrapping is only necessary when some expectations are small."
-        )
-        if (smallcounts == "approximate") {
-          warning(
-            "Approximate bootstrap p-values only available for observed counts that are integers, integers + 1/3, or integers + 2/3. Using bootstrap instead."
-          )
-        }
-        # If bootstraps is 0 but bootstraps has been selected then perform 10^4 bootstraps.
-        if (bootstraps == 0) {
-          bootstraps <- 10 ^ 4
-        }
-        count <- 0
-        sims <-
-          rmultinom(bootstraps,
-                    n,
-                    prob = c(
-                      1 - (2 / 3) * phi0unbiased,
-                      (1 / 3) * phi0unbiased,
-                      (1 / 3) *
-                        phi0unbiased
-                    ))
-        if (model == "T3") {
-          sims <- apply(sims, 2, sort, decreasing = TRUE)
-        }
-        for (i in 1:bootstraps) {
+      if (method != "bootstrap" && min(expd) >= 5) {
+        stat <- powerDivStat(obs, expd, lambda)
+        if (method == "MLest") {
           if (model == "T3") {
-            expected <-
-              c(sims[1, i], (1 / 2) * (n - sims[1, i]), (1 / 2) * (n - sims[1, i]))
+            # If model is model T3 then compute the p-value using the function T3density. Otherwise, use the function T1density.
+            p <- ifelse(stat == 0,
+                        1,
+                        min(1, max(
+                          0,
+                          integrate(
+                            T3density,
+                            lower = stat,
+                            upper = Inf,
+                            mu0 = mu0unbiased,
+                            alpha0 = alpha0unbiased,
+                            beta0 = beta0unbiased
+                          )$value
+                        )))
           } else {
-            expected <-
-              c(max(sims[, i], n / 3), (1 / 2) * (n - max(sims[, i], n /
-                                                            3)), (1 / 2) * (n - max(sims[, i], n / 3)))
+            # if model is T1
+            p <- ifelse(stat == 0,
+                        1,
+                        min(1, max(
+                          0,
+                          integrate(
+                            T1density,
+                            lower = stat,
+                            upper = Inf,
+                            mu0 = mu0unbiased
+                          )$value
+                        )))
           }
-          simstat <- powerDivStat(sims[, i], expected, lambda)
-          count <- ifelse(simstat >= stat, count + 1, count)
+        } else {
+          # Perform a test with controlled asymptotic size such that the null rejection rate does not exceed the nominal significance level.
+          if (model == "T3") {
+            # For model T3, the conservative test uses the least favorable approach, which in this case is the chi_1^2 distribution.
+            p <- pchisq(stat, 1, lower.tail = FALSE)
+          } else {
+            # For model T1, the conservative test is the Minimum Adjusted Bonferroni method.
+            
+            if (mu0 >= 0 && mu0 <= 0.125) {
+              beta <- 0.5
+              q <- pT1beta50
+            } else if (mu0 > 0.125 && mu0 <= 1.75) {
+              beta <- 0.45
+              q <- pT1beta45
+            } else if (mu0 > 1.75 && mu0 <= 2.75) {
+              beta <- 0.3
+              q <- pT1beta30
+            } else if (mu0 > 2.75 && mu0 <= 3.75) {
+              beta <- 0.2
+              q <- pT1beta20
+            } else {
+              beta <- 0.05
+              q <- pT1beta5
+            }
+            mu0lower <-
+              max(0, mu0 + sqrt(2) * erf.inv(2 * beta - 1))
+            p1 <- ifelse(stat == 0,
+                         1,
+                         min(1, max(
+                           0,
+                           integrate(
+                             T1density,
+                             lower = stat,
+                             upper = Inf,
+                             mu0 = mu0lower
+                           )$value
+                         )))
+            p <- (length(q[q <= p1])) / length(q)
+          }
         }
-        p <- count / bootstraps
-      } else if (method != "bootstrap" &&
-                 smallcounts == "approximate" && min(expd) < 5) {
+      } else if (method != "bootstrap" && min(expd) < 5 && smallcounts == "approximate") {
+        warning(
+          "Approximate bootstrapping has been selected. p-values are approximate."
+        )
         # Approximate bootstrap p-values computed from 10^8 bootstraps for each scenario, with obs[1]=10^6. Fairly accurate approximation, even for obs[1]!=10^6.
-        if (all.equal(sum(abs(obs * 3 - round(obs * 3))), 0) == TRUE) {
+        if (all.equal(sum(abs(obs * 3 - round(obs * 3))), 0) == TRUE && n>= 30) {
           sortobs23times3 = sort(round(3 * obs[2:3]))
           if (sortobs23times3[1] %% 3 == 0) {
             if (identical(sortobs23times3, c(0, 27))) {
@@ -558,82 +596,50 @@ quartetTreeTest <- function(obs,
               p <- 0.525
             }
           }
-        } else {
-          stop(
-            'Approximate bootstrap p-values only available for observed counts that are integers, integers + 1/3, or integers + 2/3. Use bootstrap instead.'
+        }
+        if (is.na(p) == TRUE) {
+          warning(
+            'Approximate bootstrap p-values could not computed. Using bootstrap instead.'
           )
         }
-      } else if (method != "bootstrapping" && min(expd) >= 5) {
-        if (method == "MLest") {
-          if (model == "T3") {
-            # If model is model T3 then compute the p-value using the function T3density. Otherwise, use the function T1density.
-            p <- ifelse(stat == 0,
-                        1,
-                        min(1, max(
-                          0,
-                          integrate(
-                            T3density,
-                            lower = stat,
-                            upper = Inf,
-                            mu0 = mu0unbiased,
-                            alpha0 = alpha0unbiased,
-                            beta0 = beta0unbiased
-                          )$value
-                        )))
-          } else {
-            # if model is T1
-            p <- ifelse(stat == 0,
-                        1,
-                        min(1, max(
-                          0,
-                          integrate(
-                            T1density,
-                            lower = stat,
-                            upper = Inf,
-                            mu0 = mu0unbiased
-                          )$value
-                        )))
-          }
-        } else if (method == "conservative") {
-          # Perform a test with controlled asymptotic size such that the null rejection rate does not exceed the nominal significance level.
-          if (model == "T3") {
-            # For model T3, the conservative test uses the least favorable approach, which in this case is the chi_1^2 distribution.
-            p <- pchisq(stat, 1, lower.tail = FALSE)
-          } else {
-            # For model T1, the conservative test is the Minimum Adjusted Bonferroni method.
-            
-            if (mu0 >= 0 && mu0 <= 0.125) {
-              beta <- 0.5
-              q <- pT1beta50
-            } else if (mu0 > 0.125 && mu0 <= 1.75) {
-              beta <- 0.45
-              q <- pT1beta45
-            } else if (mu0 > 1.75 && mu0 <= 2.75) {
-              beta <- 0.3
-              q <- pT1beta30
-            } else if (mu0 > 2.75 && mu0 <= 3.75) {
-              beta <- 0.2
-              q <- pT1beta20
-            } else {
-              beta <- 0.05
-              q <- pT1beta5
-            }
-            mu0lower <-
-              max(0, mu0 + sqrt(2) * erf.inv(2 * beta - 1))
-            p1 <- ifelse(stat == 0,
-                         1,
-                         min(1, max(
-                           0,
-                           integrate(
-                             T1density,
-                             lower = stat,
-                             upper = Inf,
-                             mu0 = mu0lower
-                           )$value
-                         )))
-            p <- (length(q[q <= p1])) / length(q)
-          }
+      }
+      if (is.na(p) == TRUE) {
+        # Perform bootstrap if bootstrap method is selected, or if bootstrap method is not selected but bootstrap for smallcounts is
+        # selected and there are small expected counts.
+        warning(
+          "Bootstrapping has been selected. p-values are approximate. Bootstrapping is only necessary when some expectations are small."
+        )
+        # If bootstraps is 0 but bootstraps has been selected then perform 10^4 bootstraps.
+        if (bootstraps == 0) {
+          bootstraps <- 10 ^ 4
         }
+        stat <- powerDivStat(obs, expd, lambda)
+        count <- 0
+        sims <-
+          rmultinom(bootstraps,
+                    n,
+                    prob = c(
+                      1 - (2 / 3) * phi0unbiased,
+                      (1 / 3) * phi0unbiased,
+                      (1 / 3) *
+                        phi0unbiased
+                    ))
+        if (model == "T3") {
+          sims <- apply(sims, 2, sort, decreasing = TRUE)
+        }
+        for (i in 1:bootstraps) {
+          if (model == "T3") {
+            expected <-
+              c(sims[1, i], (1 / 2) * (n - sims[1, i]), (1 / 2) * (n - sims[1, i]))
+          } else {
+            expected <-
+              c(max(sims[, i], n / 3), (1 / 2) * (n - max(sims[, i], n /
+                                                            3)), (1 / 2) * (n - max(sims[, i], n / 3)))
+          }
+          simstat <- powerDivStat(sims[, i], expected, lambda)
+          count <- ifelse(simstat >= stat, count + 1, count)
+        }
+        p <- count / bootstraps
       }
     }
     output <- list(p, t)
@@ -1122,7 +1128,9 @@ quartetTreeErrorProb <- function(obs,
 #' HBpTable[1:10,]
 #'
 #' @export
-HolmBonferroni <- function(pTable, model, alpha = .05) {
+HolmBonferroni <- function(pTable, 
+                           model, 
+                           alpha = .05) {
   if (!(model %in% c("T1", "T3", "star")))  {
     stop('Argument model must be one of "T1", "T3", or "star".')
   }

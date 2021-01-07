@@ -4,8 +4,10 @@
 \name{dataYeastRokas}
 \alias{dataYeastRokas}
 \title{Yeast gene tree dataset}
-\format{A text file with 106 topological Newick gene trees on the taxa: 
- Sbay, Scas, Scer, Sklu, Skud, Smik, Spar, and Calb (outgroup).}
+\format{
+A text file with 106 topological Newick gene trees on the taxa: 
+ Sbay, Scas, Scer, Sklu, Skud, Smik, Spar, and Calb (outgroup).
+}
 \source{
 \url{https://wiki.rice.edu/confluence/download/attachments/8898533/yeast.trees?version=1&modificationDate=1360603275797&api=v2}
 }

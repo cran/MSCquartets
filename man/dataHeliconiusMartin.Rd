@@ -4,13 +4,15 @@
 \name{dataHeliconiusMartin}
 \alias{dataHeliconiusMartin}
 \title{Heliconius gene tree dataset}
-\format{A text file with 2909 metric Newick gene trees each with 16 leaves labelled:\cr
+\format{
+A text file with 2909 metric Newick gene trees each with 16 leaves labelled:\cr
 chioneus.553, chioneus.560, chioneus.564, chioneus.565, \cr
 ethilla.67, hecale.273, melpomeneFG.13435, melpomeneFG.9315, \cr 
 melpomeneFG.9316, melpomeneFG.9317, pardalinus.371, rosina.2071, \cr 
-rosina.531, rosina.533, rosina.546, sergestus.202}
+rosina.531, rosina.533, rosina.546, sergestus.202
+}
 \source{
-\url{http://datadryad.org/resource/doi:10.5061/dryad.dk712}
+\doi{10.5061/dryad.dk712}
 }
 \description{
 A text file dataset for Heliconius butterflies containing 2909 gene trees on 7 taxa, with 4 individuals sampled for each of 3 of the taxa, for a total of 16

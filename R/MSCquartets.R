@@ -12,7 +12,7 @@
 #' \item Tabulate all qcCFs for a collection of gene trees.
 #' \item Perform hypothesis tests of whether one or more qcCFs are consistent with the MSC model on
 #' a species tree \insertCite{MAR19}{MSCquartets}.
-#' \item Produce simplex plots showing all estimated CFs as well as results of hypothesis tests.
+#' \item Produce simplex plots showing all estimated CFs as well as results of hypothesis tests \insertCite{AMR2020}{MSCquartets}.
 #' \item Infer a species tree using the qcCFs via the QDC and WQDC methods \insertCite{Rho19,YR19}{MSCquartets}. 
 #' \item Infer a level-1 species network via the NANUQ method \insertCite{ABR19}{MSCquartets}.
 #' }
@@ -26,22 +26,29 @@
 #'
 #' Several gene tree data sets, simulated and empirical, are included.
 #'   
+#' In publications please cite the software announcement \insertCite{RBMA2020}{MSCquartets}, as well as the
+#' appropriate paper(s) developing the theory behind the routines you used.
+#' 
 #' @references
 #' 
-#' \insertRef{Rho19}{MSCquartets}
+#' \insertRef{RBMA2020}{MSCquartets}
 #' 
 #' \insertRef{MAR19}{MSCquartets}
 #' 
-#' \insertRef{ABR19}{MSCquartets}
+#' \insertRef{AMR2020}{MSCquartets}
+#'    
+#' \insertRef{Rho19}{MSCquartets}
 #' 
 #' \insertRef{YR19}{MSCquartets}
+#' 
+#' \insertRef{ABR19}{MSCquartets}
 #' 
 #' @importFrom graphics hist legend mtext par plot points segments text
 #' @importFrom stats chisq.test dmultinom pchisq qnorm
 #' @importFrom Rdpack reprompt
 #'
 #' @docType package
-#' @name MSCquartets
+#' @name MSCquartets-package
 NULL
 
 
@@ -93,7 +100,7 @@ NULL
 #' melpomeneFG.9316, melpomeneFG.9317, pardalinus.371, rosina.2071, \cr 
 #' rosina.531, rosina.533, rosina.546, sergestus.202
 #'
-#' @source \url{http://datadryad.org/resource/doi:10.5061/dryad.dk712}
+#' @source \doi{10.5061/dryad.dk712}
 #' 
 NULL 
 

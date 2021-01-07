@@ -4,8 +4,7 @@
 \alias{estimateEdgeLengths}
 \title{Estimate edge lengths on a species tree from gene tree quartet counts}
 \usage{
-estimateEdgeLengths(tree, rqt, terminal = 1, method = "simpleML",
-  lambda = 1/2)
+estimateEdgeLengths(tree, rqt, terminal = 1, method = "simpleML", lambda = 1/2)
 }
 \arguments{
 \item{tree}{a phylo object, giving a resolved tree on which to estimate edge lengths}

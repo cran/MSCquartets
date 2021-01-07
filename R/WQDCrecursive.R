@@ -131,7 +131,9 @@ WQDCrecursive = function(rqt,
 #' @seealso \code{\link{WQDCrecursive}}
 #'
 #' @export
-quartetTableCollapse = function(rqt, taxaA, taxaB) {
+quartetTableCollapse = function(rqt, 
+                                taxaA, 
+                                taxaB) {
   taxaAB = union(taxaA, taxaB)
   if (!setequal(intersect(taxaAB, colnames(rqt)), taxaAB)) {
     stop("Not all taxa in given sets in table.")

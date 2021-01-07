@@ -4,8 +4,13 @@
 \alias{QDC}
 \title{Compute Quartet Distance Consensus tree from gene tree data}
 \usage{
-QDC(genetreedata, taxanames = NULL, method = fastme.bal,
-  omit = FALSE, metric = FALSE)
+QDC(
+  genetreedata,
+  taxanames = NULL,
+  method = fastme.bal,
+  omit = FALSE,
+  metric = FALSE
+)
 }
 \arguments{
 \item{genetreedata}{gene tree data that may be supplied in any of 3 forms: 
@@ -22,7 +27,8 @@ is a quartet table, this argument is ignored and all taxa in the table are used}
 
 \item{method}{a distance-based tree building function, such as \code{fastme.bal} or \code{nj}}
 
-\item{omit}{\code{TRUE} ignores unresolved quartets, \code{FALSE} treats them as 1/3 of each resolution}
+\item{omit}{\code{TRUE} ignores unresolved quartets; \code{FALSE} treats them as 1/3 of each resolution; 
+ignored if \code{genetreedata} is supplied as a quartet table}
 
 \item{metric}{if \code{FALSE} return topological tree; if \code{TRUE} return metric tree with
 internal edge lengths estimated by \code{estimateEdgeLengths} with \code{lambda=0}, and terminal branches of length 1}

@@ -4,7 +4,9 @@
 \name{dataGeneTreeSample}
 \alias{dataGeneTreeSample}
 \title{Simulated gene tree dataset from species tree}
-\format{A text file with 1000 metric Newick gene trees on the taxa t1-t9}
+\format{
+A text file with 1000 metric Newick gene trees on the taxa t1-t9
+}
 \description{
 A text file dataset containing 1000 gene trees on 9 taxa simulated under the MSC on a species tree
 }

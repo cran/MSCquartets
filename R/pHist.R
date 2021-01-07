@@ -28,7 +28,9 @@
 #'@seealso \code{\link{NANUQ}}, \code{\link{NANUQdist}}
 #'
 #'@export
-pvalHist = function(pTable, model, pmin = 0) {
+pvalHist = function(pTable, 
+                    model, 
+                    pmin = 0) {
   if (!(model %in% c("T1","T3","star"))) {
     stop('Argument model must be one of "T1", "T3", or "star".')
   }

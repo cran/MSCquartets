@@ -4,8 +4,14 @@
 \alias{quartetTreeTest}
 \title{Hypothesis test for quartet counts fitting a tree under the MSC}
 \usage{
-quartetTreeTest(obs, model = "T3", lambda = 0, method = "MLest",
-  smallcounts = "approximate", bootstraps = 10^4)
+quartetTreeTest(
+  obs,
+  model = "T3",
+  lambda = 0,
+  method = "MLest",
+  smallcounts = "approximate",
+  bootstraps = 10^4
+)
 }
 \arguments{
 \item{obs}{vector of 3 counts of resolved quartet frequencies}

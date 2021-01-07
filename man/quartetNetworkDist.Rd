@@ -25,6 +25,12 @@ and specified levels of quartet hypothesis tests. The network quartet distance, 
 is described more fully by \insertCite{ABR19;textual}{MSCquartets}, generalizes 
 the quartet distance of \insertCite{Rho19;textual}{MSCquartets}.
 }
+\details{
+In case of a triple of quartet counts with the two largest equal and the third slighltly smaller, 
+along with \code{alpha} and \code{beta} leading to a star quartet being rejected and a tree not being rejected, 
+this function chooses a resolved quartet topology uniformly at random from the two largest counts. This is the only 
+stochastic element of the code, and its impact is usually negligable.
+}
 \examples{
 pTable=NANUQ(system.file("extdata", "dataYeastRokas",package="MSCquartets"), alpha=.0001, 
        beta=.95,outfile = file.path(tempdir(), "NANUQdist"))

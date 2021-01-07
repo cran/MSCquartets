@@ -4,8 +4,16 @@
 \alias{NANUQ}
 \title{Apply NANUQ network inference algorithm to gene tree data}
 \usage{
-NANUQ(genedata, outfile = "NANUQdist", alpha = 0.05, beta = 0.95,
-  taxanames = NULL, plot = TRUE)
+NANUQ(
+  genedata,
+  outfile = "NANUQdist",
+  omit = FALSE,
+  epsilon = 0,
+  alpha = 0.05,
+  beta = 0.95,
+  taxanames = NULL,
+  plot = TRUE
+)
 }
 \arguments{
 \item{genedata}{gene tree data that may be supplied in any of 3 forms: 
@@ -13,7 +21,7 @@ NANUQ(genedata, outfile = "NANUQdist", alpha = 0.05, beta = 0.95,
 \item as a character string giving the name of a file containing Newick gene trees,
 \item as a multiPhylo object containing the gene trees, or 
 \item as a table of quartets on the gene trees, as produced by a previous call to 
-\code{NANUQ} or \code{quartetTableResolved}, which has columns only for taxa, quartet counts, 
+\code{NANUQ} or \code{quartetTableResolved}, which has columns only for taxa, resolved quartet counts, 
 and possibly p_T3 and p_star
 }}
 
@@ -21,6 +29,11 @@ and possibly p_T3 and p_star
 saving a \code{NANUQ} distance matrix in nexus format; to the stub \code{outfile}
 will be appended an \code{alpha} and \code{beta} value and ".nex"; 
 if \code{NULL} then then no file is written}
+
+\item{omit}{\code{FALSE} to treat unresolved quartets as 1/3 of each resolution; 
+\code{TRUE} to discard unresolved quartet data; ignored if gene tree data given as quartet table}
+
+\item{epsilon}{minimum for branch lengths to be treated as non-zero; ignored if gene tree data given as quartet table}
 
 \item{alpha}{a value or vector of significance levels for judging p-values 
 testing a null hypothesis of no hybridization vs. an alternative of hybridization, for each quartet;  a smaller value applies 
@@ -82,6 +95,12 @@ of \code{alpha} and \code{beta} are likely to need some adjustment based on insp
 table from \code{NANUQ} will allow for the results of the time-consuming computation of qcCFs to be 
 saved, along with p-values,
 for input to further calls of \code{NANUQ} with new choices of \code{alpha} and \code{beta}.
+
+See the documentation for \code{\link{quartetNetworkDist}} for an explanation of a small, rarely noticeable,
+stochastic element of the algorithm.
+
+For data sets of many gene trees, user time may be reduced by using parallel code for 
+counting displayed quartets. See \code{\link{quartetTableParallel}}, where example commands are given.
 }
 \examples{
 pTable=NANUQ(system.file("extdata", "dataYeastRokas",package="MSCquartets"), 
@@ -101,6 +120,7 @@ plot(nn,"2D")
 \insertRef{SplitsTree}{MSCquartets}
 }
 \seealso{
-\code{\link{quartetTable}}, \code{\link{quartetTableDominant}}, \code{\link{quartetTreeTestInd}}, 
-\code{\link{quartetStarTestInd}}, \code{\link{NANUQdist}}, \code{\link{quartetTestPlot}}, \code{\link{pvalHist}}
+\code{\link{quartetTable}}, \code{\link{quartetTableParallel}}, \code{\link{quartetTableDominant}}, \code{\link{quartetTreeTestInd}}, 
+\code{\link{quartetStarTestInd}}, \code{\link{NANUQdist}}, \code{\link{quartetTestPlot}}, \code{\link{pvalHist}},
+\code{\link{quartetNetworkDist}}
 }

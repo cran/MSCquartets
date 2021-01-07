@@ -36,6 +36,13 @@
 #' table from \code{NANUQ} will allow for the results of the time-consuming computation of qcCFs to be 
 #' saved, along with p-values,
 #' for input to further calls of \code{NANUQ} with new choices of \code{alpha} and \code{beta}.
+#' 
+#' See the documentation for \code{\link{quartetNetworkDist}} for an explanation of a small, rarely noticeable,
+#' stochastic element of the algorithm.
+#' 
+#' For data sets of many gene trees, user time may be reduced by using parallel code for 
+#' counting displayed quartets. See \code{\link{quartetTableParallel}}, where example commands are given.
+#' 
 #'
 #' @references
 #' \insertRef{ABR19}{MSCquartets}
@@ -47,13 +54,16 @@
 #' \item as a character string giving the name of a file containing Newick gene trees,
 #' \item as a multiPhylo object containing the gene trees, or 
 #' \item as a table of quartets on the gene trees, as produced by a previous call to 
-#' \code{NANUQ} or \code{quartetTableResolved}, which has columns only for taxa, quartet counts, 
+#' \code{NANUQ} or \code{quartetTableResolved}, which has columns only for taxa, resolved quartet counts, 
 #' and possibly p_T3 and p_star
 #' }
 #' @param outfile  a character string giving an output file name stub for 
 #' saving a \code{NANUQ} distance matrix in nexus format; to the stub \code{outfile}
 #' will be appended an \code{alpha} and \code{beta} value and ".nex"; 
 #' if \code{NULL} then then no file is written
+#' @param omit \code{FALSE} to treat unresolved quartets as 1/3 of each resolution; 
+#' \code{TRUE} to discard unresolved quartet data; ignored if gene tree data given as quartet table
+#' @param epsilon minimum for branch lengths to be treated as non-zero; ignored if gene tree data given as quartet table
 #' @param alpha a value or vector of significance levels for judging p-values 
 #' testing a null hypothesis of no hybridization vs. an alternative of hybridization, for each quartet;  a smaller value applies 
 #' a less conservative test for a tree (more trees), hence a stricter requirement for desciding in favor of hybridization (fewer reticulations)
@@ -73,8 +83,9 @@
 #' gene trees; a distance table to be used as input for SplitsTree is written to a nexus file
 #'
 #'
-#' @seealso \code{\link{quartetTable}}, \code{\link{quartetTableDominant}}, \code{\link{quartetTreeTestInd}}, 
-#' \code{\link{quartetStarTestInd}}, \code{\link{NANUQdist}}, \code{\link{quartetTestPlot}}, \code{\link{pvalHist}}
+#' @seealso \code{\link{quartetTable}}, \code{\link{quartetTableParallel}}, \code{\link{quartetTableDominant}}, \code{\link{quartetTreeTestInd}}, 
+#' \code{\link{quartetStarTestInd}}, \code{\link{NANUQdist}}, \code{\link{quartetTestPlot}}, \code{\link{pvalHist}},
+#' \code{\link{quartetNetworkDist}}
 #'
 #' @examples
 #' pTable=NANUQ(system.file("extdata", "dataYeastRokas",package="MSCquartets"), 
@@ -90,6 +101,8 @@
 #' @export
 NANUQ = function( genedata,
                   outfile = "NANUQdist",
+                  omit = FALSE,
+                  epsilon=0,
                   alpha = .05,
                   beta = .95,
                   taxanames = NULL,
@@ -102,8 +115,9 @@ NANUQ = function( genedata,
   
   if ("matrix" %in% class(genedata)) {
     pTable = genedata
+    message("Ignoring arguments 'omit' and 'epsilon' since genedata supplied as quartet table.")
     if (!is.null(taxanames)) {
-      message("Ignoring argument taxanames since genedata supplied as quartet table.")
+      message("Ignoring argument 'taxanames' since genedata supplied as quartet table.")
     }
     } else {
     if ("multiPhylo" %in% class(genedata))  {
@@ -130,8 +144,8 @@ NANUQ = function( genedata,
     }
     message("Analyzing ", length(taxanames), " taxa: ", namelist)
     
-    pTable = quartetTable(genetrees, taxanames)   # tally quartets on gene trees
-    pTable = quartetTableResolved(pTable, omit = FALSE)         # treat unresolved quartets as 1/3 of each resolution
+    pTable = quartetTable(genetrees, taxanames, epsilon = epsilon)   # tally quartets on gene trees
+    pTable = quartetTableResolved(pTable, omit)   # treat unresolved quartets
   }
   
   if (!("p_T3"%in% colnames(pTable))){
@@ -162,11 +176,13 @@ NANUQ = function( genedata,
 #' paired to produce k plots and k distance tables/output files. This is equivalent to k 
 #' calls to \code{NANUQdist} with paired scalar values from the vectors of \code{alpha} and \code{beta}.
 #' 
+#' See the documentation for \code{\link{quartetNetworkDist}} for an explanation of a small, rarely noticeable,
+#' stochastic element of the algorithm.
 #'
 #' @references
 #' \insertRef{ABR19}{MSCquartets}
 #' 
-#' @param pTable a table of quartets and p-values, as previously computed by \code{NANUQ}, or by both \code{quartetTreeTestInd} and 
+#' @param pTable a table of resolved quartets and p-values, as previously computed by \code{NANUQ}, or by both \code{quartetTreeTestInd} and 
 #' \code{quartetStarTestInd}, with columns \code{"p_T3"} and \code{"p_star"}
 #' @param outfile  a character string giving an output file name stub for 
 #' saving a \code{NANUQ} distance matrix in nexus format; to the stub \code{outfile}
@@ -190,7 +206,7 @@ NANUQ = function( genedata,
 #' @examples
 #' pTable=NANUQ(system.file("extdata","dataYeastRokas",package="MSCquartets"), 
 #'       alpha=.0001, beta=.95, outfile = file.path(tempdir(), "NANUQdist"))
-#' NANUQdist(pTable, alpha=.05, beta=.95,outfile = file.path(tempdir(), "NANUQdist"))
+#' NANUQdist(pTable, alpha=.05, beta=.95, outfile = file.path(tempdir(), "NANUQdist"))
 #'
 #' @export
 NANUQdist = function (pTable,
@@ -252,7 +268,8 @@ NANUQdist = function (pTable,
 #' nexusDist(Dist,outfile = file.path(tempdir(), "NANUQdist"))
 #'
 #' @export
-nexusDist = function(distMatrix, outfilename) {
+nexusDist = function(distMatrix, 
+                     outfilename) {
   taxanames = colnames(distMatrix)
   ntaxa = length(taxanames)
   taxanames = matrix(taxanames, ntaxa, 1)
@@ -280,8 +297,13 @@ nexusDist = function(distMatrix, outfilename) {
 #' and specified levels of quartet hypothesis tests. The network quartet distance, which
 #' is described more fully by \insertCite{ABR19;textual}{MSCquartets}, generalizes 
 #' the quartet distance of \insertCite{Rho19;textual}{MSCquartets}.
-#'
-#'@references
+#' 
+#' @details In case of a triple of quartet counts with the two largest equal and the third slighltly smaller, 
+#' along with \code{alpha} and \code{beta} leading to a star quartet being rejected and a tree not being rejected, 
+#' this function chooses a resolved quartet topology uniformly at random from the two largest counts. This is the only 
+#' stochastic element of the code, and its impact is usually negligable.
+#' 
+#' @references
 #' \insertRef{ABR19}{MSCquartets}
 #' 
 #' \insertRef{Rho19}{MSCquartets}
@@ -304,7 +326,9 @@ nexusDist = function(distMatrix, outfilename) {
 #' @seealso \code{\link{NANUQ}}, \code{\link{NANUQdist}}
 #'
 #' @export
-quartetNetworkDist = function(pTable, alpha, beta) {
+quartetNetworkDist = function(pTable, 
+                              alpha, 
+                              beta) {
   if (!(is.numeric(alpha) && is.numeric(beta))) {
     stop("Critical values alpha and beta must be numeric.")
   }

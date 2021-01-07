@@ -50,5 +50,5 @@ DQT=quartetTableDominant(RQT)
 
 }
 \seealso{
-\code{\link{quartetTableResolved}}, \code{\link{quartetTableDominant}}, \code{\link{taxonNames}}
+\code{\link{quartetTableParallel}}, \code{\link{quartetTableResolved}}, \code{\link{quartetTableDominant}}, \code{\link{taxonNames}}
 }

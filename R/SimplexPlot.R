@@ -21,7 +21,9 @@
 #'          \code{\link{simplexCoords}}
 #'
 #' @export
-simplexPrepare <- function(model = "T3", maintitle = NULL, titletext = NULL) {
+simplexPrepare <- function(model = "T3", 
+                           maintitle = NULL, 
+                           titletext = NULL) {
   if (!(model %in% c("T1", "T3")))
     stop("Invalid model name; use 'T1' or 'T3'.") #check parameters
   lineWidth = 2
@@ -86,7 +88,8 @@ simplexPrepare <- function(model = "T3", maintitle = NULL, titletext = NULL) {
 #'          \code{\link{simplexText}},
 #'          \code{\link{simplexCoords}}
 #' @export
-simplexPoint <- function(v, ...) {
+simplexPoint <- function(v, 
+                         ...) {
   coords <- simplexCoords(v)
   points(coords$x, coords$y, ...)
 }
@@ -113,7 +116,9 @@ simplexPoint <- function(v, ...) {
 #'          \code{\link{simplexText}},
 #'          \code{\link{simplexCoords}}
 #' @export
-simplexSegment <- function(v, w, ...) {
+simplexSegment <- function(v, 
+                           w, 
+                           ...) {
   # Draw line segment in planar simplex
   # Args:
   #      v,w = vectors giving endpoints in R^3
@@ -147,7 +152,9 @@ simplexSegment <- function(v, w, ...) {
 #'          \code{\link{simplexSegment}},
 #'          \code{\link{simplexCoords}}
 #' @export
-simplexText <- function(v, label = '', ...) {
+simplexText <- function(v, 
+                        label = '', 
+                        ...) {
   coords <- simplexCoords(v)
   text(coords$x, coords$y, label = label, ...)
 }

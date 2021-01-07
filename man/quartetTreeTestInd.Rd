@@ -4,8 +4,15 @@
 \alias{quartetTreeTestInd}
 \title{Multiple independent hypothesis tests for quartet counts fitting a species tree under the MSC}
 \usage{
-quartetTreeTestInd(rqt, model = "T3", lambda = 0, method = "MLest",
-  smallcounts = "approximate", bootstraps = 10^4, speciestree = NULL)
+quartetTreeTestInd(
+  rqt,
+  model = "T3",
+  lambda = 0,
+  method = "MLest",
+  smallcounts = "approximate",
+  bootstraps = 10^4,
+  speciestree = NULL
+)
 }
 \arguments{
 \item{rqt}{table of resolved quartet counts, as produced by \code{quartetTableResolved}, or \code{quartetStarTestInd}}

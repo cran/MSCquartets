@@ -313,7 +313,8 @@ WQDSAdjustLengths = function(tree) {
 #' to be analyzed, if \code{NULL} all taxa on the first gene tree are used; if \code{genetreedata} 
 #' is a quartet table, this argument is ignored and all taxa in the table are used
 #' @param method a distance-based tree building function, such as \code{fastme.bal} or \code{nj}
-#' @param omit \code{TRUE} ignores unresolved quartets, \code{FALSE} treats them as 1/3 of each resolution
+#' @param omit \code{TRUE} ignores unresolved quartets; \code{FALSE} treats them as 1/3 of each resolution; 
+#' ignored if \code{genetreedata} is supplied as a quartet table
 #' @param metric if \code{FALSE} return topological tree; if \code{TRUE} return metric tree with
 #' internal edge lengths estimated by \code{estimateEdgeLengths} with \code{lambda=0}, and terminal branches of length 1
 #' 
@@ -343,7 +344,8 @@ WQDSAdjustLengths = function(tree) {
 QDC = function(genetreedata,
                taxanames = NULL,
                method=fastme.bal,
-               omit = FALSE, metric=FALSE) {
+               omit = FALSE, 
+               metric=FALSE) {
   if ("matrix" %in% class(genetreedata)) {
     RQT = genetreedata
     if (!is.null(taxanames)) {
@@ -375,7 +377,7 @@ QDC = function(genetreedata,
     message("Analyzing ", length(taxanames), " taxa: ", namelist)
     
     # tally quartets on gene trees
-    RQT = quartetTableResolved(quartetTable(genetrees, taxanames), omit)         # treat unresolved quartets as 1/3 of each resolution
+    RQT = quartetTableResolved(quartetTable(genetrees, taxanames), omit = omit)         # treat unresolved quartets as 1/3 of each resolution
   }
   
   Q = quartetTableDominant(RQT)
@@ -397,14 +399,14 @@ QDC = function(genetreedata,
 #' species tree from gene tree data. This is a consistent estimator of the unrooted 
 #' species tree topology and all internal branch lengths.
 #'
-#' @details This function is a wrapper which performs the the steps of reading in a collection
+#' @details This function is a wrapper which performs the steps of reading in a collection
 #' of gene trees, tallying quartets, estimating quartet internal branch lengths, computing the weighted
 #' quartet distance between taxa, building
 #' a tree, and adjusting edge lengths, to give a consistent estimate of the metric species tree in coalescent units
 #' under the MSC.
 #' 
 #' If the gene tree data indicates some quartets experienced little to no incomplete lineage 
-#' sorting, this algorithm tends to be less topologically accuracte than \code{QDC} 
+#' sorting, this algorithm tends to be less topologically accurate than \code{QDC} 
 #' (which infers no metric information) or \code{WQDCrecursive} (which gives better topologies,
 #' and reasonably accurate lengths for short edges, though long edge lengths may still be unreliable).
 #' 
@@ -427,12 +429,12 @@ QDC = function(genetreedata,
 #' @param terminal non-negative branch length to supply for terminal branches 
 #' whose length cannot be inferred by \code{WQDC}
 #' @return an unrooted metric tree of type phylo
-#' @seealso \code{\link{quartetTable}},
-#'          \code{\link{quartetTableResolved}},
-#'          \code{\link{quartetTableDominant}},
-#'          \code{\link{quartetWeightedDist}},
-#'          \code{\link{WQDCrecursive}}
-#'          \code{\link{WQDS}},
+#' @seealso \code{\link{quartetTable}}, 
+#'          \code{\link{quartetTableResolved}}, 
+#'          \code{\link{quartetTableDominant}}, 
+#'          \code{\link{quartetWeightedDist}}, 
+#'          \code{\link{WQDCrecursive}}, 
+#'          \code{\link{WQDS}}, 
 #'          \code{\link{QDC}}
 #'
 #' @examples
@@ -480,7 +482,7 @@ WQDC = function(genetreedata,
     message("Analyzing ", length(taxanames), " taxa: ", namelist)
     
     # tally quartets on gene trees
-    RQT = quartetTableResolved(quartetTable(genetrees, taxanames), omit)         # treat unresolved quartets as 1/3 of each resolution
+    RQT = quartetTableResolved(quartetTable(genetrees, taxanames), omit = omit)         # treat unresolved quartets as 1/3 of each resolution
   }
   
   Q=quartetTableDominant(RQT, bigweights ="finite")

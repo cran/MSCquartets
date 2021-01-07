@@ -4,11 +4,16 @@
 \alias{NANUQdist}
 \title{Compute NANUQ distance and write to file}
 \usage{
-NANUQdist(pTable, outfile = "NANUQdist", alpha = 0.05, beta = 0.95,
-  plot = TRUE)
+NANUQdist(
+  pTable,
+  outfile = "NANUQdist",
+  alpha = 0.05,
+  beta = 0.95,
+  plot = TRUE
+)
 }
 \arguments{
-\item{pTable}{a table of quartets and p-values, as previously computed by \code{NANUQ}, or by both \code{quartetTreeTestInd} and 
+\item{pTable}{a table of resolved quartets and p-values, as previously computed by \code{NANUQ}, or by both \code{quartetTreeTestInd} and 
 \code{quartetStarTestInd}, with columns \code{"p_T3"} and \code{"p_star"}}
 
 \item{outfile}{a character string giving an output file name stub for 
@@ -42,11 +47,14 @@ color-coded to represent test results giving interpretation as network, resolved
 If \code{alpha} and \code{beta} are vectors, they must be of the same length k. Then the i-th entries are 
 paired to produce k plots and k distance tables/output files. This is equivalent to k 
 calls to \code{NANUQdist} with paired scalar values from the vectors of \code{alpha} and \code{beta}.
+
+See the documentation for \code{\link{quartetNetworkDist}} for an explanation of a small, rarely noticeable,
+stochastic element of the algorithm.
 }
 \examples{
 pTable=NANUQ(system.file("extdata","dataYeastRokas",package="MSCquartets"), 
       alpha=.0001, beta=.95, outfile = file.path(tempdir(), "NANUQdist"))
-NANUQdist(pTable, alpha=.05, beta=.95,outfile = file.path(tempdir(), "NANUQdist"))
+NANUQdist(pTable, alpha=.05, beta=.95, outfile = file.path(tempdir(), "NANUQdist"))
 
 }
 \references{

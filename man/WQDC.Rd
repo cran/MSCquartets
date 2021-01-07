@@ -4,8 +4,13 @@
 \alias{WQDC}
 \title{Compute Weighted Quartet Distance Consensus tree from gene tree data}
 \usage{
-WQDC(genetreedata, taxanames = NULL, method = fastme.bal,
-  omit = FALSE, terminal = 1)
+WQDC(
+  genetreedata,
+  taxanames = NULL,
+  method = fastme.bal,
+  omit = FALSE,
+  terminal = 1
+)
 }
 \arguments{
 \item{genetreedata}{gene tree data that may be supplied in any of 3 forms:
@@ -37,14 +42,14 @@ species tree from gene tree data. This is a consistent estimator of the unrooted
 species tree topology and all internal branch lengths.
 }
 \details{
-This function is a wrapper which performs the the steps of reading in a collection
+This function is a wrapper which performs the steps of reading in a collection
 of gene trees, tallying quartets, estimating quartet internal branch lengths, computing the weighted
 quartet distance between taxa, building
 a tree, and adjusting edge lengths, to give a consistent estimate of the metric species tree in coalescent units
 under the MSC.
 
 If the gene tree data indicates some quartets experienced little to no incomplete lineage 
-sorting, this algorithm tends to be less topologically accuracte than \code{QDC} 
+sorting, this algorithm tends to be less topologically accurate than \code{QDC} 
 (which infers no metric information) or \code{WQDCrecursive} (which gives better topologies,
 and reasonably accurate lengths for short edges, though long edge lengths may still be unreliable).
 }
@@ -60,11 +65,11 @@ plot(stree)
 \insertRef{YR19}{MSCquartets}
 }
 \seealso{
-\code{\link{quartetTable}},
-         \code{\link{quartetTableResolved}},
-         \code{\link{quartetTableDominant}},
-         \code{\link{quartetWeightedDist}},
-         \code{\link{WQDCrecursive}}
-         \code{\link{WQDS}},
+\code{\link{quartetTable}}, 
+         \code{\link{quartetTableResolved}}, 
+         \code{\link{quartetTableDominant}}, 
+         \code{\link{quartetWeightedDist}}, 
+         \code{\link{WQDCrecursive}}, 
+         \code{\link{WQDS}}, 
          \code{\link{QDC}}
 }
