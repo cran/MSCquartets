@@ -42,15 +42,15 @@
 #' @seealso \code{\link{quartetTable}}, \code{\link{quartetTableResolved}}, \code{\link{quartetTableDominant}}, \code{\link{taxonNames}}
 #'
 #' @examples \donttest{
+#
 #' gtrees=read.tree(file=system.file("extdata","dataHeliconiusMartin",package="MSCquartets"))
-#' N <- parallel::detectCores()
-#' QT=quartetTableParallel(gtrees,numCores=N)
+#' QT=quartetTableParallel(gtrees,numCores=2)
 #' RQT=quartetTableResolved(QT)
 #' pTable=NANUQ(RQT,alpha=1e-40, beta=1e-30, outfile = file.path(tempdir(), "NANUQdist"))}
 #'
 #' @importFrom ape cophenetic.phylo compute.brlen
 #' @importFrom foreach foreach %dopar%
-#' @importFrom doParallel registerDoParallel
+#' @importFrom doParallel registerDoParallel stopImplicitCluster
 #'
 #' @export
 quartetTableParallel <- function(trees,
@@ -185,6 +185,9 @@ quartetTableParallel <- function(trees,
     quartetDisplayed(Q, trees[[i]], epsilon = epsilon)
   }
   
+ stopImplicitCluster()
+ 
+ 
   cf = cfM[[1]]
   warnMissing = cfM[[2]]
   quartetTable <- cbind(Q,cf)

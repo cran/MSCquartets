@@ -1,10 +1,10 @@
-f34d580febb5411ee61dd00281e85209 *DESCRIPTION
+36c3e7bf1e49715d2b826515aca54e9f *DESCRIPTION
 6e2998684d8aadaf7268f1f85da56fe9 *LICENSE
-08991b7359909e93198551d6cdb1082b *NAMESPACE
-9ce586ab4eaf29f7390f50e0b5851b4d *R/ExpectedCFs.R
+0c18343cb9a1106ecec5bae1aef8c8d1 *NAMESPACE
+81ff13fe609c864348856c1d370d6b15 *R/ExpectedCFs.R
 cb480b821d1d4c7a175ebe67f3205adf *R/MSCquartets.R
 47a5f00e7984194cf7bf8d621616f017 *R/NANUQ.R
-5614624bfee4cd00007ac8809664e905 *R/ParallelTable.R
+38e73d5367ebb203ef82c0fedf27aea2 *R/ParallelTable.R
 c12295d682be4ee77710fa6a9e4be94e *R/QuartetTally.R
 3a454ba8685d8d1117fec8f5f5e33eef *R/SimplexPlot.R
 4088163ef245765f4d3a24eea412c977 *R/StarQuartetHypTest.R
@@ -13,7 +13,7 @@ fb462dce38c4aa1f5a2a0a97706b3828 *R/TreeQuartetDist.R
 ab233fc3f4f623b55d27e4943b141ba0 *R/WQDCrecursive.R
 1e49fc6cf2a497f4967e8dbe192b5f85 *R/pHist.R
 cc98bab198b274cee99ec47a0d2bea4b *R/sysdata.rda
-a4827f1c7b23e58b0a971ac6e715da18 *build/partial.rdb
+f14c74b536e833059a90b235b721e7af *build/partial.rdb
 1a9e34e5ba3b60faed62ba35761f94bc *inst/REFERENCES.bib
 0d0be168c555a93aa06db4a6608367fa *inst/extdata/dataGeneTreeSample
 c40c21f15ecc6884dbd0b445500f875d *inst/extdata/dataHeliconiusMartin
@@ -45,7 +45,7 @@ d651f562c2055dbc37f9689cea4df451 *man/quartetStarTest.Rd
 062880b05f596e0abd24d90ea848bf44 *man/quartetTable.Rd
 918184a55d8deab6b9ecfc9246f91eb9 *man/quartetTableCollapse.Rd
 ed536c4522482d944e9dd9a51a223773 *man/quartetTableDominant.Rd
-8bfd30ff06907a7265f92077ff92fad4 *man/quartetTableParallel.Rd
+f1b104e7de9da82f5f11fcd4a40e7b05 *man/quartetTableParallel.Rd
 6a179391d875976dfb0be7100ea2c1f4 *man/quartetTablePrint.Rd
 70d44943c29065627f3dd15792afe928 *man/quartetTableResolved.Rd
 cef6fd0120e779a920cba1e48664a848 *man/quartetTestPlot.Rd

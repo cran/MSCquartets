@@ -40,15 +40,17 @@
 #' 
 #' \insertRef{Allman2011}{MSCquartets}
 #' 
+#' @importFrom methods is
+#' 
 #' @export
 expectedCFs <- function(speciestree,
                         plot = TRUE,
                         model = "T1",
                         cex = 1) {
-  if (class(speciestree) == "phylo") {
+  if (is(speciestree,"phylo")) {
     stree = unroot(speciestree)
   } else {
-    if (class(speciestree) == "character") {
+    if (is(speciestree,"character")) {
       stree = unroot(read.tree(text = speciestree)) #unrooted species tree
     } else {
       stop('Species tree must be of class "phylo"" or class "character".')

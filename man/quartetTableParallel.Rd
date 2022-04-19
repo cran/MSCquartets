@@ -59,8 +59,7 @@ If the quartet counts are to be used for NANUQ, or any other routines requiring 
 \examples{
 \donttest{
 gtrees=read.tree(file=system.file("extdata","dataHeliconiusMartin",package="MSCquartets"))
-N <- parallel::detectCores()
-QT=quartetTableParallel(gtrees,numCores=N)
+QT=quartetTableParallel(gtrees,numCores=2)
 RQT=quartetTableResolved(QT)
 pTable=NANUQ(RQT,alpha=1e-40, beta=1e-30, outfile = file.path(tempdir(), "NANUQdist"))}
 
