@@ -11,6 +11,9 @@ simplexPoint(v, ...)
 
 \item{...}{other options to pass to graphics::points function}
 }
+\value{
+No return value, called for side effects
+}
 \description{
 Normalizes a point given in 3-d non-normalized coordinates, then plots it in 
 the 2-d probability simplex.

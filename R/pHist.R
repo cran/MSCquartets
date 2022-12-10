@@ -20,6 +20,8 @@
 #'contains a column \code{p_model} of p-values
 #'@param pmin include only p-values above \code{pmin} in the histogram
 #'
+#'@return No return value, called for side effects
+#'
 #'@examples
 #' pTable=NANUQ(system.file("extdata","dataYeastRokas",package="MSCquartets"), 
 #'        alpha=0.05, beta=.95, outfile = file.path(tempdir(), "NANUQdist"))

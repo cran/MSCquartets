@@ -77,7 +77,7 @@
 #' is a quartet table, this argument is ignored and all taxa in the table are used
 #' @param plot \code{TRUE} produces simplex plots of hypothesis test results, \code{FALSE} omits plots
 #'
-#' @return a table of quartets and p-values for judging fit to the MSC on quartet 
+#' @return a table of quartets and p-values (of class matrix) for judging fit to the MSC on quartet 
 #' trees (returned invisibly);
 #' this table can be used as input to \code{NANUQ} or \code{NANUQdist} with new choices of alpha and beta, without re-tallying quartets on
 #' gene trees; a distance table to be used as input for SplitsTree is written to a nexus file
@@ -198,7 +198,7 @@ NANUQ = function( genedata,
 #'
 #' @param plot \code{TRUE} produces simplex plots of hypothesis tests, \code{FALSE} omits plots
 #'
-#' @return a NANUQ distance table, or a list of such tables if \code{alpha} and \code{beta} 
+#' @return a NANUQ distance table (of class matrix), or a list of such tables if \code{alpha} and \code{beta} 
 #' are vectors (returned invisibly)
 #' 
 #' @seealso \code{\link{NANUQ}}, \code{\link{quartetTreeTestInd}}, \code{\link{quartetStarTestInd}}
@@ -256,7 +256,7 @@ NANUQdist = function (pTable,
 #' @param distMatrix a square matrix giving a distance table, with rows and columns labeled by taxon names
 #' @param outfilename the name of an output file
 #'
-#' @return NULL
+#' @return No return value, called for side effects
 #' 
 #' @examples
 #' gtrees=read.tree(file=system.file("extdata","dataGeneTreeSample",package="MSCquartets"))
@@ -315,7 +315,7 @@ nexusDist = function(distMatrix,
 #' @param beta a scalar significance level for judging p-values \code{p_star} indicating quartet star tree;
 #'      smaller value gives fewer resolved tree decisions
 #'
-#' @return a distance table
+#' @return a distance table (of class matrix)
 #' 
 #' @examples 
 #' pTable=NANUQ(system.file("extdata", "dataYeastRokas",package="MSCquartets"), alpha=.0001, 

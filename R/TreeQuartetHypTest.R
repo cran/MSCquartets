@@ -10,7 +10,7 @@
 #' @param expd  expected vector
 #' @param lambda  statistic parameter (e.g., 0=Likelihood Ratio, 1=Chi-squared)
 #'
-#' @return value of statistic
+#' @return numeric value of statistic
 #'
 #' @examples
 #' obs=c(10,20,30)
@@ -78,7 +78,7 @@ powerDivStat <- function(obs,
 # Error function
 #
 #@param x argument
-#@return function value
+#@return numeric function value
 #
 erf <- function(x) {
   2 * pnorm(x * sqrt(2)) - 1
@@ -89,11 +89,48 @@ erf <- function(x) {
 # Inverse error function
 #
 #@param x argument
-#@return function value
+#@return numeric function value
 #
 erf.inv <- function(x) {
   qnorm((x + 1) / 2) / sqrt(2)
 }
+
+#######################################################
+
+#' Modified Struve function
+#' 
+#' This function is used in computing the probability density for
+#' Model T1. The code is closely based on the \code{I0L0} function implemented in Python for the package 
+#' RandomFieldUtils, which was previously on CRAN up to 12/2022).
+#'
+#'@param x  function argument
+#'
+#'@return numeric value of negative modified Struve function 
+#'
+#'@export
+M0 <- function(x) {
+  if (x<0) {
+    r <- NA
+  } else if (x>=0&&x<16) {
+    g2 <- c(0.52468736791485599138,-0.35612460699650586196,0.20487202864009927687,-0.10418640520402693629,0.4634211095548429228*10^(-1),-0.1790587192403498630*10^(-1),0.597968695481143177*10^(-2),-0.171777547693565429*10^(-2),0.42204654469171422*10^(-3),-0.8796178522094125*10^(-4),0.1535434234869223*10^(-4),-0.219780769584743*10^(-5),0.24820683936666*10^(-6),-0.2032706035607*10^(-7),0.90984198421*10^(-9),0.2561793929*10^(-10),-0.710609790*10^(-11),0.32716960*10^(-12),0.2300215*10^(-13),-0.292109*10^(-14),-0.3566*10^(-16),0.1832*10^(-16),-0.10*10^(-18),-0.11*10^(-18))
+    r <- -0.5*g2[1]
+    ac <- acos((6*x-40)/(x+40))
+    for (i in 2:24) {
+      r <- r-g2[i]*cos((i-1)*ac)
+    }
+  } else {
+    g3 <- c(2.00326510241160643125,0.195206851576492081*10^(-2),0.38239523569908328*10^(-3),0.7534280817054436*10^(-4),0.1495957655897078*10^(-4),0.299940531210557*10^(-5),0.60769604822459*10^(-6),0.12399495544506*10^(-6),0.2523262552649*10^(-7),0.504634857332*10^(-8),0.97913236230*10^(-9),0.18389115241*10^(-9),0.3376309278*10^(-10),0.611179703*10^(-11),0.108472972*10^(-11),0.18861271*10^(-12),0.3280345*10^(-13),0.565647*10^(-14),0.93300*10^(-15),0.15881*10^(-15),0.2791*10^(-16),0.389*10^(-17),0.70*10^(-18),0.16*10^(-18))
+    r <- 0.5*g3[1]
+    x2 <- x^2
+    ac <- acos((800-x2)/(288+x2))
+    for (i in 2:24) {
+      r <- r+g3[i]*cos((i-1)*ac)
+    }
+    r <- -r*2/(pi*x)
+  }
+  return(r)
+}
+
 
 #########################################################
 
@@ -104,22 +141,21 @@ erf.inv <- function(x) {
 #'@references
 #'\insertRef{MAR19}{MSCquartets}
 #'
-#'@param x  statistic value (e.g., likelihood ratio statistic, or other power divergence statistic)
+#'@param x  statistic value (e.g., likelihood ratio statistic, or other power divergence statistic);
+#'may be a vector
 #'@param mu0  parameter of density function
 #'
-#'@return value of density function
+#'@return numeric value, or vector of values, of density function
 #'
 #'@seealso \code{\link{T3density}}
 #'
-#'@importFrom RandomFieldsUtils I0L0
-#'
 #'@export
-T1density <-
-  function(x, 
-           mu0) {
-    (1 / 4) * exp(-(1 / 2) * x) * (sqrt(2 / (pi * x)) * (1 + erf(mu0 / sqrt(2))) +
-                                     exp(-(1 / 2) * mu0 ^ 2) * RandomFieldsUtils::I0L0(mu0 * sqrt(x)))
-  }
+#'
+T1density <- function (x, mu0) 
+{
+  (1/4) * exp(-(1/2) * x) * (sqrt(2/(pi * x)) * (1 + erf(mu0/sqrt(2))) - 
+                               exp(-(1/2) * mu0^2) * Vectorize(M0)(mu0 * sqrt(x)))
+}
 
 #########################################################
 
@@ -135,7 +171,7 @@ T1density <-
 #' @param alpha0 parameter of density function
 #' @param beta0 parameter of density function
 #'
-#' @return  value of density function
+#' @return numeric value of density function
 #'
 #' @seealso \code{\link{T1density}}
 #'
@@ -162,8 +198,8 @@ T3density <- function(x,
         sqrt(x) * tan(alpha0) + mu0 * sin(alpha0)
       ))))
 }
+########################################################
 
-#########################################################
 
 #' Hypothesis test for quartet counts fitting a tree under the MSC
 #'
@@ -222,7 +258,7 @@ T3density <- function(x,
 #' @param smallcounts \code{"bootstrap"} or \code{"approximate"}, method of obtaining p-value when some counts are small
 #' @param bootstraps  number of samples for bootstrapping
 #'
-#' @return \code{(p-value, bl)} where \code{bl} is a consistent estimator of the
+#' @return list \code{(p-value, bl)} where \code{bl} is a consistent estimator of the
 #' internal edge length in coalescent units, possibly \code{Inf}.
 #'
 #' @examples
@@ -796,7 +832,8 @@ quartetTreeTestInd <-
 #' @param beta  significance level for test with null hypothesis star tree;
 #' test results plotted only if \code{beta<1} and \code{"p_star"} column present in \code{pTable}
 #' @param cex scaling factor for size of plotted symbols
-#' @return NULL
+#'
+#'@return No return value, called for side effects
 #'
 #' @seealso \code{\link{quartetTreeTestInd}}, \code{\link{quartetStarTestInd}},
 #' \code{\link{NANUQ}}, \code{\link{NANUQdist}}
@@ -1015,7 +1052,7 @@ quartetTestPlot <- function(pTable,
 #'@param model \code{"T3"} or \code{"T1"}, for the models of \insertCite{MAR19;textual}{MSCquartets} describing an unspecified species
 #'tree topology (\code{"T3"}), or the topology whose count is the first entry of \code{obs} (\code{"T1"})
 #'
-#'@return \code{(error.prob, top.probs)} where \code{error.prob} is the species tree error probability
+#'@return list \code{(error.prob, top.probs)} where \code{error.prob} is the species tree error probability
 #'and \code{top.probs} is a vector of the three species tree topology probabilities in the order of \code{obs};
 #'for model \code{"T1"} the species tree used is the one
 #'corresponding to the first count; for model \code{"T3"} the species

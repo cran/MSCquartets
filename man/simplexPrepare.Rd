@@ -13,6 +13,9 @@ simplexPrepare(model = "T3", maintitle = NULL, titletext = NULL)
 
 \item{titletext}{additional text for title}
 }
+\value{
+No return value, called for side effects
+}
 \description{
 Outline the 2-d probability simplex, and draw the T1 or T3 model points for quartet frequencies.
 The models "T1" and "T3" are described more fully by \insertCite{MAR19;textual}{MSCquartets}.

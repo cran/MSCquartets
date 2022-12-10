@@ -13,6 +13,9 @@ simplexLabels(top = "", left = "", right = "")
 
 \item{right}{label for right bottom}
 }
+\value{
+No return value, called for side effects
+}
 \description{
 Add labels to vertices of the probability simplex.
 }

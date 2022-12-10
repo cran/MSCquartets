@@ -11,6 +11,9 @@ simplexSegment(v, w, ...)
 
 \item{...}{other options to pass to graphics::segments function}
 }
+\value{
+No return value, called for side effects
+}
 \description{
 Normalizes two points in 3-d, and draws line segment between them in 2-d probability simplex.
 }

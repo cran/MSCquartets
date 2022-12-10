@@ -193,7 +193,7 @@ quartetTable = function(trees,
 #' @param omit \code{TRUE} deletes unresolved quartets column;
 #'            \code{FALSE} deletes the column but redistributes unresolved counts as (1/3,1/3,1/3) to resolved counts
 #' @return
-#'      a table of quartet counts similar to \code{qt}, but with columns showing only resolved quartet counts
+#'      a table (of class matrix) of quartet counts similar to \code{qt}, but with columns showing only resolved quartet counts
 #'
 #' @examples
 #' gtrees=read.tree(file=system.file("extdata","dataGeneTreeSample",package="MSCquartets"))
@@ -237,7 +237,7 @@ quartetTableResolved = function(qt,
 #' topology appears is given as \code{Inf} or a finite, but large, numerical value
 #' 
 #' @return
-#'   an (n choose 4)x(n+1) array with dominant quartet topology encoded by 1,1,-1,-1 in
+#'   an (n choose 4)x(n+1) matrix with dominant quartet topology encoded by 1,1,-1,-1 in
 #' taxon columns, with signs indicating cherries; the (n+1)th column \code{"weight"} contains the maximum likelihood estimates,
 #' under MSC on a 4-taxon tree, of the quartets' central edge lengths, in coalescent units
 #'
@@ -331,7 +331,7 @@ taxonNames = function(trees) {
 #' @param qt a table such as returned by \code{quartetTable}, \code{quartetTableResolved}, 
 #' or \code{quartetTableDominant}, possibly with extra columns added by other functions
 #'
-#' @return NULL
+#' @return No return value, called for side effects
 #'
 #' @examples 
 #'  gtrees=read.tree(file=system.file("extdata","dataGeneTreeSample",package="MSCquartets"))

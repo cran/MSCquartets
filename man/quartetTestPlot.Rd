@@ -19,6 +19,9 @@ test results plotted only if \code{beta<1} and \code{"p_star"} column present in
 
 \item{cex}{scaling factor for size of plotted symbols}
 }
+\value{
+No return value, called for side effects
+}
 \description{
 Plot a 2-d probability simplex, with points for all quartet count vectors. Colors
 indicate rejection or failure to reject for tests at specified levels.

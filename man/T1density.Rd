@@ -7,7 +7,8 @@
 T1density(x, mu0)
 }
 \arguments{
-\item{x}{statistic value (e.g., likelihood ratio statistic, or other power divergence statistic)}
+\item{x}{statistic value (e.g., likelihood ratio statistic, or other power divergence statistic);
+may be a vector}
 
 \item{mu0}{parameter of density function}
 }

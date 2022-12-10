@@ -1,6 +1,6 @@
 Package: MSCquartets
 Title: Analyzing Gene Tree Quartets under the Multi-Species Coalescent
-Version: 1.1.1
+Version: 1.1.2
 Authors@R: c(
      person("Elizabeth", "Allman", email = "esallman@alaska.edu",
                   role = "aut"),
@@ -20,18 +20,17 @@ Description: Methods for analyzing and using quartets displayed on a collection 
       species networks of Allman et al. (2019) <doi:10.1186/s13015-019-0159-2>. Software announcement by 
       Rhodes et al. (2020) <doi:10.1093/bioinformatics/btaa868>.
 License: MIT + file LICENSE
-Imports: RandomFieldsUtils, zipfR, graphics, stats, Rdpack, foreach,
-        doParallel, methods
+Imports: zipfR, graphics, stats, Rdpack, foreach, doParallel, methods
 RdMacros: Rdpack
 Encoding: UTF-8
 RoxygenNote: 7.1.2
 NeedsCompilation: no
 Depends: R (>= 3.2.0), ape (>= 5.0), phangorn
-Packaged: 2022-04-14 00:41:23 UTC; johnrhodes
+Packaged: 2022-12-10 00:44:48 UTC; johnrhodes
 Author: Elizabeth Allman [aut],
   Hector Banos [aut],
   Jonathan Mitchell [aut],
   John Rhodes [aut, cre] (<https://orcid.org/0000-0001-9921-1091>)
 Maintainer: John Rhodes <j.rhodes@alaska.edu>
 Repository: CRAN
-Date/Publication: 2022-04-19 14:22:30 UTC
+Date/Publication: 2022-12-10 10:30:02 UTC

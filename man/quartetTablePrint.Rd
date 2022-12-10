@@ -10,6 +10,9 @@ quartetTablePrint(qt)
 \item{qt}{a table such as returned by \code{quartetTable}, \code{quartetTableResolved}, 
 or \code{quartetTableDominant}, possibly with extra columns added by other functions}
 }
+\value{
+No return value, called for side effects
+}
 \description{
 Print a quartet table with the taxa in each quartet shown by name.
 }

@@ -15,6 +15,9 @@ contains a column \code{p_model} of p-values}
 
 \item{pmin}{include only p-values above \code{pmin} in the histogram}
 }
+\value{
+No return value, called for side effects
+}
 \description{
 Graphical exploration of extreme p-values from quartet hypothesis tests, to aid in choosing critical values
 for hypothesis tests. Log base 10 of p-values exceeding some minimum are plotted, to explore gaps in 

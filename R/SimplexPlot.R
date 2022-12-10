@@ -9,7 +9,8 @@
 #' @param model \code{"T1"} or \code{"T3"}, for 1-tree or 3-tree model
 #' @param maintitle main title for plot
 #' @param titletext additional text for title
-#' @return NULL
+#' 
+#' @return No return value, called for side effects 
 #'
 #' @examples
 #'    simplexPrepare("T3",maintitle="Main title",titletext="further text")
@@ -76,7 +77,7 @@ simplexPrepare <- function(model = "T3",
 #' 
 #' @param ... other options to pass to graphics::points function
 #' 
-#' @return NULL
+#' @return No return value, called for side effects
 #'
 #' @examples
 #'    simplexPrepare("T3","Example Plot")
@@ -104,7 +105,7 @@ simplexPoint <- function(v,
 #' 
 #' @param ... other options to pass to graphics::segments function
 #' 
-#' @return NULL
+#' @return No return value, called for side effects
 #'
 #' @examples
 #'    simplexPrepare("T3","Example Plot")
@@ -140,7 +141,7 @@ simplexSegment <- function(v,
 #' 
 #' @param ... other options to pass to graphics::text function
 #' 
-#' @return NULL
+#' @return No return value, called for side effects
 #'
 #' @examples
 #'    simplexPrepare("T3","Example Plot")
@@ -168,7 +169,8 @@ simplexText <- function(v,
 #' @param top label for top
 #' @param left label for left bottom
 #' @param right label for right bottom
-#' @return NULL
+#' 
+#' @return No return value, called for side effects
 #'
 #' @examples
 #'    simplexPrepare("T3","Example Plot")
@@ -205,7 +207,7 @@ simplexLabels <- function(top = '',
 #' 
 #' @param v vector of 3 non-negative numbers, not summing to 0
 #' 
-#' @return 2-d coordinates to plot normalized point in simplex
+#' @return a vector of 2-d coordinates to plot normalized point in simplex
 #'
 #' @examples
 #'      simplexCoords(c(15,65,20))
