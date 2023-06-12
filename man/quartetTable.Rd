@@ -11,7 +11,7 @@ quartetTable(trees, taxonnames = NULL, epsilon = 0, random = 0)
 
 \item{taxonnames}{vector of \code{n} names of taxa of interest; if \code{NULL} then taken from taxa on \code{trees[[1]]}}
 
-\item{epsilon}{minimum for branch lengths to be treated as non-zero}
+\item{epsilon}{minimum for branch lengths to be treated as non-zero (default 0)}
 
 \item{random}{number of random subsets of 4 taxa to consider; if 0, use all \code{n} choose 4 subsets}
 }
@@ -21,25 +21,28 @@ an (\code{n} choose 4)x(\code{n}+4) matrix (or (\code{random})x(\code{n}+4) matr
     quartets 12|34, 13|24, 14|23, 1234 across the trees
 }
 \description{
-Compiles table of quartet count concordance factors (qcCFs) for topological quartets displayed on a 
+Compiles table of quartet count concordance factors (qcCFs) for topological quartets displayed on a
 collection of trees.
 }
 \details{
 The names in \code{taxonnames} may be any subset of those on the trees.
 Branch lengths of non-negative size less than or equal to \code{epsilon}
 are treated as zero, giving polytomies.
- 
- In the returned table, columns are labeled by taxon names and quartet names ("12|34", etc.).
- 1s and 0s in taxon columns indicate the taxa in a quartet. Quartet 12|34
- means the first and second indicated taxa form a cherry, 13|24 means the first and third form a cherry, 14|23 means
- the first and fourth form a cherry, and 1234 means the quartet is unresolved.
 
-An error occurs if any branch length is negative. 
+In the returned table, columns are labeled by taxon names and quartet names ("12|34", etc.).
+1s and 0s in taxon columns indicate the taxa in a quartet. Quartet 12|34
+means the first and second indicated taxa form a cherry, 13|24 means the first and third form a cherry, 14|23 means
+the first and fourth form a cherry, and 1234 means the quartet is unresolved.
+
+An error occurs if any branch length is negative.
 Warnings are given if some of \code{taxonnames} are missing on some trees, or
 if some 4-taxon set is not on any tree.
 
 If \code{random}>0, then for efficiency \code{random} should be much smaller then
 the number of possible 4 taxon subsets.
+
+This function calls an Rcpp function for tallying quartets, for much shorter computational
+time than can be achieved in R alone.
 }
 \examples{
 gtrees=read.tree(file=system.file("extdata","dataGeneTreeSample",package="MSCquartets"))

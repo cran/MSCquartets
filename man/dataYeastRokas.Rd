@@ -5,7 +5,7 @@
 \alias{dataYeastRokas}
 \title{Yeast gene tree dataset}
 \format{
-A text file with 106 topological Newick gene trees on the taxa: 
+A text file with 106 topological Newick gene trees on the taxa:
  Sbay, Scas, Scer, Sklu, Skud, Smik, Spar, and Calb (outgroup).
 }
 \source{

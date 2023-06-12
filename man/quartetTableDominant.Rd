@@ -9,7 +9,7 @@ quartetTableDominant(rqt, bigweights = "infinite")
 \arguments{
 \item{rqt}{a table, as produced by \code{quartetTableResolved} of size (n choose 4)x(n+3);}
 
-\item{bigweights}{\code{"infinite"} or \code{"finite"}, to indicate whether the weight (internal edge length) 
+\item{bigweights}{\code{"infinite"} or \code{"finite"}, to indicate whether the weight (internal edge length)
 of a quartet for which only one
 topology appears is given as \code{Inf} or a finite, but large, numerical value}
 }

@@ -41,17 +41,19 @@
 #' \insertRef{Allman2011}{MSCquartets}
 #' 
 #' @importFrom methods is
+#' @importFrom ape unroot read.tree cophenetic.phylo
+#'
 #' 
 #' @export
 expectedCFs <- function(speciestree,
                         plot = TRUE,
                         model = "T1",
                         cex = 1) {
-  if (is(speciestree,"phylo")) {
-    stree = unroot(speciestree)
+  if (methods::is(speciestree,"phylo")) {
+    stree = ape::unroot(speciestree)
   } else {
-    if (is(speciestree,"character")) {
-      stree = unroot(read.tree(text = speciestree)) #unrooted species tree
+    if (methods::is(speciestree,"character")) {
+      stree = ape::unroot(read.tree(text = speciestree)) #unrooted species tree
     } else {
       stop('Species tree must be of class "phylo"" or class "character".')
     }
@@ -63,7 +65,7 @@ expectedCFs <- function(speciestree,
     stop('Argument "model" must be "T1" or "T3" for plotting.')
   }
   
-  D = cophenetic.phylo(stree) # create distance table, for determining displayed quartets
+  D = ape::cophenetic.phylo(stree) # create distance table, for determining displayed quartets
   D = D[order(rownames(D)), order(colnames(D))]# put taxa in sorted order
   
   

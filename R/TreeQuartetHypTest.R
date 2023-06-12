@@ -10,7 +10,7 @@
 #' @param expd  expected vector
 #' @param lambda  statistic parameter (e.g., 0=Likelihood Ratio, 1=Chi-squared)
 #'
-#' @return numeric value of statistic
+#' @return value of statistic
 #'
 #' @examples
 #' obs=c(10,20,30)
@@ -18,8 +18,8 @@
 #' powerDivStat(obs,expd,0)
 #'
 #' @export
-powerDivStat <- function(obs, 
-                         expd, 
+powerDivStat <- function(obs,
+                         expd,
                          lambda) {
   if (is.vector(obs) == FALSE ||
       is.vector(expd) == FALSE ||
@@ -46,7 +46,7 @@ powerDivStat <- function(obs,
       # If observations and expectations are equal, there is no need for an algorithm for computing the power-divergence statistic since the power-divergence statistic must be 0.
       stat  <- 0
     } else {
-      if (lambda %in% c(0, 1, -1 / 2, -1, -2, 2 / 3) == FALSE) {
+      if (lambda %in% c(0, 1,-1 / 2,-1,-2, 2 / 3) == FALSE) {
         warning(
           "Non-standard choice of lambda. Standard choices are lambda=0,1,-1/2,-1,-2,2/3."
         )
@@ -78,7 +78,7 @@ powerDivStat <- function(obs,
 # Error function
 #
 #@param x argument
-#@return numeric function value
+#@return function value
 #
 erf <- function(x) {
   2 * pnorm(x * sqrt(2)) - 1
@@ -89,23 +89,23 @@ erf <- function(x) {
 # Inverse error function
 #
 #@param x argument
-#@return numeric function value
+#@return function value
 #
 erf.inv <- function(x) {
   qnorm((x + 1) / 2) / sqrt(2)
 }
 
-#######################################################
+#########################################################
 
 #' Modified Struve function
-#' 
+#'
 #' This function is used in computing the probability density for
-#' Model T1. The code is closely based on the \code{I0L0} function implemented in Python for the package 
+#' Model T1. The code is closely based on the \code{I0L0} function implemented in Python for the package
 #' RandomFieldUtils, which was previously on CRAN up to 12/2022).
 #'
 #'@param x  function argument
 #'
-#'@return numeric value of negative modified Struve function 
+#'@return value of negative modified Struve function function
 #'
 #'@export
 M0 <- function(x) {
@@ -141,21 +141,20 @@ M0 <- function(x) {
 #'@references
 #'\insertRef{MAR19}{MSCquartets}
 #'
-#'@param x  statistic value (e.g., likelihood ratio statistic, or other power divergence statistic);
-#'may be a vector
+#'@param x  statistic value (e.g., likelihood ratio statistic, or other power divergence statistic)
 #'@param mu0  parameter of density function
 #'
-#'@return numeric value, or vector of values, of density function
+#'@return value of density function
 #'
 #'@seealso \code{\link{T3density}}
 #'
 #'@export
-#'
-T1density <- function (x, mu0) 
-{
-  (1/4) * exp(-(1/2) * x) * (sqrt(2/(pi * x)) * (1 + erf(mu0/sqrt(2))) - 
-                               exp(-(1/2) * mu0^2) * Vectorize(M0)(mu0 * sqrt(x)))
-}
+T1density <-
+  function(x,
+           mu0) {
+    (1 / 4) * exp(-(1 / 2) * x) * (sqrt(2 / (pi * x)) * (1 + erf(mu0 / sqrt(2))) +
+                                     exp(-(1 / 2) * mu0 ^ 2) * Vectorize(M0)(mu0 * sqrt(x)))
+  }
 
 #########################################################
 
@@ -171,14 +170,14 @@ T1density <- function (x, mu0)
 #' @param alpha0 parameter of density function
 #' @param beta0 parameter of density function
 #'
-#' @return numeric value of density function
+#' @return  value of density function
 #'
 #' @seealso \code{\link{T1density}}
 #'
 #' @export
-T3density <- function(x, 
-                      mu0, 
-                      alpha0, 
+T3density <- function(x,
+                      mu0,
+                      alpha0,
                       beta0) {
   (1 / (2 * sqrt(2 * pi * x))) * (exp(-(1 / 2) * x) * (1 - erf((1 / sqrt(
     2
@@ -198,8 +197,8 @@ T3density <- function(x,
         sqrt(x) * tan(alpha0) + mu0 * sin(alpha0)
       ))))
 }
-########################################################
 
+#########################################################
 
 #' Hypothesis test for quartet counts fitting a tree under the MSC
 #'
@@ -258,7 +257,7 @@ T3density <- function(x,
 #' @param smallcounts \code{"bootstrap"} or \code{"approximate"}, method of obtaining p-value when some counts are small
 #' @param bootstraps  number of samples for bootstrapping
 #'
-#' @return list \code{(p-value, bl)} where \code{bl} is a consistent estimator of the
+#' @return \code{output} where \code{output$p.value} is the p-value and \code{output$edgelength} is a consistent estimator of the
 #' internal edge length in coalescent units, possibly \code{Inf}.
 #'
 #' @examples
@@ -272,417 +271,501 @@ T3density <- function(x,
 #' @importFrom stats pbinom rmultinom integrate pnorm uniroot
 #'
 #' @export
-#'
-quartetTreeTest <- function(obs,
-                            model = "T3",
-                            lambda = 0,
-                            method = "MLest",
-                            smallcounts = "approximate",
-                            bootstraps = 10 ^ 4) {
-  # Function for correcting the bias of the mu0 as much as possible for model T1
-  T1bias <- function(mu02, mu0) {
-    (1 / sqrt(2 * pi)) * exp(-(1 / 2) * mu02 ^ 2) + (1 / 2) * mu02 * (1 + erf(mu02 /
-                                                                                sqrt(2))) - mu0
-  }
-  
-  # Function to integrate for bias for model T3
-  integrand <-
-    function(y, 
-             mu02, 
-             alpha02, 
-             beta02) {
-      (1 / sqrt(2 * pi)) * y * (exp(-(1 / 2) * (y - mu02) ^ 2) * erf(y * (1 / tan(beta02)) /
-                                                                       sqrt(2)) + exp(-(1 / 2) * (y + mu02 * sin(alpha02)) ^ 2) * (erf((
-                                                                         y * (1 / tan(alpha02)) + mu02 * cos(alpha02)
-                                                                       ) / sqrt(2)) + erf((
-                                                                         y * tan(alpha02 + beta02) - mu02 * cos(alpha02)
-                                                                       ) / sqrt(2))))
+quartetTreeTest <-
+  function (obs,
+            model = "T3",
+            lambda = 0,
+            method = "MLest",
+            smallcounts = "approximate",
+            bootstraps = 10 ^ 4)
+  {
+    T1bias <- function(mu02, mu0) {
+      (1 / sqrt(2 * pi)) * exp(-(1 / 2) * mu02 ^ 2) + (1 / 2) * mu02 *
+        (1 + erf(mu02 / sqrt(2))) - mu0
     }
-  
-  # Function for correcting the bias of the mu0 as much as possible for model T3.
-  T3bias <- function(mu02, 
-                     mu0, 
-                     n) {
-    phi02 <-
-      min((1 / (4 * (n + mu02 ^ 2))) * (4 * n + 3 * mu02 ^ 2 - mu02 * sqrt(8 *
-                                                                             n + 9 * mu02 ^ 2)), 1)
-    alpha02 <- atan(1 / sqrt(3 * (3 - 2 * phi02)))
-    beta02 <- (1 / 2) * (pi / 2 - alpha02)
-    bias <-
-      integrate(
+    integrand <- function(y, mu02, alpha02, beta02) {
+      (1 / sqrt(2 * pi)) * y * (exp(-(1 / 2) * (y - mu02) ^ 2) *
+                                  erf(y * (1 / tan(beta02)) / sqrt(2)) + exp(-(1 /
+                                                                                 2) * (y +
+                                                                                         mu02 * sin(alpha02)) ^
+                                                                               2) * (erf((
+                                                                                 y * (1 / tan(alpha02)) +
+                                                                                   mu02 * cos(alpha02)
+                                                                               ) / sqrt(2)) + erf((
+                                                                                 y * tan(alpha02 +
+                                                                                           beta02) - mu02 * cos(alpha02)
+                                                                               ) / sqrt(2))))
+    }
+    T3bias <- function(mu02, mu0, n) {
+      phi02 <- min((1 / (4 * (n + mu02 ^ 2))) * (4 * n + 3 * mu02 ^ 2 -
+                                                   mu02 * sqrt(8 * n + 9 * mu02 ^
+                                                                 2)), 1)
+      alpha02 <- atan(1 / sqrt(3 * (3 - 2 * phi02)))
+      beta02 <- (1 / 2) * (pi / 2 - alpha02)
+      bias <- integrate(
         integrand,
         lower = 0,
         upper = Inf,
         mu02 = mu02,
         alpha02 = alpha02,
         beta02 = beta02
-      )$value - mu0
-    return(bias)
-  }
-  
-  if (is.vector(obs) == FALSE ||
-      length(obs) != 3 ||
-      min(obs) < 0 ||
-      sum(obs) < 1 ||
-      all.equal(sum(obs), round(sum(obs))) != TRUE ||
-      model %in% c("T1", "T3") == FALSE ||
-      is.vector(lambda) == FALSE ||
-      length(lambda) != 1 ||
-      smallcounts %in% c("bootstrap", "approximate") == FALSE ||
-      bootstraps <= 0 || bootstraps %% 1 != 0 ||
-      method %in% c("MLest", "conservative", "bootstrap") == FALSE) {
-    # Return an error and stop if arguments are misspecified.
-    stop(
-      'Invalid arguments: obs must be a non-negative vector of length 3 summing to a positive integer;
-      model must be "T1" or "T3"; lambda must be real; smallcounts must be "bootstrap" or "approximate";
-      bootstraps must be a positive integer; method must be "MLest", "conservative", or "bootstrap".'
-    )
-  } else {
-    n <- sum(obs)
-    if (n < 30) {
-      # Provide a warning if there are a small number of gene trees.
-      warning("The number of gene quartets is <30; p-value may be inaccurate.")
+      )$value -
+        mu0
+      return(bias)
     }
-    # compute ML estimate for obs
-    if (model == "T3") {
-      obs <- sort(obs, decreasing = TRUE)
-      expd <-
-        c(obs[1], (1 / 2) * (n - obs[1]), (1 / 2) * (n - obs[1]))
-    } else {
-      # assume model=T1
-      expd <-
-        c(max(obs[1], n / 3), (1 / 2) * (n - max(obs[1], n / 3)), (1 / 2) * (n - max(obs[1], n /
-                                                                                       3)))
+    if (is.numeric(obs) == FALSE ||
+        is.vector(obs) == FALSE || length(obs) != 3
+        ||
+        min(obs) < 0 ||
+        sum(obs) < 1 || all.equal(sum(obs), round(sum(obs))) != TRUE
+        || model %in% c("T1", "T3") == FALSE
+        ||
+        is.numeric(lambda) == FALSE ||
+        is.vector(lambda) == FALSE || length(lambda) != 1
+        || smallcounts %in% c("bootstrap", "approximate") == FALSE
+        ||
+        is.numeric(bootstraps) == FALSE ||
+        is.vector(bootstraps) == FALSE ||
+        length(bootstraps) != 1 || bootstraps <= 0 || bootstraps %% 1 != 0
+        || method %in% c("MLest", "conservative", "bootstrap") ==
+        FALSE) {
+      stop(
+        "Invalid arguments: obs must be a numeric non-negative vector of length 3 summing to a positive integer;\n      model must be \"T1\" or \"T3\";\n      lambda must be a real number;\n      method must be \"MLest\", \"conservative\", or \"bootstrap\";\n      smallcounts must be \"bootstrap\" or \"approximate\";\n      bootstraps must be a positive integer."
+      )
     }
-    
-    phi0 <- 3 * (n - expd[1]) / (2 * n)
-    mu0 <-
-      max(0, sqrt(2 * n) * (1 - phi0) / sqrt(phi0 * (3 - 2 * phi0)))
-    if (min(expd) != 0) {
-      if (model == "T1") {
-        # Bias correction.
-        if (mu0 <= 1 / sqrt(2 * pi)) {
-          mu0unbiased <- 0
-        } else if (sign(T1bias(0, mu0)) == sign(T1bias(mu0, mu0))) {
-          # If the absolute bias is so small that absolute error may be bigger, then disregard bias.
-          mu0unbiased <- mu0
-        } else {
-          mu0unbiased <- uniroot(T1bias, c(0, mu0), mu0 = mu0)$root
-        }
-        phi0unbiased <-
-          (1 / (4 * (n + mu0unbiased ^ 2))) * (4 * n + 3 * mu0unbiased ^ 2 - mu0unbiased *
-                                                 sqrt(8 * n + 9 * mu0unbiased ^ 2))
+    else {
+      n <- sum(obs)
+      if (n < 30) {
+        warning("The number of gene quartets is <30; p-value may be inaccurate.")
+      }
+      obs <- as.numeric(obs)
+      if (model == "T3") {
+        obs <- sort(obs, decreasing = TRUE)
+        expd <- c(obs[1], (1 / 2) * (n - obs[1]), (1 / 2) * (n -
+                                                               obs[1]))
       }
       else {
-        # Bias correction for model=T3.
-        if (mu0 <= 3 * sqrt(3) / (2 * sqrt(2 * pi))) {
-          mu0unbiased <- 0
-        } else if (sign(T3bias(0, mu0, n)) == sign(T3bias(mu0, mu0, n))) {
-          # If the absolute bias is so small that absolute error may be bigger, then disregard bias.
-          mu0unbiased <- mu0
-        } else {
-          mu0unbiased <- uniroot(T3bias, c(0, mu0), mu0 = mu0, n = n)$root
+        expd <- c(max(obs[1], n / 3), (1 / 2) * (n - max(obs[1],
+                                                         n / 3)), (1 / 2) * (n - max(obs[1], n /
+                                                                                       3)))
+      }
+      phi0 <- 3 * (n - expd[1]) / (2 * n)
+      mu0 <- max(0, sqrt(2 * n) * (1 - phi0) / sqrt(phi0 * (3 -
+                                                              2 * phi0)))
+      if (min(expd) != 0) {
+        if (model == "T1") {
+          if (mu0 <= 1 / sqrt(2 * pi)) {
+            mu0unbiased <- 0
+          }
+          else if (sign(T1bias(0, mu0)) == sign(T1bias(mu0,
+                                                       mu0))) {
+            mu0unbiased <- mu0
+          }
+          else {
+            mu0unbiased <- uniroot(T1bias, c(0, mu0), mu0 = mu0)$root
+          }
+          phi0unbiased <- (1 / (4 * (n + mu0unbiased ^ 2))) *
+            (4 * n + 3 * mu0unbiased ^ 2 - mu0unbiased *
+               sqrt(8 * n + 9 * mu0unbiased ^ 2))
         }
-        phi0unbiased <-
-          (1 / (4 * (n + mu0unbiased ^ 2))) * (4 * n + 3 * mu0unbiased ^ 2 - mu0unbiased *
-                                                 sqrt(8 * n + 9 * mu0unbiased ^ 2))
-        if (identical(obs, expd) == FALSE) {
-          # For model T3 alpha0 and beta0 must also be computed if p-value is not 1.
-          alpha0unbiased <-
-            atan(1 / sqrt(3 * (3 - 2 * phi0unbiased)))
-          beta0unbiased <- (1 / 2) * (pi / 2 - alpha0unbiased)
+        else {
+          if (mu0 <= 3 * sqrt(3) / (2 * sqrt(2 * pi))) {
+            mu0unbiased <- 0
+          }
+          else if (sign(T3bias(0, mu0, n)) == sign(T3bias(mu0,
+                                                          mu0, n))) {
+            mu0unbiased <- mu0
+          }
+          else {
+            mu0unbiased <- uniroot(T3bias, c(0, mu0), mu0 = mu0,
+                                   n = n)$root
+          }
+          phi0unbiased <- (1 / (4 * (n + mu0unbiased ^ 2))) *
+            (4 * n + 3 * mu0unbiased ^ 2 - mu0unbiased *
+               sqrt(8 * n + 9 * mu0unbiased ^ 2))
+          if (identical(obs, expd) == FALSE) {
+            alpha0unbiased <- atan(1 / sqrt(3 * (3 - 2 *
+                                                   phi0unbiased)))
+            beta0unbiased <- (1 / 2) * (pi / 2 - alpha0unbiased)
+          }
         }
       }
-    } else {
-      phi0unbiased <- phi0
-    }
-    t <- -log(phi0unbiased)
-    if (all.equal(sum(abs(obs - expd)), 0) == TRUE) {
-      # If all observations and expectations are equal, then the p-value must be 1.
-      p <- 1
-    } else {
-      # Set p = NA so that if a method other than bootstrapping is selected but cannot be performed then a bootstrap p-value is computed.
-      p = NA
-      
-      if (method != "bootstrap" && min(expd) >= 5) {
+      else {
+        phi0unbiased <- phi0
+      }
+      t <- -log(phi0unbiased)
+      if (all.equal(sum(abs(obs - expd)), 0) == TRUE) {
+        p <- 1
+      }
+      else {
         stat <- powerDivStat(obs, expd, lambda)
-        if (method == "MLest") {
-          if (model == "T3") {
-            # If model is model T3 then compute the p-value using the function T3density. Otherwise, use the function T1density.
-            p <- ifelse(stat == 0,
-                        1,
-                        min(1, max(
-                          0,
-                          integrate(
-                            T3density,
-                            lower = stat,
-                            upper = Inf,
-                            mu0 = mu0unbiased,
-                            alpha0 = alpha0unbiased,
-                            beta0 = beta0unbiased
-                          )$value
-                        )))
-          } else {
-            # if model is T1
-            p <- ifelse(stat == 0,
-                        1,
-                        min(1, max(
-                          0,
-                          integrate(
-                            T1density,
-                            lower = stat,
-                            upper = Inf,
-                            mu0 = mu0unbiased
-                          )$value
-                        )))
+        if (method == "bootstrap" || (method != "bootstrap" &&
+                                      min(expd) < 5 &&
+                                      smallcounts == "bootstrap") ||
+            (method != "bootstrap" && min(expd) < 5 &&
+             smallcounts != "bootstrap" && ((all.equal(sum(
+               abs(obs *
+                   3 - round(obs * 3))
+             ), 0) != TRUE) || (
+               all.equal(sum(abs(
+                 obs *
+                 3 - round(obs * 3)
+               )), 0) == TRUE && var(obs -
+                                     trunc(obs)) != 0
+             )))) {
+          warning(
+            "Bootstrapping has been selected. p-values are approximate. Bootstrapping is only necessary when some expectations are small and approximate bootstrap p-values not available."
+          )
+          if (method == "bootstrap" &&
+              min(expd) < 5 && smallcounts == "approximate") {
+            warning("method is prioritized over smallcounts. Bootstrap has been chosen.")
           }
-        } else {
-          # Perform a test with controlled asymptotic size such that the null rejection rate does not exceed the nominal significance level.
+          if (method != "bootstrap" && min(expd) < 5 &&
+              smallcounts != "bootstrap" && ((all.equal(sum(
+                abs(obs *
+                    3 - round(obs * 3))
+              ), 0) != TRUE) || (all.equal(sum(
+                abs(obs *
+                    3 - round(obs * 3))
+              ), 0) == TRUE && var(obs -
+                                   trunc(obs)) != 0))) {
+            warning(
+              "Approximate bootstrap p-values not available when two expected counts are below 5 and observed counts are not all integers, all integers + 1/3 or all integers + 2/3."
+            )
+          }
+          if (bootstraps == 0) {
+            bootstraps <- 10 ^ 4
+          }
+          count <- 0
+          sims <- rmultinom(bootstraps,
+                            n,
+                            prob = c(
+                              1 -
+                                (2 / 3) * phi0unbiased,
+                              (1 / 3) * phi0unbiased,
+                              (1 / 3) * phi0unbiased
+                            ))
           if (model == "T3") {
-            # For model T3, the conservative test uses the least favorable approach, which in this case is the chi_1^2 distribution.
-            p <- pchisq(stat, 1, lower.tail = FALSE)
-          } else {
-            # For model T1, the conservative test is the Minimum Adjusted Bonferroni method.
-            
-            if (mu0 >= 0 && mu0 <= 0.125) {
-              beta <- 0.5
-              q <- pT1beta50
-            } else if (mu0 > 0.125 && mu0 <= 1.75) {
-              beta <- 0.45
-              q <- pT1beta45
-            } else if (mu0 > 1.75 && mu0 <= 2.75) {
-              beta <- 0.3
-              q <- pT1beta30
-            } else if (mu0 > 2.75 && mu0 <= 3.75) {
-              beta <- 0.2
-              q <- pT1beta20
-            } else {
-              beta <- 0.05
-              q <- pT1beta5
+            sims <- apply(sims, 2, sort, decreasing = TRUE)
+          }
+          for (i in 1:bootstraps) {
+            if (model == "T3") {
+              expected <- c(sims[1, i], (1 / 2) * (n - sims[1,
+                                                            i]), (1 / 2) * (n - sims[1, i]))
             }
-            mu0lower <-
-              max(0, mu0 + sqrt(2) * erf.inv(2 * beta - 1))
-            p1 <- ifelse(stat == 0,
-                         1,
-                         min(1, max(
-                           0,
-                           integrate(
-                             T1density,
-                             lower = stat,
-                             upper = Inf,
-                             mu0 = mu0lower
-                           )$value
-                         )))
-            p <- (length(q[q <= p1])) / length(q)
+            else {
+              expected <- c(max(sims[, i], n / 3), (1 / 2) *
+                              (n - max(sims[, i], n / 3)), (1 / 2) * (n -
+                                                                        max(sims[, i], n /
+                                                                              3)))
+            }
+            simstat <- powerDivStat(sims[, i], expected,
+                                    lambda)
+            count <- ifelse(simstat >= stat, count + 1,
+                            count)
           }
+          p <- count / bootstraps
         }
-      } else if (method != "bootstrap" && min(expd) < 5 && smallcounts == "approximate") {
-        warning(
-          "Approximate bootstrapping has been selected. p-values are approximate."
-        )
-        # Approximate bootstrap p-values computed from 10^8 bootstraps for each scenario, with obs[1]=10^6. Fairly accurate approximation, even for obs[1]!=10^6.
-        if (all.equal(sum(abs(obs * 3 - round(obs * 3))), 0) == TRUE && n>= 30) {
+        else if (method != "bootstrap" && min(expd) <
+                 5 &&
+                 smallcounts == "approximate" && (all.equal(sum(abs(
+                   obs *
+                   3 - round(obs * 3)
+                 )), 0) == TRUE) && var(obs -
+                                        trunc(obs)) == 0) {
           sortobs23times3 = sort(round(3 * obs[2:3]))
           if (sortobs23times3[1] %% 3 == 0) {
             if (identical(sortobs23times3, c(0, 27))) {
               p <- 0.000919
-            } else if (identical(sortobs23times3, c(3, 24))) {
+            }
+            else if (identical(sortobs23times3, c(3, 24))) {
               p <- 0.0209
-            } else if (identical(sortobs23times3, c(6, 21))) {
+            }
+            else if (identical(sortobs23times3, c(6, 21))) {
               p <- 0.103
-            } else if (identical(sortobs23times3, c(9, 18))) {
+            }
+            else if (identical(sortobs23times3, c(9, 18))) {
               p <- 0.359
-            } else if (identical(sortobs23times3, c(12, 15))) {
-              p <- 0.790
-            } else if (identical(sortobs23times3, c(0, 24))) {
+            }
+            else if (identical(sortobs23times3, c(12, 15))) {
+              p <- 0.79
+            }
+            else if (identical(sortobs23times3, c(0, 24))) {
               p <- 0.00191
-            } else if (identical(sortobs23times3, c(3, 21))) {
+            }
+            else if (identical(sortobs23times3, c(3, 21))) {
               p <- 0.0397
-            } else if (identical(sortobs23times3, c(6, 18))) {
+            }
+            else if (identical(sortobs23times3, c(6, 18))) {
               p <- 0.175
-            } else if (identical(sortobs23times3, c(9, 15))) {
+            }
+            else if (identical(sortobs23times3, c(9, 15))) {
               p <- 0.523
-            } else if (identical(sortobs23times3, c(0, 21))) {
+            }
+            else if (identical(sortobs23times3, c(0, 21))) {
               p <- 0.00416
-            } else if (identical(sortobs23times3, c(3, 18))) {
+            }
+            else if (identical(sortobs23times3, c(3, 18))) {
               p <- 0.0763
-            } else if (identical(sortobs23times3, c(6, 15))) {
+            }
+            else if (identical(sortobs23times3, c(6, 15))) {
               p <- 0.297
-            } else if (identical(sortobs23times3, c(9, 12))) {
+            }
+            else if (identical(sortobs23times3, c(9, 12))) {
               p <- 0.768
-            } else if (identical(sortobs23times3, c(0, 18))) {
+            }
+            else if (identical(sortobs23times3, c(0, 18))) {
               p <- 0.00871
-            } else if (identical(sortobs23times3, c(3, 15))) {
+            }
+            else if (identical(sortobs23times3, c(3, 15))) {
               p <- 0.129
-            } else if (identical(sortobs23times3, c(6, 12))) {
+            }
+            else if (identical(sortobs23times3, c(6, 12))) {
               p <- 0.476
-            } else if (identical(sortobs23times3, c(0, 15))) {
+            }
+            else if (identical(sortobs23times3, c(0, 15))) {
               p <- 0.0183
-            } else if (identical(sortobs23times3, c(3, 12))) {
-              p <- 0.240
-            } else if (identical(sortobs23times3, c(6, 9))) {
+            }
+            else if (identical(sortobs23times3, c(3, 12))) {
+              p <- 0.24
+            }
+            else if (identical(sortobs23times3, c(6, 9))) {
               p <- 0.737
-            } else if (identical(sortobs23times3, c(0, 12))) {
+            }
+            else if (identical(sortobs23times3, c(0, 12))) {
               p <- 0.0393
-            } else if (identical(sortobs23times3, c(3, 9))) {
+            }
+            else if (identical(sortobs23times3, c(3, 9))) {
               p <- 0.439
-            } else if (identical(sortobs23times3, c(0, 9))) {
-              p <- 0.0860
-            } else if (identical(sortobs23times3, c(3, 6))) {
+            }
+            else if (identical(sortobs23times3, c(0, 9))) {
+              p <- 0.086
+            }
+            else if (identical(sortobs23times3, c(3, 6))) {
               p <- 0.681
-            } else if (identical(sortobs23times3, c(0, 6))) {
+            }
+            else if (identical(sortobs23times3, c(0, 6))) {
               p <- 0.197
-            } else if (identical(sortobs23times3, c(0, 3))) {
+            }
+            else if (identical(sortobs23times3, c(0, 3))) {
               p <- 0.478
             }
           }
           else if (sortobs23times3[1] %% 3 == 1) {
             if (identical(sortobs23times3, c(1, 28))) {
               p <- 0.00222
-            } else if (identical(sortobs23times3, c(4, 25))) {
+            }
+            else if (identical(sortobs23times3, c(4, 25))) {
               p <- 0.0237
-            } else if (identical(sortobs23times3, c(7, 22))) {
+            }
+            else if (identical(sortobs23times3, c(7, 22))) {
               p <- 0.119
-            } else if (identical(sortobs23times3, c(10, 19))) {
+            }
+            else if (identical(sortobs23times3, c(10, 19))) {
               p <- 0.358
-            } else if (identical(sortobs23times3, c(13, 16))) {
+            }
+            else if (identical(sortobs23times3, c(13, 16))) {
               p <- 0.777
-            } else if (identical(sortobs23times3, c(1, 25))) {
+            }
+            else if (identical(sortobs23times3, c(1, 25))) {
               p <- 0.00452
-            } else if (identical(sortobs23times3, c(4, 22))) {
+            }
+            else if (identical(sortobs23times3, c(4, 22))) {
               p <- 0.0436
-            } else if (identical(sortobs23times3, c(7, 19))) {
+            }
+            else if (identical(sortobs23times3, c(7, 19))) {
               p <- 0.203
-            } else if (identical(sortobs23times3, c(10, 16))) {
-              p <- 0.520
-            } else if (identical(sortobs23times3, c(1, 22))) {
-              p <- 0.00940
-            } else if (identical(sortobs23times3, c(4, 19))) {
+            }
+            else if (identical(sortobs23times3, c(10, 16))) {
+              p <- 0.52
+            }
+            else if (identical(sortobs23times3, c(1, 22))) {
+              p <- 0.0094
+            }
+            else if (identical(sortobs23times3, c(4, 19))) {
               p <- 0.0794
-            } else if (identical(sortobs23times3, c(7, 16))) {
+            }
+            else if (identical(sortobs23times3, c(7, 16))) {
               p <- 0.295
-            } else if (identical(sortobs23times3, c(10, 13))) {
+            }
+            else if (identical(sortobs23times3, c(10, 13))) {
               p <- 0.754
-            } else if (identical(sortobs23times3, c(1, 19))) {
+            }
+            else if (identical(sortobs23times3, c(1, 19))) {
               p <- 0.0194
-            } else if (identical(sortobs23times3, c(4, 16))) {
+            }
+            else if (identical(sortobs23times3, c(4, 16))) {
               p <- 0.143
-            } else if (identical(sortobs23times3, c(7, 13))) {
-              p <- 0.470
-            } else if (identical(sortobs23times3, c(1, 16))) {
+            }
+            else if (identical(sortobs23times3, c(7, 13))) {
+              p <- 0.47
+            }
+            else if (identical(sortobs23times3, c(1, 16))) {
               p <- 0.0404
-            } else if (identical(sortobs23times3, c(4, 13))) {
+            }
+            else if (identical(sortobs23times3, c(4, 13))) {
               p <- 0.233
-            } else if (identical(sortobs23times3, c(7, 10))) {
-              p <- 0.720
-            } else if (identical(sortobs23times3, c(1, 13))) {
-              p <- 0.0850
-            } else if (identical(sortobs23times3, c(4, 10))) {
+            }
+            else if (identical(sortobs23times3, c(7, 10))) {
+              p <- 0.72
+            }
+            else if (identical(sortobs23times3, c(1, 13))) {
+              p <- 0.085
+            }
+            else if (identical(sortobs23times3, c(4, 10))) {
               p <- 0.422
-            } else if (identical(sortobs23times3, c(1, 10))) {
+            }
+            else if (identical(sortobs23times3, c(1, 10))) {
               p <- 0.113
-            } else if (identical(sortobs23times3, c(4, 7))) {
+            }
+            else if (identical(sortobs23times3, c(4, 7))) {
               p <- 0.665
-            } else if (identical(sortobs23times3, c(1, 7))) {
+            }
+            else if (identical(sortobs23times3, c(1, 7))) {
               p <- 0.237
-            } else if (identical(sortobs23times3, c(1, 4))) {
+            }
+            else if (identical(sortobs23times3, c(1, 4))) {
               p <- 0.532
             }
           }
           else {
             if (identical(sortobs23times3, c(2, 26))) {
               p <- 0.00827
-            } else if (identical(sortobs23times3, c(5, 23))) {
+            }
+            else if (identical(sortobs23times3, c(5, 23))) {
               p <- 0.0436
-            } else if (identical(sortobs23times3, c(8, 20))) {
+            }
+            else if (identical(sortobs23times3, c(8, 20))) {
               p <- 0.199
-            } else if (identical(sortobs23times3, c(11, 17))) {
+            }
+            else if (identical(sortobs23times3, c(11, 17))) {
               p <- 0.516
-            } else if (identical(sortobs23times3, c(2, 23))) {
+            }
+            else if (identical(sortobs23times3, c(2, 23))) {
               p <- 0.0164
-            } else if (identical(sortobs23times3, c(5, 20))) {
+            }
+            else if (identical(sortobs23times3, c(5, 20))) {
               p <- 0.0777
-            } else if (identical(sortobs23times3, c(8, 17))) {
+            }
+            else if (identical(sortobs23times3, c(8, 17))) {
               p <- 0.298
-            } else if (identical(sortobs23times3, c(11, 14))) {
+            }
+            else if (identical(sortobs23times3, c(11, 14))) {
               p <- 0.739
-            } else if (identical(sortobs23times3, c(2, 20))) {
+            }
+            else if (identical(sortobs23times3, c(2, 20))) {
               p <- 0.0237
-            } else if (identical(sortobs23times3, c(5, 17))) {
+            }
+            else if (identical(sortobs23times3, c(5, 17))) {
               p <- 0.146
-            } else if (identical(sortobs23times3, c(8, 14))) {
+            }
+            else if (identical(sortobs23times3, c(8, 14))) {
               p <- 0.466
-            } else if (identical(sortobs23times3, c(2, 17))) {
+            }
+            else if (identical(sortobs23times3, c(2, 17))) {
               p <- 0.0468
-            } else if (identical(sortobs23times3, c(5, 14))) {
+            }
+            else if (identical(sortobs23times3, c(5, 14))) {
               p <- 0.238
-            } else if (identical(sortobs23times3, c(8, 11))) {
+            }
+            else if (identical(sortobs23times3, c(8, 11))) {
               p <- 0.703
-            } else if (identical(sortobs23times3, c(2, 14))) {
+            }
+            else if (identical(sortobs23times3, c(2, 14))) {
               p <- 0.0926
-            } else if (identical(sortobs23times3, c(5, 11))) {
+            }
+            else if (identical(sortobs23times3, c(5, 11))) {
               p <- 0.409
-            } else if (identical(sortobs23times3, c(2, 11))) {
+            }
+            else if (identical(sortobs23times3, c(2, 11))) {
               p <- 0.185
-            } else if (identical(sortobs23times3, c(5, 8))) {
+            }
+            else if (identical(sortobs23times3, c(5, 8))) {
               p <- 0.645
-            } else if (identical(sortobs23times3, c(2, 8))) {
+            }
+            else if (identical(sortobs23times3, c(2, 8))) {
               p <- 0.377
-            } else if (identical(sortobs23times3, c(2, 5))) {
+            }
+            else if (identical(sortobs23times3, c(2, 5))) {
               p <- 0.525
             }
           }
         }
-        if (is.na(p) == TRUE) {
-          warning(
-            'Approximate bootstrap p-values could not computed. Using bootstrap instead.'
-          )
-        }
-      }
-      if (is.na(p) == TRUE) {
-        # Perform bootstrap if bootstrap method is selected, or if bootstrap method is not selected but bootstrap for smallcounts is
-        # selected and there are small expected counts.
-        warning(
-          "Bootstrapping has been selected. p-values are approximate. Bootstrapping is only necessary when some expectations are small."
-        )
-        # If bootstraps is 0 but bootstraps has been selected then perform 10^4 bootstraps.
-        if (bootstraps == 0) {
-          bootstraps <- 10 ^ 4
-        }
-        stat <- powerDivStat(obs, expd, lambda)
-        count <- 0
-        sims <-
-          rmultinom(bootstraps,
-                    n,
-                    prob = c(
-                      1 - (2 / 3) * phi0unbiased,
-                      (1 / 3) * phi0unbiased,
-                      (1 / 3) *
-                        phi0unbiased
-                    ))
-        if (model == "T3") {
-          sims <- apply(sims, 2, sort, decreasing = TRUE)
-        }
-        for (i in 1:bootstraps) {
-          if (model == "T3") {
-            expected <-
-              c(sims[1, i], (1 / 2) * (n - sims[1, i]), (1 / 2) * (n - sims[1, i]))
-          } else {
-            expected <-
-              c(max(sims[, i], n / 3), (1 / 2) * (n - max(sims[, i], n /
-                                                            3)), (1 / 2) * (n - max(sims[, i], n / 3)))
+        else if (method != "bootstrap" && min(expd) >=
+                 5) {
+          if (method == "MLest") {
+            if (model == "T3") {
+              p <- ifelse(stat == 0, 1, min(1, max(
+                0,
+                integrate(
+                  T3density,
+                  lower = stat,
+                  upper = Inf,
+                  mu0 = mu0unbiased,
+                  alpha0 = alpha0unbiased,
+                  beta0 = beta0unbiased
+                )$value
+              )))
+            }
+            else {
+              p <- ifelse(stat == 0, 1, min(1, max(
+                0,
+                integrate(
+                  T1density,
+                  lower = stat,
+                  upper = Inf,
+                  mu0 = mu0unbiased
+                )$value
+              )))
+            }
           }
-          simstat <- powerDivStat(sims[, i], expected, lambda)
-          count <- ifelse(simstat >= stat, count + 1, count)
+          else if (method == "conservative") {
+            if (model == "T3") {
+              p <- pchisq(stat, 1, lower.tail = FALSE)
+            }
+            else {
+              if (mu0 >= 0 && mu0 <= 0.125) {
+                beta <- 0.5
+                q <- pT1beta50
+              }
+              else if (mu0 > 0.125 && mu0 <= 1.75) {
+                beta <- 0.45
+                q <- pT1beta45
+              }
+              else if (mu0 > 1.75 && mu0 <= 2.75) {
+                beta <- 0.3
+                q <- pT1beta30
+              }
+              else if (mu0 > 2.75 && mu0 <= 3.75) {
+                beta <- 0.2
+                q <- pT1beta20
+              }
+              else {
+                beta <- 0.05
+                q <- pT1beta5
+              }
+              mu0lower <- max(0, mu0 + sqrt(2) * erf.inv(2 *
+                                                           beta - 1))
+              p1 <- ifelse(stat == 0, 1, min(1, max(
+                0,
+                integrate(
+                  T1density,
+                  lower = stat,
+                  upper = Inf,
+                  mu0 = mu0lower
+                )$value
+              )))
+              p <- (length(q[q <= p1])) / length(q)
+            }
+          }
         }
-        p <- count / bootstraps
       }
+      output <- list(p, t)
+      names(output) <- c("p.value", "edgelength")
+      return(output)
     }
-    output <- list(p, t)
-    names(output) <- c("p.value", "t")
-    return(output)
   }
-}
+
 
 #########################################################
 
@@ -692,7 +775,7 @@ quartetTreeTest <- function(obs,
 #' are independent.
 #'
 #' @details This function assumes all quartets are resolved.  The test performed and the arguments
-#' are described more fully in \code{QuartetTreeTest}.
+#' are described more fully in \code{quartetTreeTest}.
 #'
 #' @references
 #' \insertRef{MAR19}{MSCquartets}
@@ -747,67 +830,82 @@ quartetTreeTestInd <-
         'Invalid arguments: lambda must be real; smallcounts must be "bootstrap" or "approximate";
       bootstraps must be a positive integer; method must be "MLest","conservative", or "bootstrap".'
       )
+    }
+    colnames = colnames(rqt)
+    taxanames = setdiff(
+      colnames,
+      c(
+        "12|34",
+        "13|24",
+        "14|23",
+        "1234",
+        "p_cut",
+        "cutindex",
+        "p_star",
+        "p_T3",
+        "p_T1"
+      )
+    )
+
+    M = dim(rqt)[1] # number of quartets
+    n = length(taxanames) # number of taxa
+
+    if (model == "T3") {
+      pTable = cbind(rqt, p_T3 = 0) # create table for quartets, counts, and p-values
+      message("Applying hypothesis test for model T3 to ", M, " quartets.")
+      for (m in 1:M) {
+        # consider each quartet
+        obs = unname(rqt[m, c("12|34","13|24","14|23")])
+        pvec = quartetTreeTest(
+          obs,
+          model,
+          lambda = lambda,
+          smallcounts = smallcounts,
+          bootstraps = bootstraps,
+          method = method
+        )  #  compute p-value
+        pTable[m, "p_T3"] = pvec$p.value  # store p-value
+      }
     } else {
-      M = dim(rqt)[1] # number of quartets
-      n = dim(rqt)[2] # number of taxa + 3
-      
-      if (model == "T3") {
-        pTable = cbind(rqt, p_T3 = 0) # create table for quartets, counts, and p-values
-        message("Applying hypothesis test for model T3 to ", M, " quartets.")
-        for (m in 1:M) {
-          # consider each quartet
-          obs = unname(rqt[m, (n - 2):n])
-          pvec = quartetTreeTest(
-            obs,
-            model,
-            lambda = lambda,
-            smallcounts = smallcounts,
-            bootstraps = bootstraps,
-            method = method
-          )  #  compute p-value
-          pTable[m, "p_T3"] = pvec$p.value  # store p-value
-        }
+      if (model != "T1") {
+        stop("Invalid model: must use 'T1' or 'T3'")
       } else {
-        if (model != "T1") {
-          stop("Invalid model: must use 'T1' or 'T3'")
+        if (is.null(speciestree)) {
+          stop("Species tree topology must be supplied for model T1")
         } else {
-          if (is.null(speciestree)) {
-            stop("Species tree topology must be supplied for model T1")
-          } else {
-            stree = unroot(read.tree(text = speciestree)) #unrooted species tree
-            nedges = dim(stree$edge)[1]# number of edges
-            stree$edge.length = rep(1, nedges)# reset edge lengths to 1
-            D = cophenetic.phylo(stree) # create distance table, for determining displayed quartets
-            D = D[order(rownames(D)), order(colnames(D))]# put taxa in sorted order
-            pTable = cbind(rqt, p_T1 = 0, qindex = 0) # create table for quartets, counts, p-values, index for quartet on species tree
-            
-            message("Applying hypothesis test for model T1 to ",M," quartets.")
-            for (m in 1:M) {
-              # consider each quartet
-              qnames = which(rqt[m, 1:(n - 3)] == 1) # determine taxa to in this quartet
-              a = D[qnames[1], qnames[2]] + D[qnames[3], qnames[4]] # use four point condition on species tree
-              b = D[qnames[1], qnames[3]] + D[qnames[2], qnames[4]]
-              c = D[qnames[1], qnames[4]] + D[qnames[2], qnames[3]]
-              squartet = which.min(c(a, b, c)) #                      to determine quartet on species tree
-              qcounts = rqt[m, (n - 2):n]
-              temp = qcounts[1]# interchange
-              qcounts[1] = qcounts[squartet]# to put quartet on species tree first
-              qcounts[squartet] = temp
-              pTable[m, "qindex"] = squartet # save index of quartet on species tree
-              pvec = quartetTreeTest(
-                unname(qcounts),
-                model,
-                lambda = lambda,
-                smallcounts = smallcounts,
-                bootstraps = bootstraps
-              )  #  compute p-value
-              pTable[m, "p_T1"] = pvec$p.value  # store p-value
-            }
+          stree = unroot(read.tree(text = speciestree)) #unrooted species tree
+          nedges = dim(stree$edge)[1]# number of edges
+          stree$edge.length = rep(1, nedges)# reset edge lengths to 1
+          D = cophenetic.phylo(stree) # create distance table, for determining displayed quartets
+          D = D[order(rownames(D)), order(colnames(D))]# put taxa in sorted order
+          pTable = cbind(rqt, p_T1 = 0, qindex = 0) # create table for quartets, counts, p-values, index for quartet on species tree
+
+          message("Applying hypothesis test for model T1 to ", M, " quartets.")
+          for (m in 1:M) {
+            # consider each quartet
+            qnames = which(rqt[m, 1:n] == 1) # determine taxa to in this quartet
+            a = D[qnames[1], qnames[2]] + D[qnames[3], qnames[4]] # use four point condition on species tree
+            b = D[qnames[1], qnames[3]] + D[qnames[2], qnames[4]]
+            c = D[qnames[1], qnames[4]] + D[qnames[2], qnames[3]]
+            squartet = which.min(c(a, b, c)) #                      to determine quartet on species tree
+            qcounts = rqt[m, c("12|34","13|24","14|23")]
+            temp = qcounts[1]# interchange
+            qcounts[1] = qcounts[squartet]# to put quartet on species tree first
+            qcounts[squartet] = temp
+            pTable[m, "qindex"] = squartet # save index of quartet on species tree
+            pvec = quartetTreeTest(
+              unname(qcounts),
+              model,
+              lambda = lambda,
+              smallcounts = smallcounts,
+              bootstraps = bootstraps
+            )  #  compute p-value
+            pTable[m, "p_T1"] = pvec$p.value  # store p-value
           }
         }
       }
-      return(pTable)
     }
+    return(pTable)
   }
 
 #############################################################
@@ -818,7 +916,7 @@ quartetTreeTestInd <-
 #' indicate rejection or failure to reject for tests at specified levels.
 #'
 #' @details The first argument of this function is a table of quartets and p-values. The
-#' plot may show results of either the T1 or T3
+#' plot may show results of either the T1, T3, or 2-cut
 #' test, with or without a star tree test (depending on whether a \code{"p_star"} column is in the table and/or \code{beta =1}).
 #' The p-values must be computed by previous calls to
 #' \code{quartetTreeTestInd} (for \code{"T1"} or \code{"T3"} p-values)
@@ -827,13 +925,12 @@ quartetTreeTestInd <-
 #'
 #' @param pTable table of quartets and p-values, as produced by \code{quartetTreeTestInd},
 #' \code{quartetStarTestInd}, or \code{NANUQ}
-#' @param test  model to use, for tree null hypothesis; options are \code{"T1"} or \code{"T3"}
+#' @param test  model to use, for tree null hypothesis; options are \code{"T1"}, \code{"T3"}, \code{"cut"}, \code{"NANUQ"}
 #' @param alpha  significance level  for tree test with null hypothesis given by \code{test}
 #' @param beta  significance level for test with null hypothesis star tree;
 #' test results plotted only if \code{beta<1} and \code{"p_star"} column present in \code{pTable}
 #' @param cex scaling factor for size of plotted symbols
-#'
-#'@return No return value, called for side effects
+#' @return NULL
 #'
 #' @seealso \code{\link{quartetTreeTestInd}}, \code{\link{quartetStarTestInd}},
 #' \code{\link{NANUQ}}, \code{\link{NANUQdist}}
@@ -857,21 +954,21 @@ quartetTestPlot <- function(pTable,
   if (!(is.numeric(alpha) && is.numeric(beta))) {
     stop("Critical values alpha and beta must be numeric.")
   }
+
   lineWidth = 1.5
   yellowColor = "goldenrod3" #pick specific colors
   orangeColor = "darkgreen"
   redColor = "red"
   blueColor = "blue"
-  
+
   counts = c("12|34", "13|24", "14|23")
   M = dim(pTable)[1]
-  n = dim(pTable)[2]
-  
+
   if ((test == "T1") & (beta == 1)) {
     #  T1 only
     p_tree.small = (pTable[, "p_T1"] < alpha)
     p_star.small = rep(TRUE, M)
-    titletext = bquote("Model T1," ~ alpha * "=" * .(alpha))
+    titletext = bquote("T1 Model," ~ alpha * "=" * .(alpha))
     legtext = c("reject tree", "fail to reject tree")
     legpch = c(2, 1)
     legcol = c(redColor, blueColor)
@@ -892,7 +989,7 @@ quartetTestPlot <- function(pTable,
       #  T1  and star
       p_tree.small = (pTable[, "p_T1"] < alpha)
       p_star.small = (pTable[, "p_star"] <= beta)
-      titletext = bquote("Model T1," ~ alpha * "=" * .(alpha) * "," ~ beta *
+      titletext = bquote("T1 Model," ~ alpha * "=" * .(alpha) * "," ~ beta *
                            "=" * .(beta))
       legtext = c(
         "reject tree & star",
@@ -919,7 +1016,7 @@ quartetTestPlot <- function(pTable,
         #T3 only
         p_tree.small = (pTable[, "p_T3"] < alpha)
         p_star.small = rep(TRUE, M)
-        titletext = bquote("Model T3," ~ alpha * "=" * .(alpha))
+        titletext = bquote("T3 Model," ~ alpha * "=" * .(alpha))
         legtext = c("reject tree", "fail to reject tree")
         legpch = c(2, 1)
         legcol = c(redColor, blueColor)
@@ -929,12 +1026,12 @@ quartetTestPlot <- function(pTable,
           #T3 and star
           p_tree.small = (pTable[, "p_T3"] < alpha)
           p_star.small = (pTable[, "p_star"] <= beta)
-          
+
           if (test == "NANUQ") {
             titletext = bquote("NANUQ," ~ alpha * "=" * .(alpha) * "," ~ beta *
                                  "=" * .(beta))
           } else {
-            titletext = bquote("Model T3," ~ alpha * "=" * .(alpha) * "," ~ beta *
+            titletext = bquote("T3 Model," ~ alpha * "=" * .(alpha) * "," ~ beta *
                                  "=" * .(beta))
           }
           legtext = c(
@@ -947,21 +1044,48 @@ quartetTestPlot <- function(pTable,
           legcol = c(redColor, blueColor, yellowColor, orangeColor)
           model = "T3"
         } else {
-          stop("Invalid test name")
+          if ((test == "cut") & (beta == 1)) {
+            #  cut only
+            p_tree.small = (pTable[, "p_cut"] < alpha)
+            p_star.small = rep(TRUE, M)
+            titletext = bquote("2-cut Model," ~ alpha * "=" * .(alpha))
+            legtext = c("reject cut", "fail to reject cut")
+            legpch = c(2, 1)
+            legcol = c(redColor, blueColor)
+            model = "cut"
+          } else {
+            if ((test == "cut") & (beta < 1)) {
+              #  cut  and star
+              p_tree.small = (pTable[, "p_cut"] < alpha)
+              p_star.small = (pTable[, "p_star"] <= beta)
+              titletext = bquote("2-cut Model," ~ alpha * "=" * .(alpha) * "," ~ beta *
+                                   "=" * .(beta))
+              legtext = c(
+                "reject cut & star",
+                "fail to reject cut/reject star",
+                "fail to reject cut & star",
+                "reject cut/fail to reject star"
+              )
+              legpch = c(2, 1, 0, 4)
+              legcol = c(redColor, blueColor, yellowColor, orangeColor)
+              model = "cut"
+            } else
+            stop("Invalid test name")
+          }
         }
       }
     }
   }
-  
-  
+
+
   simplexPrepare(model, maintitle = "Quartet Hypothesis Test", titletext =
                    titletext) # draw outline of simplex and lines for model
-  
+
   blues = (!p_tree.small) & (p_star.small)
   reds = (p_tree.small) & (p_star.small)
   yellows = (!p_tree.small) & (!p_star.small)
   oranges = (p_tree.small) & (!p_star.small)
-  
+
   bluepoints = pTable[which(blues), counts, drop = FALSE] # points to plot blue
   nblue = dim(bluepoints)[1]
   redpoints = pTable[which(reds), counts, drop = FALSE] #      red
@@ -970,11 +1094,11 @@ quartetTestPlot <- function(pTable,
   nyellow = dim(yellowpoints)[1]
   orangepoints = pTable[which(oranges), counts, drop = FALSE] #        orange
   norange = dim(orangepoints)[1]
-  
+
   if (nblue > 0) {
     for (i in 1:nblue) {
       simplexPoint(
-        bluepoints[i, ],
+        bluepoints[i,],
         type = "o",
         pch = 1,
         col = blueColor,
@@ -986,7 +1110,7 @@ quartetTestPlot <- function(pTable,
   if (nred > 0) {
     for (i in 1:dim(redpoints)[1]) {
       simplexPoint(
-        redpoints[i, ],
+        redpoints[i,],
         type = "o",
         pch = 2,
         col = redColor,
@@ -998,7 +1122,7 @@ quartetTestPlot <- function(pTable,
   if (nyellow > 0) {
     for (i in 1:dim(yellowpoints)[1]) {
       simplexPoint(
-        yellowpoints[i, ],
+        yellowpoints[i,],
         type = "o",
         pch = 0,
         col = yellowColor,
@@ -1008,10 +1132,10 @@ quartetTestPlot <- function(pTable,
     }
   }
   if (norange > 0) {
-    message("Some points (orange) accepted as star, but rejected as tree.")
+    message("Some points (green) not rejected as star, but rejected as tree.")
     for (i in 1:dim(orangepoints)[1]) {
       simplexPoint(
-        orangepoints[i, ],
+        orangepoints[i,],
         type = "o",
         pch = 4,
         col = orangeColor,
@@ -1052,7 +1176,7 @@ quartetTestPlot <- function(pTable,
 #'@param model \code{"T3"} or \code{"T1"}, for the models of \insertCite{MAR19;textual}{MSCquartets} describing an unspecified species
 #'tree topology (\code{"T3"}), or the topology whose count is the first entry of \code{obs} (\code{"T1"})
 #'
-#'@return list \code{(error.prob, top.probs)} where \code{error.prob} is the species tree error probability
+#'@return \code{(error.prob, top.probs)} where \code{error.prob} is the species tree error probability
 #'and \code{top.probs} is a vector of the three species tree topology probabilities in the order of \code{obs};
 #'for model \code{"T1"} the species tree used is the one
 #'corresponding to the first count; for model \code{"T3"} the species
@@ -1080,7 +1204,8 @@ quartetTreeErrorProb <- function(obs,
     # If all observations are equal, then all tree topologies have equal probabilities and quartet tree
     # error probability is 2/3.
     if (all.equal(obs[1], obs[2]) == TRUE &&
-        all.equal(obs[1], obs[3]) == TRUE && all.equal(obs[2], obs[3]) == TRUE) {
+        all.equal(obs[1], obs[3]) == TRUE &&
+        all.equal(obs[2], obs[3]) == TRUE) {
       treeerrorprob <- 2 / 3
       probs <- c(1 / 3, 1 / 3, 1 / 3)
     } else {
@@ -1095,23 +1220,23 @@ quartetTreeErrorProb <- function(obs,
       logp3 <-
         obs[3] * log(2) + zipfR::Ibeta(2 / 3, obs[1] + obs[2] + 1 / 2, obs[3] +
                                          1 / 2, log = TRUE)
-      
+
       b1 <- exp(logp2 - logp1)
       b2 <- exp(logp3 - logp1)
-      
+
       p1 <- 1 / (1 + b1 + b2)
       p2 <- b1 / (1 + b1 + b2)
       p3 <- b2 / (1 + b1 + b2)
-      
+
       probs <- c(p1, p2, p3)
-      
+
       if (model == "T1") {
         treeerrorprob <- sum(probs[2:3])
       } else {
         treeerrorprob <- sum(probs[setdiff(1:3, which.max(obs))])
       }
     }
-    
+
     output <- list(treeerrorprob, probs)
     names(output) <-
       c("tree.error.probability", "tree.probabilities")
@@ -1148,9 +1273,12 @@ quartetTreeErrorProb <- function(obs,
 #' is important for its application to quartet counts presumed to have arisen on a single
 #' species tree.
 #'
-#'This can be a low power test (often failing to reject when the null hypothesis is false).
+#' This can be a low power test (often failing to reject when the null hypothesis is false).
 #' In particular for the T1 and T3 tests, it does not consider the relationships between edge
 #' lengths for different sets of four taxa.
+#'
+#' Warning: Output of this function should not be used as input for other
+#' MSCquartets functions, as it reorders the quartets in the table.
 #'
 #' @references \insertRef{HolmBonf79}{MSCquartets}
 #'
@@ -1165,8 +1293,8 @@ quartetTreeErrorProb <- function(obs,
 #' HBpTable[1:10,]
 #'
 #' @export
-HolmBonferroni <- function(pTable, 
-                           model, 
+HolmBonferroni <- function(pTable,
+                           model,
                            alpha = .05) {
   if (!(model %in% c("T1", "T3", "star")))  {
     stop('Argument model must be one of "T1", "T3", or "star".')
@@ -1177,8 +1305,8 @@ HolmBonferroni <- function(pTable,
   }
   m = nrow(pTable)
   pTable <-
-    pTable[order(pTable[, columnname]), ] #sort rows of table by columname
-  
+    pTable[order(pTable[, columnname]),] #sort rows of table by columname
+
   multipliers <- m:1 # descending integers
   HBps <-
     pmin(1, pTable[, columnname] * multipliers) #adjust p-values
@@ -1188,6 +1316,8 @@ HolmBonferroni <- function(pTable,
   pname = paste0("HB", columnname)
   colnames(newcols) = c(pname, paste0("Reject(", pname, ")"))
   pTable = cbind.data.frame(pTable, newcols)
-  message("Holm-Bonferroni method leads to rejection for ", (FirstNonFail - 1)," tests.")
+  message("Holm-Bonferroni method leads to rejection for ",
+          (FirstNonFail - 1),
+          " tests.")
   return(pTable)
 }

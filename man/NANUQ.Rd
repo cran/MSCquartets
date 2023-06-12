@@ -16,27 +16,27 @@ NANUQ(
 )
 }
 \arguments{
-\item{genedata}{gene tree data that may be supplied in any of 3 forms: 
+\item{genedata}{gene tree data that may be supplied in any of 3 forms:
 \enumerate{
 \item as a character string giving the name of a file containing Newick gene trees,
-\item as a multiPhylo object containing the gene trees, or 
-\item as a table of quartets on the gene trees, as produced by a previous call to 
-\code{NANUQ} or \code{quartetTableResolved}, which has columns only for taxa, resolved quartet counts, 
+\item as a multiPhylo object containing the gene trees, or
+\item as a table of quartets on the gene trees, as produced by a previous call to
+\code{NANUQ} or \code{quartetTableResolved}, which has columns only for taxa, resolved quartet counts,
 and possibly p_T3 and p_star
 }}
 
-\item{outfile}{a character string giving an output file name stub for 
+\item{outfile}{a character string giving an output file name stub for
 saving a \code{NANUQ} distance matrix in nexus format; to the stub \code{outfile}
-will be appended an \code{alpha} and \code{beta} value and ".nex"; 
+will be appended an \code{alpha} and \code{beta} value and ".nex";
 if \code{NULL} then then no file is written}
 
-\item{omit}{\code{FALSE} to treat unresolved quartets as 1/3 of each resolution; 
+\item{omit}{\code{FALSE} to treat unresolved quartets as 1/3 of each resolution;
 \code{TRUE} to discard unresolved quartet data; ignored if gene tree data given as quartet table}
 
 \item{epsilon}{minimum for branch lengths to be treated as non-zero; ignored if gene tree data given as quartet table}
 
-\item{alpha}{a value or vector of significance levels for judging p-values 
-testing a null hypothesis of no hybridization vs. an alternative of hybridization, for each quartet;  a smaller value applies 
+\item{alpha}{a value or vector of significance levels for judging p-values
+testing a null hypothesis of no hybridization vs. an alternative of hybridization, for each quartet;  a smaller value applies
 a less conservative test for a tree (more trees), hence a stricter requirement for desciding in favor of hybridization (fewer reticulations)}
 
 \item{beta}{a value or vector of significance levels for judging p-values testing
@@ -45,31 +45,31 @@ test for a star tree (more polytomies), hence a stricter requirement for decidin
 if vectors, \code{alpha} and \code{beta} must have the same length}
 
 \item{taxanames}{if \code{genedata} is a file or a multiPhylo object, a vector of a subset
-of the taxa names on the gene trees 
-to be analyzed, if \code{NULL} all taxa on the first gene tree are used; if \code{genedata} 
+of the taxa names on the gene trees
+to be analyzed, if \code{NULL} all taxa on the first gene tree are used; if \code{genedata}
 is a quartet table, this argument is ignored and all taxa in the table are used}
 
 \item{plot}{\code{TRUE} produces simplex plots of hypothesis test results, \code{FALSE} omits plots}
 }
 \value{
-a table of quartets and p-values for judging fit to the MSC on quartet 
-trees (returned invisibly);
-this table can be used as input to \code{NANUQ} or \code{NANUQdist} with new choices of alpha and beta, without re-tallying quartets on
-gene trees; a distance table to be used as input for SplitsTree is written to a nexus file
+a table \code{$pTable} of quartets and p-values for judging fit to the MSC on quartet
+trees, and a distance table \code{$dist}, or list of distance tables, giving NANUQ distance (returned invisibly);
+the table can be used as input to \code{NANUQ} or \code{NANUQdist} with new choices of alpha and beta, without re-tallying quartets on
+gene trees; the distance table is to be used as input to NeighborNet.
 }
 \description{
 Apply the NANUQ algorithm of \insertCite{ABR19;textual}{MSCquartets} to infer a hybridization network from a collection of gene trees,
 under the level-1 network multispecies coalescent (NMSC) model.
 }
 \details{
-This function 
+This function
 \enumerate{
 \item counts displayed quartets across gene trees to form quartet count concordance factors (qcCFs),
 \item applies appropriate hypothesis tests to judge qcCFs as representing putative hybridization,
-resolved trees, or unresolved (star) trees using \code{alpha} and \code{beta} as significance levels, 
+resolved trees, or unresolved (star) trees using \code{alpha} and \code{beta} as significance levels,
 \item produces a simplex plot showing results of the hypothesis tests for all qcCFs
 \item computes the appropriate NANUQ distance table, writing it to a file.
-} 
+}
 The distance table file
 can then be opened in the external software SplitsTree \insertCite{SplitsTree}{MSCquartets} (recommended) or within R using the package \code{phangorn} to
 obtain a circular split system under the Neighbor-Net algorithm, which is then depicted as a splits graph.
@@ -80,7 +80,7 @@ not arise from the NMSC on such a network.
 If \code{alpha} and \code{beta} are vectors, they must have the same length k. Then the i-th entries are paired to
 produce k plots and k output files. This is equivalent to k calls to \code{NANUQ} with scalar values of \code{alpha} and \code{beta}.
 
-A call of \code{NANUQ} with \code{genedata} given as a table previously output from \code{NANUQ} is 
+A call of \code{NANUQ} with \code{genedata} given as a table previously output from \code{NANUQ} is
 equivalent to a call of \code{NANUQdist}. If \code{genedata} is a table previously output from \code{quartetTableResolved}
 which lacks columns of p-values for hypothesis tests, these will be appended to the table output by \code{NANUQ}.
 
@@ -92,25 +92,23 @@ to be large so that most quartets are interpreted as resolved trees.
 
 Usually, an initial call to \code{NANUQ} will not give a good analysis, as values
 of \code{alpha} and \code{beta} are likely to need some adjustment based on inspecting the data. Saving the returned
-table from \code{NANUQ} will allow for the results of the time-consuming computation of qcCFs to be 
+table from \code{NANUQ} will allow for the results of the time-consuming computation of qcCFs to be
 saved, along with p-values,
 for input to further calls of \code{NANUQ} with new choices of \code{alpha} and \code{beta}.
 
 See the documentation for \code{\link{quartetNetworkDist}} for an explanation of a small, rarely noticeable,
 stochastic element of the algorithm.
 
-For data sets of many gene trees, user time may be reduced by using parallel code for 
+For data sets of many gene trees, user time may be reduced by using parallel code for
 counting displayed quartets. See \code{\link{quartetTableParallel}}, where example commands are given.
 }
 \examples{
-pTable=NANUQ(system.file("extdata", "dataYeastRokas",package="MSCquartets"), 
-   alpha=.0001, beta=.95, outfile = file.path(tempdir(), "NANUQdist"))
-NANUQ(pTable, alpha=.05, beta=.95,outfile = file.path(tempdir(), "NANUQdist"))
-# The distance table was written to an output file for opening in SplitsTree.
-# Alternately, to use the experimental phangorn implementation of NeighborNet 
+data(pTableYeastRokas)
+out=NANUQ(pTableYeastRokas, alpha=.05, beta=.95, outfile = NULL)
+# Specifying an outfile would write the distance table to it for opening in SplitsTree.
+# Alternately, to use the phangorn implementation of NeighborNet
 # within R, enter the following additional lines:
-dist=NANUQdist(pTable, alpha=.05, beta=.95,outfile = file.path(tempdir(), "NANUQdist"))
-nn=neighborNet(dist)
+nn=neighborNet(out$dist)
 plot(nn,"2D")
 
 }
@@ -120,7 +118,7 @@ plot(nn,"2D")
 \insertRef{SplitsTree}{MSCquartets}
 }
 \seealso{
-\code{\link{quartetTable}}, \code{\link{quartetTableParallel}}, \code{\link{quartetTableDominant}}, \code{\link{quartetTreeTestInd}}, 
+\code{\link{quartetTable}}, \code{\link{quartetTableParallel}}, \code{\link{quartetTableDominant}}, \code{\link{quartetTreeTestInd}},
 \code{\link{quartetStarTestInd}}, \code{\link{NANUQdist}}, \code{\link{quartetTestPlot}}, \code{\link{pvalHist}},
 \code{\link{quartetNetworkDist}}
 }

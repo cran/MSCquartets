@@ -10,7 +10,7 @@ quartetTestPlot(pTable, test, alpha = 0.05, beta = 1, cex = 1)
 \item{pTable}{table of quartets and p-values, as produced by \code{quartetTreeTestInd},
 \code{quartetStarTestInd}, or \code{NANUQ}}
 
-\item{test}{model to use, for tree null hypothesis; options are \code{"T1"} or \code{"T3"}}
+\item{test}{model to use, for tree null hypothesis; options are \code{"T1"}, \code{"T3"}, \code{"cut"}, \code{"NANUQ"}}
 
 \item{alpha}{significance level  for tree test with null hypothesis given by \code{test}}
 
@@ -19,16 +19,13 @@ test results plotted only if \code{beta<1} and \code{"p_star"} column present in
 
 \item{cex}{scaling factor for size of plotted symbols}
 }
-\value{
-No return value, called for side effects
-}
 \description{
 Plot a 2-d probability simplex, with points for all quartet count vectors. Colors
 indicate rejection or failure to reject for tests at specified levels.
 }
 \details{
 The first argument of this function is a table of quartets and p-values. The
-plot may show results of either the T1 or T3
+plot may show results of either the T1, T3, or 2-cut
 test, with or without a star tree test (depending on whether a \code{"p_star"} column is in the table and/or \code{beta =1}).
 The p-values must be computed by previous calls to
 \code{quartetTreeTestInd} (for \code{"T1"} or \code{"T3"} p-values)

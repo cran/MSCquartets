@@ -9,7 +9,7 @@
 #'
 #' @param rqt  Table of resolved quartet counts, as produced by \code{quartetTableResolved}, or \code{quartetTreeTestInd}
 #'
-#' @return the same table (of class matrix) as the input \code{rqt} with column \code{"p_star"} appended, containing p-values for 
+#' @return the same table as the input \code{rqt} with column \code{"p_star"} appended, containing p-values for 
 #' judging fit to MSC on a star tree
 #'
 #' @seealso \code{\link{quartetStarTest}}, \code{\link{quartetTreeTest}}, \code{\link{quartetTreeTestInd}},
@@ -43,7 +43,7 @@ quartetStarTestInd = function(rqt) {
 #' The test performed is a standard Chi-square with 2 degrees of freedom.
 #'
 #' @param obs  vector of 3 counts of resolved quartet frequencies
-#' @return numeric p-value
+#' @return p-value
 #'
 #' @examples
 #' obs=c(16,72,12)

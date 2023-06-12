@@ -9,8 +9,7 @@
 #' @param model \code{"T1"} or \code{"T3"}, for 1-tree or 3-tree model
 #' @param maintitle main title for plot
 #' @param titletext additional text for title
-#' 
-#' @return No return value, called for side effects 
+#' @return NULL
 #'
 #' @examples
 #'    simplexPrepare("T3",maintitle="Main title",titletext="further text")
@@ -25,8 +24,8 @@
 simplexPrepare <- function(model = "T3", 
                            maintitle = NULL, 
                            titletext = NULL) {
-  if (!(model %in% c("T1", "T3")))
-    stop("Invalid model name; use 'T1' or 'T3'.") #check parameters
+  if (!(model %in% c("T1", "T3", "cut")))
+    stop("Invalid model name; use 'T1','T3', or 'cut'.") #check parameters
   lineWidth = 2
   
   oldpar=par(mar = c(0, 0, 4, 0) + 0.1)# set margin
@@ -60,9 +59,18 @@ simplexPrepare <- function(model = "T3",
   simplexSegment(left, right, lty = 'dotted', lwd = lineWidth)
   simplexSegment(top, mid, lwd = lineWidth) # Plot lines giving model for quartet probabilities under the coalsecent on a species tree
   if (model == "T3") {
-    # only for 3-tree model use 3 lines
+    # for 3-tree model use 3 lines stopping at centroid
     simplexSegment(left, mid, lwd = lineWidth)
     simplexSegment(right, mid, lwd = lineWidth)
+  }
+  if (model =="cut") {
+    # for cut model use 3 lines through centroid
+    botmid=c(0,.5,.5)
+    rightmid=c(.5,0,.5)
+    leftmid=c(.5,.5,0)
+    simplexSegment(mid, botmid, lwd = lineWidth)
+    simplexSegment(left, rightmid, lwd = lineWidth)
+    simplexSegment(right, leftmid, lwd = lineWidth)
   }
 }
 
@@ -77,7 +85,7 @@ simplexPrepare <- function(model = "T3",
 #' 
 #' @param ... other options to pass to graphics::points function
 #' 
-#' @return No return value, called for side effects
+#' @return NULL
 #'
 #' @examples
 #'    simplexPrepare("T3","Example Plot")
@@ -105,7 +113,7 @@ simplexPoint <- function(v,
 #' 
 #' @param ... other options to pass to graphics::segments function
 #' 
-#' @return No return value, called for side effects
+#' @return NULL
 #'
 #' @examples
 #'    simplexPrepare("T3","Example Plot")
@@ -141,7 +149,7 @@ simplexSegment <- function(v,
 #' 
 #' @param ... other options to pass to graphics::text function
 #' 
-#' @return No return value, called for side effects
+#' @return NULL
 #'
 #' @examples
 #'    simplexPrepare("T3","Example Plot")
@@ -169,8 +177,7 @@ simplexText <- function(v,
 #' @param top label for top
 #' @param left label for left bottom
 #' @param right label for right bottom
-#' 
-#' @return No return value, called for side effects
+#' @return NULL
 #'
 #' @examples
 #'    simplexPrepare("T3","Example Plot")
@@ -207,7 +214,7 @@ simplexLabels <- function(top = '',
 #' 
 #' @param v vector of 3 non-negative numbers, not summing to 0
 #' 
-#' @return a vector of 2-d coordinates to plot normalized point in simplex
+#' @return 2-d coordinates to plot normalized point in simplex
 #'
 #' @examples
 #'      simplexCoords(c(15,65,20))

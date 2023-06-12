@@ -13,16 +13,16 @@ NANUQdist(
 )
 }
 \arguments{
-\item{pTable}{a table of resolved quartets and p-values, as previously computed by \code{NANUQ}, or by both \code{quartetTreeTestInd} and 
+\item{pTable}{a table of resolved quartets and p-values, as previously computed by \code{NANUQ}, or by both \code{quartetTreeTestInd} and
 \code{quartetStarTestInd}, with columns \code{"p_T3"} and \code{"p_star"}}
 
-\item{outfile}{a character string giving an output file name stub for 
+\item{outfile}{a character string giving an output file name stub for
 saving a \code{NANUQ} distance matrix in nexus format; to the stub \code{outfile}
-will be appended an \code{alpha} and \code{beta} value and ".nex"; 
-if \code{NULL} then a distance matrix is not computed}
+will be appended an \code{alpha} and \code{beta} value and ".nex";
+if \code{NULL} then not written to file}
 
-\item{alpha}{a value or vector of significance levels for judging p-values 
-testing a null hypothesis of no hybridization for each quartet;  a smaller value applies 
+\item{alpha}{a value or vector of significance levels for judging p-values
+testing a null hypothesis of no hybridization for each quartet;  a smaller value applies
 a more liberal test for a tree (more trees), hence a stricter requirement for suspecting hybridization (fewer reticulations)}
 
 \item{beta}{a value or vector of significance levels for judging p-values testing
@@ -33,7 +33,7 @@ if vectors, \code{alpha} and \code{beta} must have the same length}
 \item{plot}{\code{TRUE} produces simplex plots of hypothesis tests, \code{FALSE} omits plots}
 }
 \value{
-a NANUQ distance table, or a list of such tables if \code{alpha} and \code{beta} 
+a NANUQ distance table, or a list of such tables if \code{alpha} and \code{beta}
 are vectors (returned invisibly)
 }
 \description{
@@ -44,17 +44,16 @@ for each of several levels specified. Distance tables are written to files, in n
 If plots are produced, each point represents an empirical quartet concordance factor,
 color-coded to represent test results giving interpretation as network, resolved tree, or star tree.
 
-If \code{alpha} and \code{beta} are vectors, they must be of the same length k. Then the i-th entries are 
-paired to produce k plots and k distance tables/output files. This is equivalent to k 
+If \code{alpha} and \code{beta} are vectors, they must be of the same length k. Then the i-th entries are
+paired to produce k plots and k distance tables/output files. This is equivalent to k
 calls to \code{NANUQdist} with paired scalar values from the vectors of \code{alpha} and \code{beta}.
 
 See the documentation for \code{\link{quartetNetworkDist}} for an explanation of a small, rarely noticeable,
 stochastic element of the algorithm.
 }
 \examples{
-pTable=NANUQ(system.file("extdata","dataYeastRokas",package="MSCquartets"), 
-      alpha=.0001, beta=.95, outfile = file.path(tempdir(), "NANUQdist"))
-NANUQdist(pTable, alpha=.05, beta=.95, outfile = file.path(tempdir(), "NANUQdist"))
+data(pTableYeastRokas)
+dist=NANUQdist(pTableYeastRokas, alpha=.05, beta=.95, outfile = NULL)
 
 }
 \references{

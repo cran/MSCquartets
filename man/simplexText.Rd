@@ -13,9 +13,6 @@ simplexText(v, label = "", ...)
 
 \item{...}{other options to pass to graphics::text function}
 }
-\value{
-No return value, called for side effects
-}
 \description{
 Add text to a 2-d probability simplex plot, at specified location.
 }

@@ -44,7 +44,7 @@ are independent.
 }
 \details{
 This function assumes all quartets are resolved.  The test performed and the arguments
-are described more fully in \code{QuartetTreeTest}.
+are described more fully in \code{quartetTreeTest}.
 }
 \examples{
 gtrees=read.tree(file=system.file("extdata","dataGeneTreeSample",package="MSCquartets"))

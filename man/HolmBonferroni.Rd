@@ -38,6 +38,9 @@ species tree.
 This can be a low power test (often failing to reject when the null hypothesis is false).
 In particular for the T1 and T3 tests, it does not consider the relationships between edge
 lengths for different sets of four taxa.
+
+Warning: Output of this function should not be used as input for other
+MSCquartets functions, as it reorders the quartets in the table.
 }
 \examples{
 gtrees=read.tree(file=system.file("extdata","dataGeneTreeSample",package="MSCquartets"))

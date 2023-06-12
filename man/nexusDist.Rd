@@ -11,9 +11,6 @@ nexusDist(distMatrix, outfilename)
 
 \item{outfilename}{the name of an output file}
 }
-\value{
-No return value, called for side effects
-}
 \description{
 Write a distance table to a file in nexus format.
 }

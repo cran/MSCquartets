@@ -7,11 +7,8 @@
 quartetTablePrint(qt)
 }
 \arguments{
-\item{qt}{a table such as returned by \code{quartetTable}, \code{quartetTableResolved}, 
+\item{qt}{a table such as returned by \code{quartetTable}, \code{quartetTableResolved},
 or \code{quartetTableDominant}, possibly with extra columns added by other functions}
-}
-\value{
-No return value, called for side effects
 }
 \description{
 Print a quartet table with the taxa in each quartet shown by name.
@@ -21,15 +18,15 @@ Print a quartet table with the taxa in each quartet shown by name.
  tnames=taxonNames(gtrees)
  QT=quartetTable(gtrees,tnames[1:6])
  QT[1:6,]
- quartetTablePrint(QT[1:6,])  
+ quartetTablePrint(QT[1:6,])
  RQT=quartetTableResolved(QT)
  RQT[1:6,]
  quartetTablePrint(RQT[1:6,])
  pTable=quartetTreeTestInd(RQT,"T3")
- pTable[1:6,] 
+ pTable[1:6,]
  quartetTablePrint(pTable[1:6,])
  DQT=quartetTableDominant(RQT)
  DQT[1:6,]
  quartetTablePrint(DQT[1:6,])
- 
+
 }

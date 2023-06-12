@@ -124,7 +124,7 @@ WQDCrecursive = function(rqt,
 #' @param taxaA a vector of taxon names in \code{rqt} to be included in the output table
 #' @param taxaB a vector of taxon names in \code{rqt} to form new composite taxon in the output table
 #'
-#' @return a resolved quartet table (of class matrix) with \code{length(taxaA)+1} taxa; the
+#' @return a resolved quartet table with \code{length(taxaA)+1} taxa; the
 #'  composite taxon is named as the concatenation of the sorted
 #'  names in \code{taxaB}
 #'

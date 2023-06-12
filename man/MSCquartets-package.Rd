@@ -5,10 +5,11 @@
 \alias{MSCquartets-package}
 \title{Multispecies Coalescent Model Quartet Package}
 \description{
-A package for analyzing quartets displayed on gene trees, under the multispecies coalescent (MSC) model.
+A package for analyzing quartets displayed on gene trees, under the
+multispecies coalescent (MSC) model and network multispecies coalescet model (NMSC).
 }
 \details{
-This package contains routines to analyze a collection of gene trees through the displayed 
+This package contains routines to analyze a collection of gene trees through the displayed
 quartets on them.
 
 A quartet count concordance factor (qcCF) for a set of 4 taxa is the triple of counts of the three
@@ -18,21 +19,22 @@ possible resolved quartet trees on those taxa across some set of gene trees. The
 \item Perform hypothesis tests of whether one or more qcCFs are consistent with the MSC model on
 a species tree \insertCite{MAR19}{MSCquartets}.
 \item Produce simplex plots showing all estimated CFs as well as results of hypothesis tests \insertCite{AMR2020}{MSCquartets}.
-\item Infer a species tree using the qcCFs via the QDC and WQDC methods \insertCite{Rho19,YR19}{MSCquartets}. 
+\item Infer a species tree using the qcCFs via the QDC and WQDC methods \insertCite{Rho19,YR19}{MSCquartets}.
 \item Infer a level-1 species network via the NANUQ method \insertCite{ABR19}{MSCquartets}.
+\item Infer the tree of blobs for a species network via the TINNiK method \insertCite{ABMR22}{MSCquartets},\insertCite{ABMR23}{MSCquartets}.
 }
 As discussed in the cited works, the inference methods for species trees and networks are
-statistically consistent under the MSC and Network MSC respectively. 
+statistically consistent under the MSC and Network MSC respectively.
 
-This package, and the theory on which it is based, allows gene trees to have 
-missing taxa (i.e., not all gene trees display all the taxa). It does require 
+This package, and the theory on which it is based, allows gene trees to have
+missing taxa (i.e., not all gene trees display all the taxa). It does require
 that each subset of 4 taxa is displayed on at least one of the gene trees.
 
 
 Several gene tree data sets, simulated and empirical, are included.
-  
+
 In publications please cite the software announcement \insertCite{RBMA2020}{MSCquartets}, as well as the
-appropriate paper(s) developing the theory behind the routines you used.
+appropriate paper(s) above developing the theory behind the routines you used.
 }
 \references{
 \insertRef{RBMA2020}{MSCquartets}
@@ -40,10 +42,14 @@ appropriate paper(s) developing the theory behind the routines you used.
 \insertRef{MAR19}{MSCquartets}
 
 \insertRef{AMR2020}{MSCquartets}
-   
+
 \insertRef{Rho19}{MSCquartets}
 
 \insertRef{YR19}{MSCquartets}
 
 \insertRef{ABR19}{MSCquartets}
+
+\insertRef{ABMR22}{MSCquartets}
+
+\insertRef{ABMR23}{MSCquartets}
 }

@@ -7,8 +7,8 @@
 \format{
 A text file with 2909 metric Newick gene trees each with 16 leaves labelled:\cr
 chioneus.553, chioneus.560, chioneus.564, chioneus.565, \cr
-ethilla.67, hecale.273, melpomeneFG.13435, melpomeneFG.9315, \cr 
-melpomeneFG.9316, melpomeneFG.9317, pardalinus.371, rosina.2071, \cr 
+ethilla.67, hecale.273, melpomeneFG.13435, melpomeneFG.9315, \cr
+melpomeneFG.9316, melpomeneFG.9317, pardalinus.371, rosina.2071, \cr
 rosina.531, rosina.533, rosina.546, sergestus.202
 }
 \source{
@@ -19,7 +19,7 @@ A text file dataset for Heliconius butterflies containing 2909 gene trees on 7 t
 leaves per gene tree. This is a subset of the data of \insertCite{Martin2013;textual}{MSCquartets}.
 }
 \details{
-File is accessed as \code{system.file("extdata","dataHeliconiusMartin",package="MSCquartets")}, for 
+File is accessed as \code{system.file("extdata","dataHeliconiusMartin",package="MSCquartets")}, for
 example via the \code{ape} command:
 
 \code{gts = read.tree(file=system.file("extdata","dataHeliconiusMartin",package="MSCquartets"))}

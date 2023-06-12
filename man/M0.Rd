@@ -14,6 +14,6 @@ value of negative modified Struve function function
 }
 \description{
 This function is used in computing the probability density for
-Model T1. The code is closely based on the \code{I0L0} function implemented in Python for the package 
+Model T1. The code is closely based on the \code{I0L0} function implemented in Python for the package
 RandomFieldUtils, which was previously on CRAN up to 12/2022).
 }

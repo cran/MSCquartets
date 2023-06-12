@@ -27,7 +27,7 @@ quartetTreeTest(
 \item{bootstraps}{number of samples for bootstrapping}
 }
 \value{
-\code{(p-value, bl)} where \code{bl} is a consistent estimator of the
+\code{output} where \code{output$p.value} is the p-value and \code{output$edgelength} is a consistent estimator of the
 internal edge length in coalescent units, possibly \code{Inf}.
 }
 \description{

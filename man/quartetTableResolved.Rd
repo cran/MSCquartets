@@ -16,8 +16,8 @@ quartetTableResolved(qt, omit = FALSE)
 a table of quartet counts similar to \code{qt}, but with columns showing only resolved quartet counts
 }
 \description{
-Converts table of all quartet counts, including unresolved ones, 
-by either dropping unresolved ones, or distributing them uniformly 
+Converts table of all quartet counts, including unresolved ones,
+by either dropping unresolved ones, or distributing them uniformly
 among the three resolved counts.
 }
 \examples{

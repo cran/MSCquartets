@@ -319,7 +319,7 @@ WQDSAdjustLengths = function(tree) {
 #' internal edge lengths estimated by \code{estimateEdgeLengths} with \code{lambda=0}, and terminal branches of length 1
 #' 
 #' 
-#' @return an unrooted tree, of type phylo
+#' @return an unrooted tree of type phylo
 #' 
 #' @seealso \code{\link{quartetTable}},
 #'          \code{\link{quartetTableResolved}},
@@ -428,7 +428,7 @@ QDC = function(genetreedata,
 #' \code{genetreedata} is given as  a resolved quartet table
 #' @param terminal non-negative branch length to supply for terminal branches 
 #' whose length cannot be inferred by \code{WQDC}
-#' @return an unrooted metric tree, of type phylo
+#' @return an unrooted metric tree of type phylo
 #' @seealso \code{\link{quartetTable}}, 
 #'          \code{\link{quartetTableResolved}}, 
 #'          \code{\link{quartetTableDominant}}, 

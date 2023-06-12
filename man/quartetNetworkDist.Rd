@@ -20,22 +20,20 @@ smaller value gives fewer resolved tree decisions}
 a distance table
 }
 \description{
-Produce network quartet distance table for the NANUQ algorithm, from a table of quartets and p-values, 
+Produce network quartet distance table for the NANUQ algorithm, from a table of quartets and p-values,
 and specified levels of quartet hypothesis tests. The network quartet distance, which
-is described more fully by \insertCite{ABR19;textual}{MSCquartets}, generalizes 
+is described more fully by \insertCite{ABR19;textual}{MSCquartets}, generalizes
 the quartet distance of \insertCite{Rho19;textual}{MSCquartets}.
 }
 \details{
-In case of a triple of quartet counts with the two largest equal and the third slighltly smaller, 
-along with \code{alpha} and \code{beta} leading to a star quartet being rejected and a tree not being rejected, 
-this function chooses a resolved quartet topology uniformly at random from the two largest counts. This is the only 
-stochastic element of the code, and its impact is usually negligable.
+In case of a triple of quartet counts with the two largest equal and the third slighltly smaller,
+along with \code{alpha} and \code{beta} leading to a star quartet being rejected and a tree not being rejected,
+this function chooses a resolved quartet topology uniformly at random from the two largest counts. This is the only
+stochastic element of the code, and its impact is usually negligible.
 }
 \examples{
-pTable=NANUQ(system.file("extdata", "dataYeastRokas",package="MSCquartets"), alpha=.0001, 
-       beta=.95,outfile = file.path(tempdir(), "NANUQdist"))
-dist=quartetNetworkDist(pTable, alpha=.05, beta=.95)
-dist
+data(pTableYeastRokas)
+dist=quartetNetworkDist(pTableYeastRokas, alpha=.05, beta=.95)
 
 }
 \references{
