@@ -1,4 +1,4 @@
-18ad09bf8d018e7b502d8b326e0bfd83 *DESCRIPTION
+9b3da1ea26361f689298c473f16d16d1 *DESCRIPTION
 5a093ae11743d5cacac89fe14759cbef *LICENSE
 cddf59a1a65164f8a9f8845340a9cab4 *NAMESPACE
 1a0a7cde7c457f0f338ad4c3fa35205e *R/ExpectedCFs.R
@@ -10,11 +10,11 @@ ef7488ae03fdbf1589fddeeffee9c9e3 *R/RcppExports.R
 a949b6fd8c332f150332bef1d9f33a59 *R/SimplexPlot.R
 4088163ef245765f4d3a24eea412c977 *R/StarQuartetHypTest.R
 fb462dce38c4aa1f5a2a0a97706b3828 *R/TreeQuartetDist.R
-4df80caf2538f171de4dca21e405fd3f *R/TreeQuartetHypTest.R
+7e06b6f91f41a17c450881bfc226c4cd *R/TreeQuartetHypTest.R
 ab233fc3f4f623b55d27e4943b141ba0 *R/WQDCrecursive.R
 7e2c1b9507edfa40a0055c7cedacd0f3 *R/pHist.R
 cc98bab198b274cee99ec47a0d2bea4b *R/sysdata.rda
-f3b8f871a63c0e08e0715ff022cc64b8 *build/partial.rdb
+a11cc1535b5c8745246f51a55be072ba *build/partial.rdb
 bd8b44f9dd127426cad7f0b830e6712c *data/pTableYeastRokas.rda
 834e65ead1c63a7f27b9584060284777 *inst/REFERENCES.bib
 0d0be168c555a93aa06db4a6608367fa *inst/extdata/dataGeneTreeSample

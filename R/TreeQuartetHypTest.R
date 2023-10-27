@@ -152,7 +152,7 @@ M0 <- function(x) {
 T1density <-
   function(x,
            mu0) {
-    (1 / 4) * exp(-(1 / 2) * x) * (sqrt(2 / (pi * x)) * (1 + erf(mu0 / sqrt(2))) +
+    (1 / 4) * exp(-(1 / 2) * x) * (sqrt(2 / (pi * x)) * (1 + erf(mu0 / sqrt(2))) -
                                      exp(-(1 / 2) * mu0 ^ 2) * Vectorize(M0)(mu0 * sqrt(x)))
   }
 
