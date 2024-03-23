@@ -4,7 +4,7 @@
 \alias{quartetTallyCpp}
 \title{Build quartet table from distances}
 \usage{
-quartetTallyCpp(dList, M, nt, Q, random)
+quartetTallyCpp(dList, M, nt, Q, random, progressbar = FALSE)
 }
 \arguments{
 \item{dList}{a list of distance matrices}
@@ -16,12 +16,18 @@ quartetTallyCpp(dList, M, nt, Q, random)
 \item{Q}{matrix to fill out as table of quartet counts}
 
 \item{random}{if 0 compute for all sets of 4 taxa, otherwise for M random ones}
+
+\item{progressbar}{if TRUE, display progress bar}
+}
+\value{
+Q with quartet counts filled in, and a flag indicating whether any
+taxa were missing
 }
 \description{
 This is a C++ function, called from quartetTable, to fill in the quartet counts.
 From a list of topological distance matrices (1 for each gene tree) it determines all
-gene quartets. It is not intended to be used as a stand-alone function, and hence not fully
-documented. The faster looping in C++ over R gives substantial time improvements
+gene quartets. The faster looping in C++ gives substantial time improvements
+over R code. Doucumentation if for internal use only.
 }
 \seealso{
 \code{\link{quartetTable}}, \code{\link{quartetTableParallel}}

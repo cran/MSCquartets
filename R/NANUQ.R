@@ -117,7 +117,7 @@ NANUQ = function( genedata,
     mepsilon=missing(epsilon)
     mtaxanames=missing(taxanames)
     if (!momit | !mepsilon | !mtaxanames){
-      warning(
+      message(
         "Since genedata supplied as quartet table, ignoring arguments 'omit', 'epsilon', 'taxanames'."
       )}
       taxanames=NULL
@@ -241,9 +241,6 @@ NANUQdist = function (pTable,
     allQD=allQD[[1]]
   }
 
-  if (is.null(outfile)) {
-    message("Distance table(s) not written to file(s).")
-  }
   invisible(allQD)
 }
 

@@ -4,7 +4,13 @@
 \alias{quartetTable}
 \title{Produce table of counts of quartets displayed on trees}
 \usage{
-quartetTable(trees, taxonnames = NULL, epsilon = 0, random = 0)
+quartetTable(
+  trees,
+  taxonnames = NULL,
+  epsilon = 0,
+  random = 0,
+  progressbar = FALSE
+)
 }
 \arguments{
 \item{trees}{multiphylo object containing un/rooted metric/topological trees}
@@ -14,6 +20,8 @@ quartetTable(trees, taxonnames = NULL, epsilon = 0, random = 0)
 \item{epsilon}{minimum for branch lengths to be treated as non-zero (default 0)}
 
 \item{random}{number of random subsets of 4 taxa to consider; if 0, use all \code{n} choose 4 subsets}
+
+\item{progressbar}{FALSE, set to TRUE if want to see tally progress}
 }
 \value{
 an (\code{n} choose 4)x(\code{n}+4) matrix (or (\code{random})x(\code{n}+4) matrix) encoding

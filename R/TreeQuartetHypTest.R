@@ -134,7 +134,7 @@ M0 <- function(x) {
 
 #########################################################
 
-#' Probability density function for Model T1 of \insertCite{MAR19;textual}{MSCquartets}, Proposition 5.2
+#' Probability density function for Model T1
 #'
 #' Value of probability density function for Model T1 of \insertCite{MAR19;textual}{MSCquartets}, Proposition 5.2.
 #'
@@ -158,7 +158,7 @@ T1density <-
 
 #########################################################
 
-#' Probability density function for Model T3 of \insertCite{MAR19;textual}{MSCquartets}, Proposition 4.2
+#' Probability density function for Model T3
 #'
 #' Value of probability density function for Model T3 of \insertCite{MAR19;textual}{MSCquartets}, Proposition 4.2.
 #'

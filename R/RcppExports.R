@@ -5,18 +5,70 @@
 #'
 #' This is a C++ function, called from quartetTable, to fill in the quartet counts.
 #' From a list of topological distance matrices (1 for each gene tree) it determines all
-#' gene quartets. It is not intended to be used as a stand-alone function, and hence not fully
-#' documented. The faster looping in C++ over R gives substantial time improvements
+#' gene quartets. The faster looping in C++ gives substantial time improvements
+#' over R code. Doucumentation if for internal use only.
 #'
 #' @param dList a list of distance matrices
 #' @param M number of sets of 4 taxa
 #' @param nt number of gene trees/distance matrices
 #' @param Q matrix to fill out as table of quartet counts
 #' @param random if 0 compute for all sets of 4 taxa, otherwise for M random ones
+#' @param progressbar if TRUE, display progress bar
+#' @seealso \code{\link{quartetTable}}, \code{\link{quartetTableParallel}}
+#'
+#' @return Q with quartet counts filled in, and a flag indicating whether any
+#' taxa were missing
+#'
+#' @export
+quartetTallyCpp <- function(dList, M, nt, Q, random, progressbar = FALSE) {
+    .Call('_MSCquartets_quartetTallyCpp', PACKAGE = 'MSCquartets', dList, M, nt, Q, random, progressbar)
+}
+
+#' Initialize vector of B quartets
+#'
+#' This is a C++ function, used in \code{TINNIKdist}, to initialize for
+#' inference of B and T quartets. Doucumentation if for internal use only.
+#'
+#' @param pTable a quartet table with p-values
+#' @param m number of rows in pTable
+#' @param alpha critical value for tree test
+#' @param beta critical value for star tree test
+#' @param colptest column with p value for tree test
+#' @param colpstar column with p value for star tree test
+#' @param Bquartets 0/1 vector encoding initial B quartets
+#'
+#' @return two lists, "Lout" with indices of initial B-quartets, "Bout" with TRUE/FALSE for all sets
+#' of 4 taxa indicating which are B-quartets
+#'
 #' @seealso \code{\link{quartetTable}}, \code{\link{quartetTableParallel}}
 #'
 #' @export
-quartetTallyCpp <- function(dList, M, nt, Q, random) {
-    .Call('_MSCquartets_quartetTallyCpp', PACKAGE = 'MSCquartets', dList, M, nt, Q, random)
+initBquartets <- function(pTable, m, alpha, beta, colptest, colpstar, Bquartets) {
+    .Call('_MSCquartets_initBquartets', PACKAGE = 'MSCquartets', pTable, m, alpha, beta, colptest, colpstar, Bquartets)
+}
+
+#' Main loop of B-quartet inference
+#'
+#' This is a C++ function, used in \code{TINNIKdist}, to
+#' infer B and T quartets. Doucumentation if for internal use only.
+#'
+#' @param pTable a quartet table with p-values
+#' @param C precomputed binomial coefficients
+#' @param Cn4 precomputed binomial coefficient
+#' @param n number of taxa
+#' @param Bquartets 0/1 vector of initial Bquartets
+#' @param L1 vector of recently inferred B quartets
+#' @param lenL1 lnegth of L1
+#' @param Nrule1 count of inference from rule 1
+#' @param Nrule2 count of inference from rule 2
+#' @param cuttops inferred cut topologies
+#'
+#' @return a 0/1 vector indicating which sets of 4-taxa are B-quartets
+#'
+#' @seealso \code{\link{quartetTable}}, \code{\link{quartetTableParallel}}
+#'
+#' @export
+BQinference <- function(pTable, C, Cn4, n, Bquartets, L1, lenL1, Nrule1, Nrule2, cuttops) {
+    .Call('_MSCquartets_BQinference', PACKAGE = 'MSCquartets', pTable, C, Cn4, n, Bquartets, L1, lenL1, Nrule1, Nrule2, cuttops)
 }
 

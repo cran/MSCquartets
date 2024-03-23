@@ -2,7 +2,7 @@
 % Please edit documentation in R/QuartetTally.R
 \name{sortQuartetTableRows}
 \alias{sortQuartetTableRows}
-\title{Sort quartet table rows}
+\title{Sort quartet table rows by lex order}
 \usage{
 sortQuartetTableRows(qT)
 }

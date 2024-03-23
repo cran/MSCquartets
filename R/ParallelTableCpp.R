@@ -56,6 +56,9 @@ quartetTableParallel <- function(trees,
                                  epsilon = 0,
                                  numCores) {
 
+  if ( !(numCores>=2) ) stop("Argument 'numCores' must be at least 2.")
+  numcores=floor(numCores)
+
   # function for combining parallel call results
   combQuartets <-function(quartets1,quartets2){
     quartets1[,c("12|34","13|24","14|23","1234")]=

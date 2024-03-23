@@ -1,21 +1,27 @@
 #include <Rcpp.h>
 #include <algorithm>
 using namespace Rcpp;
-
+// [[Rcpp::depends(RcppProgress)]]
+#include <progress.hpp>
+#include <progress_bar.hpp>
 
 //' Build quartet table from distances
 //'
 //' This is a C++ function, called from quartetTable, to fill in the quartet counts.
 //' From a list of topological distance matrices (1 for each gene tree) it determines all
-//' gene quartets. It is not intended to be used as a stand-alone function, and hence not fully
-//' documented. The faster looping in C++ over R gives substantial time improvements
+//' gene quartets. The faster looping in C++ gives substantial time improvements
+//' over R code. Doucumentation if for internal use only.
 //'
 //' @param dList a list of distance matrices
 //' @param M number of sets of 4 taxa
 //' @param nt number of gene trees/distance matrices
 //' @param Q matrix to fill out as table of quartet counts
 //' @param random if 0 compute for all sets of 4 taxa, otherwise for M random ones
+//' @param progressbar if TRUE, display progress bar
 //' @seealso \code{\link{quartetTable}}, \code{\link{quartetTableParallel}}
+//'
+//' @return Q with quartet counts filled in, and a flag indicating whether any
+//' taxa were missing
 //'
 //' @export
 // [[Rcpp::export]]
@@ -23,7 +29,8 @@ Rcpp::List quartetTallyCpp(Rcpp::List dList,
                                   int M,
                                   int nt,
                                   Rcpp::NumericMatrix Q,
-                                  int random) {
+                                  int random,
+                                  bool progressbar = false) {
 
 int warnMissing=0; //flag for some taxa missing
 int  numColsQ=0; //number of columns of Q
@@ -95,6 +102,9 @@ if (random==0) //if not considering random quartets, put them all into table
    }
  }
 
+ // Initializes the progress bar
+ Progress p(nt, progressbar);
+
 for (int i = 0; i < nt; ++i) { // run through list of topological distance tables
    d = Rcpp::as<Rcpp::NumericMatrix>(dList[i]);
    dNames = colnames(d);
@@ -128,6 +138,11 @@ for (int i = 0; i < nt; ++i) { // run through list of topological distance table
          Q(j, tqc[2])++; // 14|23
      }
    }
+   // increments the progress bar
+   if (Progress::check_abort() )
+     return -1.0;
+
+   p.increment(); // update progress
  }
 
 return Rcpp::List::create(Rcpp::Named("table") = Q,

@@ -16,7 +16,7 @@
 #' \item Produce simplex plots showing all estimated CFs as well as results of hypothesis tests \insertCite{AMR2020}{MSCquartets}.
 #' \item Infer a species tree using the qcCFs via the QDC and WQDC methods \insertCite{Rho19,YR19}{MSCquartets}.
 #' \item Infer a level-1 species network via the NANUQ method \insertCite{ABR19}{MSCquartets}.
-#' \item Infer the tree of blobs for a species network via the TINNiK method \insertCite{ABMR22}{MSCquartets},\insertCite{ABMR23}{MSCquartets}.
+#' \item Infer the tree of blobs for a species network via the TINNiK method \insertCite{ABMR22}{MSCquartets},\insertCite{ABMR24}{MSCquartets}.
 #' }
 #'As discussed in the cited works, the inference methods for species trees and networks are
 #'statistically consistent under the MSC and Network MSC respectively.
@@ -47,7 +47,7 @@
 #'
 #' \insertRef{ABMR22}{MSCquartets}
 #'
-#' \insertRef{ABMR23}{MSCquartets}
+#' \insertRef{ABMR24}{MSCquartets}
 #'
 #' @importFrom graphics hist legend mtext par plot points segments text
 #' @importFrom stats chisq.test dmultinom pchisq qnorm var
@@ -56,8 +56,7 @@
 #'
 #' @useDynLib MSCquartets
 #'
-#' @docType package
-#' @name MSCquartets-package
+"_PACKAGE"
 NULL
 
 
@@ -107,7 +106,8 @@ NULL
 #' gtrees=read.tree(file = system.file("extdata","dataYeastRokas",package="MSCquartets"))
 #' QT=quartetTable(gtrees)
 #' RQT=quartetTableResolved(QT)
-#' pTable=quartetTreeTestInd(RQT)
+#' pTable=quartetCutTestInd(RQT)
+#' pTable=quartetTreeTestInd(pTable)
 #' pTableYeastRokas=quartetStarTestInd(pTable)
 #' }
 #' @format an R data file

@@ -11,8 +11,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // quartetTallyCpp
-Rcpp::List quartetTallyCpp(Rcpp::List dList, int M, int nt, Rcpp::NumericMatrix Q, int random);
-RcppExport SEXP _MSCquartets_quartetTallyCpp(SEXP dListSEXP, SEXP MSEXP, SEXP ntSEXP, SEXP QSEXP, SEXP randomSEXP) {
+Rcpp::List quartetTallyCpp(Rcpp::List dList, int M, int nt, Rcpp::NumericMatrix Q, int random, bool progressbar);
+RcppExport SEXP _MSCquartets_quartetTallyCpp(SEXP dListSEXP, SEXP MSEXP, SEXP ntSEXP, SEXP QSEXP, SEXP randomSEXP, SEXP progressbarSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -21,13 +21,53 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type nt(ntSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type Q(QSEXP);
     Rcpp::traits::input_parameter< int >::type random(randomSEXP);
-    rcpp_result_gen = Rcpp::wrap(quartetTallyCpp(dList, M, nt, Q, random));
+    Rcpp::traits::input_parameter< bool >::type progressbar(progressbarSEXP);
+    rcpp_result_gen = Rcpp::wrap(quartetTallyCpp(dList, M, nt, Q, random, progressbar));
+    return rcpp_result_gen;
+END_RCPP
+}
+// initBquartets
+Rcpp::List initBquartets(Rcpp::NumericMatrix pTable, int m, double alpha, double beta, int colptest, int colpstar, Rcpp::StringVector Bquartets);
+RcppExport SEXP _MSCquartets_initBquartets(SEXP pTableSEXP, SEXP mSEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP colptestSEXP, SEXP colpstarSEXP, SEXP BquartetsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type pTable(pTableSEXP);
+    Rcpp::traits::input_parameter< int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< double >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< int >::type colptest(colptestSEXP);
+    Rcpp::traits::input_parameter< int >::type colpstar(colpstarSEXP);
+    Rcpp::traits::input_parameter< Rcpp::StringVector >::type Bquartets(BquartetsSEXP);
+    rcpp_result_gen = Rcpp::wrap(initBquartets(pTable, m, alpha, beta, colptest, colpstar, Bquartets));
+    return rcpp_result_gen;
+END_RCPP
+}
+// BQinference
+Rcpp::LogicalVector BQinference(Rcpp::IntegerMatrix pTable, Rcpp::IntegerMatrix C, int Cn4, int n, Rcpp::LogicalVector Bquartets, Rcpp::IntegerVector L1, int lenL1, int Nrule1, int Nrule2, Rcpp::IntegerVector cuttops);
+RcppExport SEXP _MSCquartets_BQinference(SEXP pTableSEXP, SEXP CSEXP, SEXP Cn4SEXP, SEXP nSEXP, SEXP BquartetsSEXP, SEXP L1SEXP, SEXP lenL1SEXP, SEXP Nrule1SEXP, SEXP Nrule2SEXP, SEXP cuttopsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type pTable(pTableSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type C(CSEXP);
+    Rcpp::traits::input_parameter< int >::type Cn4(Cn4SEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< Rcpp::LogicalVector >::type Bquartets(BquartetsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type L1(L1SEXP);
+    Rcpp::traits::input_parameter< int >::type lenL1(lenL1SEXP);
+    Rcpp::traits::input_parameter< int >::type Nrule1(Nrule1SEXP);
+    Rcpp::traits::input_parameter< int >::type Nrule2(Nrule2SEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type cuttops(cuttopsSEXP);
+    rcpp_result_gen = Rcpp::wrap(BQinference(pTable, C, Cn4, n, Bquartets, L1, lenL1, Nrule1, Nrule2, cuttops));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_MSCquartets_quartetTallyCpp", (DL_FUNC) &_MSCquartets_quartetTallyCpp, 5},
+    {"_MSCquartets_quartetTallyCpp", (DL_FUNC) &_MSCquartets_quartetTallyCpp, 6},
+    {"_MSCquartets_initBquartets", (DL_FUNC) &_MSCquartets_initBquartets, 7},
+    {"_MSCquartets_BQinference", (DL_FUNC) &_MSCquartets_BQinference, 10},
     {NULL, NULL, 0}
 };
 

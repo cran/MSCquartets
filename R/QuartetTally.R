@@ -60,6 +60,7 @@ topDist = function(tree, epsilon=0) {
 #' @param taxonnames vector of \code{n} names of taxa of interest; if \code{NULL} then taken from taxa on \code{trees[[1]]}
 #' @param epsilon minimum for branch lengths to be treated as non-zero (default 0)
 #' @param random number of random subsets of 4 taxa to consider; if 0, use all \code{n} choose 4 subsets
+#' @param progressbar FALSE, set to TRUE if want to see tally progress
 #' @return
 #'     an (\code{n} choose 4)x(\code{n}+4) matrix (or (\code{random})x(\code{n}+4) matrix) encoding
 #'     4 taxon subsets of \code{taxonnames} and counts of each of the
@@ -82,7 +83,8 @@ topDist = function(tree, epsilon=0) {
 quartetTable = function(trees,
                         taxonnames=NULL,
                         epsilon = 0,
-                        random = 0) {
+                        random = 0,
+                        progressbar = FALSE) {
   if (random < 0)
     stop("Parameter 'random' must be non-negative.")
   random = round(random)
@@ -112,7 +114,7 @@ quartetTable = function(trees,
 
   dList=lapply(trees,topDist,epsilon=epsilon) # compute all distance tables
 
-  out=quartetTallyCpp(dList,M,nt,Q,random) #do the rest in C++ for speed
+  out=quartetTallyCpp(dList,M,nt,Q,random,progressbar=progressbar) #do the rest in C++ for speed
   Q=out$table
 
   if (out$missingFlag == 1)
@@ -336,7 +338,7 @@ quartetTablePrint <- function (qt) {
 }
 
 ###############################################################
-#'Sort quartet table rows
+#'Sort quartet table rows by lex order
 #'
 #'Sort the rows of a quartet table so they are in MSCquartet's standard lex order.
 #'This is the order produced by the \code{quartetTable} function. The only exceptions

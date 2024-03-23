@@ -2,7 +2,7 @@
 % Please edit documentation in R/TreeQuartetHypTest.R
 \name{T3density}
 \alias{T3density}
-\title{Probability density function for Model T3 of \insertCite{MAR19;textual}{MSCquartets}, Proposition 4.2}
+\title{Probability density function for Model T3}
 \usage{
 T3density(x, mu0, alpha0, beta0)
 }
