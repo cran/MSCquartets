@@ -147,6 +147,28 @@ NULL
 #'
 NULL
 
+#' Papionini gene tree dataset
+#'
+#' A text file dataset for Papionini containing 1730 gene trees on 7 taxa. This is a subset of the data of \insertCite{Vanderpool2020;textual}{MSCquartets}.
+#'
+#' @references \insertRef{Vanderpool2020}{MSCquartets}
+#'
+#' @docType data
+#'
+#' @name dataPapioniniVanderpool
+#'
+#' @details File is accessed as \code{system.file("extdata","dataPapioniniVanderpool",package="MSCquartets")}, for
+#' example via the \code{ape} command:
+#'
+#' \code{gts = read.tree(file=system.file("extdata","dataPapioniniVanderpool",package="MSCquartets"))}
+#'
+#' @format A text file with 1703 metric Newick gene trees each with 7 leaves labelled:\cr
+#' Cercocebus_atys, Mandrillus_leucophaeus, Papio_anubis, Theropithecus_gelada,
+#' Macaca_fascicularis, Macaca_mulatta, Macaca_nemestrina
+#'
+#' @source \doi{10.5061/dryad.rfj6q577d}
+#'
+NULL
 
 #' Simulated gene tree dataset from species tree
 #'

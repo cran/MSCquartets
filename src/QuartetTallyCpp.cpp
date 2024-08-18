@@ -9,8 +9,8 @@ using namespace Rcpp;
 //'
 //' This is a C++ function, called from quartetTable, to fill in the quartet counts.
 //' From a list of topological distance matrices (1 for each gene tree) it determines all
-//' gene quartets. The faster looping in C++ gives substantial time improvements
-//' over R code. Doucumentation if for internal use only.
+//' gene quartets. It is not intended to be used as a stand-alone function, and hence not fully
+//' documented. The faster looping in C++ over R gives substantial time improvements
 //'
 //' @param dList a list of distance matrices
 //' @param M number of sets of 4 taxa
@@ -19,9 +19,6 @@ using namespace Rcpp;
 //' @param random if 0 compute for all sets of 4 taxa, otherwise for M random ones
 //' @param progressbar if TRUE, display progress bar
 //' @seealso \code{\link{quartetTable}}, \code{\link{quartetTableParallel}}
-//'
-//' @return Q with quartet counts filled in, and a flag indicating whether any
-//' taxa were missing
 //'
 //' @export
 // [[Rcpp::export]]

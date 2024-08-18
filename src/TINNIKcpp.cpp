@@ -22,8 +22,8 @@ Rcpp::IntegerVector whichVal( Rcpp::IntegerVector x, int W) {
 //#################################################################################
 //' Initialize vector of B quartets
 //'
-//' This is a C++ function, used in \code{TINNIKdist}, to initialize for
-//' inference of B and T quartets. Doucumentation if for internal use only.
+//' This is a C++ function, called from \code{TINNIKdist}, to initialize for
+//' inference of B and T quartets.
 //'
 //' @param pTable a quartet table with p-values
 //' @param m number of rows in pTable
@@ -32,10 +32,6 @@ Rcpp::IntegerVector whichVal( Rcpp::IntegerVector x, int W) {
 //' @param colptest column with p value for tree test
 //' @param colpstar column with p value for star tree test
 //' @param Bquartets 0/1 vector encoding initial B quartets
-//'
-//' @return two lists, "Lout" with indices of initial B-quartets, "Bout" with TRUE/FALSE for all sets
-//' of 4 taxa indicating which are B-quartets
-//'
 //' @seealso \code{\link{quartetTable}}, \code{\link{quartetTableParallel}}
 //'
 //' @export
@@ -64,8 +60,8 @@ Rcpp::List initBquartets(Rcpp::NumericMatrix pTable,int m, double alpha, double 
 
 //' Main loop of B-quartet inference
 //'
-//' This is a C++ function, used in \code{TINNIKdist}, to
-//' infer B and T quartets. Doucumentation if for internal use only.
+//' This is a C++ function, called from \code{TINNIKdist}, to
+//' infer B and T quartets.
 //'
 //' @param pTable a quartet table with p-values
 //' @param C precomputed binomial coefficients
@@ -77,8 +73,6 @@ Rcpp::List initBquartets(Rcpp::NumericMatrix pTable,int m, double alpha, double 
 //' @param Nrule1 count of inference from rule 1
 //' @param Nrule2 count of inference from rule 2
 //' @param cuttops inferred cut topologies
-//'
-//' @return a 0/1 vector indicating which sets of 4-taxa are B-quartets
 //'
 //' @seealso \code{\link{quartetTable}}, \code{\link{quartetTableParallel}}
 //'

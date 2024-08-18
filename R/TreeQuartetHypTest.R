@@ -207,8 +207,8 @@ T3density <- function(x,
 #'
 #' @details
 #' This function implements two of
-#' the versions of the test given by \insertCite{MAR19;textual}{MSCquartets} as well as parametric boostrapping,
-#' with other procedures for when some expected counts are small.
+#' the versions of the test given by \insertCite{MAR19;textual}{MSCquartets} as well as parametric
+#' bootstrapping, with other procedures for when some expected counts are small.
 #' When the topology and/or the internal
 #' quartet branch length is not specified by the null hypothesis these are more accurate tests than,
 #' say, a Chi-square with one degree of freedom, which is not theoretically
@@ -230,19 +230,20 @@ T3density <- function(x,
 #' and internal edge length. The bootstrap sample size is given by the \code{bootstrap} argument.
 #'
 #'
-#' When some expected topology counts are small, the methods \code{"MLest"} and \code{"conservative"} are not appropriate.
-#' The argument \code{smallcounts} determines whether bootstrapping or a faster approximate method is used.
-#' These both involve estimates of the quartet topology and internal edge length. The approximate approach
-#' returns a precomputed p-value, found by replacing the largest observed count
-#' with 1e+6 and performing 1e+8 bootstraps for the model T3. When n is sufficiently large (at least 30) and
+#' When some or all expected topology counts are small, the methods \code{"MLest"} and \code{"conservative"} are not appropriate.
+#' The argument \code{smallsample} determines whether a precomputed bootstrap of 1e+8 samples, or actual boostrapping with the specified size,
+#' is used when the total sample is small (<30).
+#' The argument \code{smallcounts} determines whether bootstrapping or a faster approximate method is used when only some counts are small.
+#' The approximate approach returns a precomputed p-value, found by replacing the largest observed count
+#' with 1e+6 and performing 1e+8 bootstraps for the model T3. When n >30 and
 #' some expected counts are small, the quartet tree error probability is small and the bootstrap p-value is
 #' approximately independent of the choice of T3 or T1 and of the largest observed count.
 #'
 #' For model T1, the first entry of \code{obs} is treated as the count of gene quartets concordant with the species tree.
 #'
 #' The returned p-value should be taken with caution when there is a small sample size, e.g. less than 30 gene trees.
-#' The returned value of \code{bl} is a consistent estimator, but not the MLE, of the internal
-#' edge length in coalescent units. Although consistent, the MLE for t is biased.
+#' The returned value of \code{$edgelength} is a consistent estimator, but not the MLE, of the internal
+#' edge length in coalescent units. Although consistent, the MLE for this length is biased.
 #' Our consistent estimator is still biased, but with less bias than the MLE. See \insertCite{MAR19;textual}{MSCquartets}
 #' for more discussion on dealing with the bias of parameter estimates in the
 #' presence of boundaries and/or singularities of parameter spaces.
@@ -254,7 +255,8 @@ T3density <- function(x,
 #' @param model  \code{"T1"} or \code{"T3"}, for the models of \insertCite{MAR19;textual}{MSCquartets}
 #' @param lambda  parameter for power-divergence statistic (e.g., 0 for likelihood ratio statistic, 1 for Chi-squared statistic)
 #' @param method \code{"MLtest"},\code{"conservative"}, or \code{"bootstrap"}
-#' @param smallcounts \code{"bootstrap"} or \code{"approximate"}, method of obtaining p-value when some counts are small
+#' @param smallsample \code{"precomputed"} or \code{"bootstrap"}, method of obtaining p-value when sample is small (<30)
+#' @param smallcounts \code{"precomputed"} or \code{"bootstrap"}, method of obtaining p-value when some (but not all) counts are small
 #' @param bootstraps  number of samples for bootstrapping
 #'
 #' @return \code{output} where \code{output$p.value} is the p-value and \code{output$edgelength} is a consistent estimator of the
@@ -271,422 +273,515 @@ T3density <- function(x,
 #' @importFrom stats pbinom rmultinom integrate pnorm uniroot
 #'
 #' @export
-quartetTreeTest <-
-  function (obs,
-            model = "T3",
-            lambda = 0,
-            method = "MLest",
-            smallcounts = "approximate",
-            bootstraps = 10 ^ 4)
-  {
-    T1bias <- function(mu02, mu0) {
-      (1 / sqrt(2 * pi)) * exp(-(1 / 2) * mu02 ^ 2) + (1 / 2) * mu02 *
-        (1 + erf(mu02 / sqrt(2))) - mu0
-    }
-    integrand <- function(y, mu02, alpha02, beta02) {
-      (1 / sqrt(2 * pi)) * y * (exp(-(1 / 2) * (y - mu02) ^ 2) *
-                                  erf(y * (1 / tan(beta02)) / sqrt(2)) + exp(-(1 /
-                                                                                 2) * (y +
-                                                                                         mu02 * sin(alpha02)) ^
-                                                                               2) * (erf((
-                                                                                 y * (1 / tan(alpha02)) +
-                                                                                   mu02 * cos(alpha02)
-                                                                               ) / sqrt(2)) + erf((
-                                                                                 y * tan(alpha02 +
-                                                                                           beta02) - mu02 * cos(alpha02)
-                                                                               ) / sqrt(2))))
-    }
-    T3bias <- function(mu02, mu0, n) {
-      phi02 <- min((1 / (4 * (n + mu02 ^ 2))) * (4 * n + 3 * mu02 ^ 2 -
-                                                   mu02 * sqrt(8 * n + 9 * mu02 ^
-                                                                 2)), 1)
-      alpha02 <- atan(1 / sqrt(3 * (3 - 2 * phi02)))
-      beta02 <- (1 / 2) * (pi / 2 - alpha02)
-      bias <- integrate(
-        integrand,
-        lower = 0,
-        upper = Inf,
-        mu02 = mu02,
-        alpha02 = alpha02,
-        beta02 = beta02
-      )$value -
-        mu0
-      return(bias)
-    }
-    if (is.numeric(obs) == FALSE ||
-        is.vector(obs) == FALSE || length(obs) != 3
-        ||
-        min(obs) < 0 ||
-        sum(obs) < 1 || all.equal(sum(obs), round(sum(obs))) != TRUE
-        || model %in% c("T1", "T3") == FALSE
-        ||
-        is.numeric(lambda) == FALSE ||
-        is.vector(lambda) == FALSE || length(lambda) != 1
-        || smallcounts %in% c("bootstrap", "approximate") == FALSE
-        ||
-        is.numeric(bootstraps) == FALSE ||
-        is.vector(bootstraps) == FALSE ||
-        length(bootstraps) != 1 || bootstraps <= 0 || bootstraps %% 1 != 0
-        || method %in% c("MLest", "conservative", "bootstrap") ==
-        FALSE) {
-      stop(
-        "Invalid arguments: obs must be a numeric non-negative vector of length 3 summing to a positive integer;\n      model must be \"T1\" or \"T3\";\n      lambda must be a real number;\n      method must be \"MLest\", \"conservative\", or \"bootstrap\";\n      smallcounts must be \"bootstrap\" or \"approximate\";\n      bootstraps must be a positive integer."
-      )
+quartetTreeTest <- function (obs, model = "T3", lambda = 0, method = "MLest", smallsample = "precomputed",
+                             smallcounts = "precomputed", bootstraps = 10^4)
+{
+  T1bias <- function(mu02, mu0) {
+    (1/sqrt(2 * pi)) * exp(-(1/2) * mu02^2) + (1/2) * mu02 *
+      (1 + erf(mu02/sqrt(2))) - mu0
+  }
+  integrand <- function(y, mu02, alpha02, beta02) {
+    (1/sqrt(2 * pi)) * y * (exp(-(1/2) * (y - mu02)^2) *
+                              erf(y * (1/tan(beta02))/sqrt(2)) + exp(-(1/2) * (y +
+                                                                                 mu02 * sin(alpha02))^2) * (erf((y * (1/tan(alpha02)) +
+                                                                                                                   mu02 * cos(alpha02))/sqrt(2)) + erf((y * tan(alpha02 +
+                                                                                                                                                                  beta02) - mu02 * cos(alpha02))/sqrt(2))))
+  }
+  T3bias <- function(mu02, mu0, n) {
+    phi02 <- min((1/(4 * (n + mu02^2))) * (4 * n + 3 * mu02^2 -
+                                             mu02 * sqrt(8 * n + 9 * mu02^2)), 1)
+    alpha02 <- atan(1/sqrt(3 * (3 - 2 * phi02)))
+    beta02 <- (1/2) * (pi/2 - alpha02)
+    bias <- integrate(integrand, lower = 0, upper = Inf,
+                      mu02 = mu02, alpha02 = alpha02, beta02 = beta02)$value -
+      mu0
+    return(bias)
+  }
+  if (is.numeric(obs) == FALSE || is.vector(obs) == FALSE ||
+      length(obs) != 3 || min(obs) < 0 || sum(obs) < 1 || all.equal(sum(obs),
+                                                                    round(sum(obs))) != TRUE || model %in% c("T1", "T3") ==
+      FALSE || is.numeric(lambda) == FALSE || is.vector(lambda) ==
+      FALSE || length(lambda) != 1 || smallsample %in% c("bootstrap",
+                                                         "precomputed") == FALSE || smallcounts %in% c("bootstrap",
+                                                                                                       "precomputed") == FALSE || is.numeric(bootstraps) ==
+      FALSE || is.vector(bootstraps) == FALSE || length(bootstraps) !=
+      1 || bootstraps <= 0 || bootstraps%%1 != 0 || method %in%
+      c("MLest", "conservative", "bootstrap") == FALSE) {
+    stop("Invalid arguments: obs must be a numeric non-negative vector of length 3 summing to a positive integer;\n      model must be \"T1\" or \"T3\";\n      lambda must be a real number;\n      method must be \"MLest\", \"conservative\", or \"bootstrap\";\n      smallsample must be \"bootstrap\" or \"precomputed\";\n      smallcounts must be \"bootstrap\" or \"approximate\";\n      bootstraps must be a positive integer.")
+  }
+  else {
+    obs <- as.numeric(obs)
+    n <- round(sum(obs))
+    if (model == "T3") {
+      obs <- sort(obs, decreasing = TRUE)
+      expd <- c(obs[1], (1/2) * (n - obs[1]), (1/2) * (n -
+                                                         obs[1]))
     }
     else {
-      n <- sum(obs)
-      if (n < 30) {
-        warning("The number of gene quartets is <30; p-value may be inaccurate.")
-      }
-      obs <- as.numeric(obs)
-      if (model == "T3") {
-        obs <- sort(obs, decreasing = TRUE)
-        expd <- c(obs[1], (1 / 2) * (n - obs[1]), (1 / 2) * (n -
-                                                               obs[1]))
-      }
-      else {
-        expd <- c(max(obs[1], n / 3), (1 / 2) * (n - max(obs[1],
-                                                         n / 3)), (1 / 2) * (n - max(obs[1], n /
-                                                                                       3)))
-      }
-      phi0 <- 3 * (n - expd[1]) / (2 * n)
-      mu0 <- max(0, sqrt(2 * n) * (1 - phi0) / sqrt(phi0 * (3 -
-                                                              2 * phi0)))
-      if (min(expd) != 0) {
-        if (model == "T1") {
-          if (mu0 <= 1 / sqrt(2 * pi)) {
-            mu0unbiased <- 0
-          }
-          else if (sign(T1bias(0, mu0)) == sign(T1bias(mu0,
-                                                       mu0))) {
-            mu0unbiased <- mu0
-          }
-          else {
-            mu0unbiased <- uniroot(T1bias, c(0, mu0), mu0 = mu0)$root
-          }
-          phi0unbiased <- (1 / (4 * (n + mu0unbiased ^ 2))) *
-            (4 * n + 3 * mu0unbiased ^ 2 - mu0unbiased *
-               sqrt(8 * n + 9 * mu0unbiased ^ 2))
+      expd <- c(max(obs[1], n/3), (1/2) * (n - max(obs[1],
+                                                   n/3)), (1/2) * (n - max(obs[1], n/3)))
+    }
+    phi0 <- 3 * (n - expd[1])/(2 * n)
+    mu0 <- max(0, sqrt(2 * n) * (1 - phi0)/sqrt(phi0 * (3 -
+                                                          2 * phi0)))
+    if (min(expd) != 0) {
+      if (model == "T1") {
+        if (mu0 <= 1/sqrt(2 * pi)) {
+          mu0unbiased <- 0
+        }
+        else if (sign(T1bias(0, mu0)) == sign(T1bias(mu0,
+                                                     mu0))) {
+          mu0unbiased <- mu0
         }
         else {
-          if (mu0 <= 3 * sqrt(3) / (2 * sqrt(2 * pi))) {
-            mu0unbiased <- 0
-          }
-          else if (sign(T3bias(0, mu0, n)) == sign(T3bias(mu0,
-                                                          mu0, n))) {
-            mu0unbiased <- mu0
-          }
-          else {
-            mu0unbiased <- uniroot(T3bias, c(0, mu0), mu0 = mu0,
-                                   n = n)$root
-          }
-          phi0unbiased <- (1 / (4 * (n + mu0unbiased ^ 2))) *
-            (4 * n + 3 * mu0unbiased ^ 2 - mu0unbiased *
-               sqrt(8 * n + 9 * mu0unbiased ^ 2))
-          if (identical(obs, expd) == FALSE) {
-            alpha0unbiased <- atan(1 / sqrt(3 * (3 - 2 *
-                                                   phi0unbiased)))
-            beta0unbiased <- (1 / 2) * (pi / 2 - alpha0unbiased)
-          }
+          mu0unbiased <- uniroot(T1bias, c(0, mu0), mu0 = mu0)$root
+        }
+        phi0unbiased <- (1/(4 * (n + mu0unbiased^2))) *
+          (4 * n + 3 * mu0unbiased^2 - mu0unbiased *
+             sqrt(8 * n + 9 * mu0unbiased^2))
+      }
+      else {
+        if (mu0 <= 3 * sqrt(3)/(2 * sqrt(2 * pi))) {
+          mu0unbiased <- 0
+        }
+        else if (sign(T3bias(0, mu0, n)) == sign(T3bias(mu0,
+                                                        mu0, n))) {
+          mu0unbiased <- mu0
+        }
+        else {
+          mu0unbiased <- uniroot(T3bias, c(0, mu0), mu0 = mu0,
+                                 n = n)$root
+        }
+        phi0unbiased <- (1/(4 * (n + mu0unbiased^2))) *
+          (4 * n + 3 * mu0unbiased^2 - mu0unbiased *
+             sqrt(8 * n + 9 * mu0unbiased^2))
+        if (all.equal(sum(abs(obs - expd)), 0) != TRUE) {
+          alpha0unbiased <- atan(1/sqrt(3 * (3 - 2 *
+                                               phi0unbiased)))
+          beta0unbiased <- (1/2) * (pi/2 - alpha0unbiased)
         }
       }
-      else {
-        phi0unbiased <- phi0
-      }
-      t <- -log(phi0unbiased)
-      if (all.equal(sum(abs(obs - expd)), 0) == TRUE) {
-        p <- 1
-      }
-      else {
-        stat <- powerDivStat(obs, expd, lambda)
-        if (method == "bootstrap" || (method != "bootstrap" &&
-                                      min(expd) < 5 &&
-                                      smallcounts == "bootstrap") ||
-            (method != "bootstrap" && min(expd) < 5 &&
-             smallcounts != "bootstrap" && ((all.equal(sum(
-               abs(obs *
-                   3 - round(obs * 3))
-             ), 0) != TRUE) || (
-               all.equal(sum(abs(
-                 obs *
-                 3 - round(obs * 3)
-               )), 0) == TRUE && var(obs -
-                                     trunc(obs)) != 0
-             )))) {
-          warning(
-            "Bootstrapping has been selected. p-values are approximate. Bootstrapping is only necessary when some expectations are small and approximate bootstrap p-values not available."
-          )
-          if (method == "bootstrap" &&
-              min(expd) < 5 && smallcounts == "approximate") {
-            warning("method is prioritized over smallcounts. Bootstrap has been chosen.")
+    }
+    else {
+      phi0unbiased <- phi0
+    }
+    t <- -log(phi0unbiased)
+    if (all.equal(sum(abs(obs - expd)), 0) == TRUE) {
+      p <- 1
+    }
+    else {
+      if (n < 30) {
+        if (smallsample == "precomputed" && (all.equal(sum(abs(obs -
+                                                               trunc(obs))), 0) == TRUE || all.equal(sum(abs(obs -
+                                                                                                             trunc(obs) - rep(1/3, 3))), 0) == TRUE || all.equal(sum(abs(obs -
+                                                                                                                                                                         trunc(obs) - rep(2/3, 3))), 0) == TRUE)) {
+          if (model == "T1") {
+            obs <- c(obs[1], sort(obs[2:3], decreasing = TRUE))
           }
-          if (method != "bootstrap" && min(expd) < 5 &&
-              smallcounts != "bootstrap" && ((all.equal(sum(
-                abs(obs *
-                    3 - round(obs * 3))
-              ), 0) != TRUE) || (all.equal(sum(
-                abs(obs *
-                    3 - round(obs * 3))
-              ), 0) == TRUE && var(obs -
-                                   trunc(obs)) != 0))) {
-            warning(
-              "Approximate bootstrap p-values not available when two expected counts are below 5 and observed counts are not all integers, all integers + 1/3 or all integers + 2/3."
-            )
+          if (all.equal(sum(abs(obs - trunc(obs))), 0) ==
+              TRUE) {
+            if (model == "T1") {
+              pvaluetable <- precompT1int
+            }
+            else if (model == "T3") {
+              pvaluetable <- precompT3int
+            }
           }
+          else if (all.equal(sum(abs(obs - trunc(obs) -
+                                     rep(1/3, 3))), 0) == TRUE) {
+            if (model == "T1") {
+              pvaluetable <- precompT1onethird
+            }
+            else if (model == "T3") {
+              pvaluetable <- precompT3onethird
+            }
+          }
+          else if (all.equal(sum(abs(obs - trunc(obs) -
+                                     rep(2/3, 3))), 0) == TRUE) {
+            if (model == "T1") {
+              pvaluetable <- precompT1twothirds
+            }
+            else if (model == "T3") {
+              pvaluetable <- precompT3twothirds
+            }
+          }
+          r <- which(colSums(abs(t(pvaluetable[, 1:3]) -
+                                   obs) < .Machine$double.eps^0.5) == 3)
+          p <- as.numeric(pvaluetable[r, 4])
+        }
+        else {
+          if (all.equal(sum(abs(obs - trunc(obs))), 0) ==
+              TRUE || all.equal(sum(abs(obs - trunc(obs) -
+                                        rep(1/3, 3))), 0) == TRUE || all.equal(sum(abs(obs -
+                                                                                       trunc(obs) - rep(2/3, 3))), 0) == TRUE) {
+            warning(paste0("Consider choosing smallsample=",
+                           "\"precomputed\"", " for accurate p-values from 10^8 bootstraps for any n<30."))
+          }
+          stat <- powerDivStat(obs, expd, lambda)
           if (bootstraps == 0) {
-            bootstraps <- 10 ^ 4
+            bootstraps <- 10^4
           }
           count <- 0
-          sims <- rmultinom(bootstraps,
-                            n,
-                            prob = c(
-                              1 -
-                                (2 / 3) * phi0unbiased,
-                              (1 / 3) * phi0unbiased,
-                              (1 / 3) * phi0unbiased
-                            ))
+          sims <- rmultinom(bootstraps, n, prob = c(1 -
+                                                      (2/3) * phi0unbiased, (1/3) * phi0unbiased,
+                                                    (1/3) * phi0unbiased))
           if (model == "T3") {
             sims <- apply(sims, 2, sort, decreasing = TRUE)
           }
           for (i in 1:bootstraps) {
             if (model == "T3") {
-              expected <- c(sims[1, i], (1 / 2) * (n - sims[1,
-                                                            i]), (1 / 2) * (n - sims[1, i]))
+              expected <- c(sims[1, i], (1/2) * (n -
+                                                   sims[1, i]), (1/2) * (n - sims[1, i]))
             }
             else {
-              expected <- c(max(sims[, i], n / 3), (1 / 2) *
-                              (n - max(sims[, i], n / 3)), (1 / 2) * (n -
-                                                                        max(sims[, i], n /
-                                                                              3)))
+              expected <- c(max(sims[, i], n/3), (1/2) *
+                              (n - max(sims[, i], n/3)), (1/2) * (n -
+                                                                    max(sims[, i], n/3)))
             }
             simstat <- powerDivStat(sims[, i], expected,
                                     lambda)
-            count <- ifelse(simstat >= stat, count + 1,
-                            count)
+            count <- ifelse(simstat >= stat, count +
+                              1, count)
           }
-          p <- count / bootstraps
+          p <- count/bootstraps
+        }
+      }
+      else {
+        stat <- powerDivStat(obs, expd, lambda)
+        if (method == "bootstrap" || (method != "bootstrap" &&
+                                      min(expd) < 5 && smallcounts == "bootstrap") ||
+            (method != "bootstrap" && min(expd) < 5 &&
+             smallcounts != "bootstrap" && ((all.equal(sum(abs(obs *
+                                                               3 - round(obs * 3))), 0) != TRUE) || (all.equal(sum(abs(obs *
+                                                                                                                       3 - round(obs * 3))), 0) == TRUE && var(obs -
+                                                                                                                                                               trunc(obs)) != 0)))) {
+          warning("Bootstrapping has been selected. p-values are approximate. Bootstrapping is only necessary when some expectations are small and approximate bootstrap p-values not available.")
+          if (method == "bootstrap" && min(expd) < 5 &&
+              smallcounts == "precomputed") {
+            warning("method is prioritized over smallcounts. Bootstrap has been chosen.")
+          }
+          if (method != "bootstrap" && min(expd) < 5 &&
+              smallcounts != "bootstrap" && ((all.equal(sum(abs(obs *
+                                                                3 - round(obs * 3))), 0) != TRUE) || (all.equal(sum(abs(obs *
+                                                                                                                        3 - round(obs * 3))), 0) == TRUE && var(obs -
+                                                                                                                                                                trunc(obs)) != 0))) {
+            warning("Approximate bootstrap p-values not available when two expected counts are below 5 and observed counts are not all integers, all integers + 1/3 or all integers + 2/3.")
+          }
+          if (bootstraps == 0) {
+            bootstraps <- 10^4
+          }
+          count <- 0
+          sims <- rmultinom(bootstraps, n, prob = c(1 -
+                                                      (2/3) * phi0unbiased, (1/3) * phi0unbiased,
+                                                    (1/3) * phi0unbiased))
+          if (model == "T3") {
+            sims <- apply(sims, 2, sort, decreasing = TRUE)
+          }
+          for (i in 1:bootstraps) {
+            if (model == "T3") {
+              expected <- c(sims[1, i], (1/2) * (n -
+                                                   sims[1, i]), (1/2) * (n - sims[1, i]))
+            }
+            else {
+              expected <- c(max(sims[, i], n/3), (1/2) *
+                              (n - max(sims[, i], n/3)), (1/2) * (n -
+                                                                    max(sims[, i], n/3)))
+            }
+            simstat <- powerDivStat(sims[, i], expected,
+                                    lambda)
+            count <- ifelse(simstat >= stat, count +
+                              1, count)
+          }
+          p <- count/bootstraps
         }
         else if (method != "bootstrap" && min(expd) <
-                 5 &&
-                 smallcounts == "approximate" && (all.equal(sum(abs(
-                   obs *
-                   3 - round(obs * 3)
-                 )), 0) == TRUE) && var(obs -
-                                        trunc(obs)) == 0) {
+                 5 && smallcounts == "precomputed" && (all.equal(sum(abs(obs *
+                                                                         3 - round(obs * 3))), 0) == TRUE) && var(obs -
+                                                                                                                  trunc(obs)) == 0) {
           sortobs23times3 = sort(round(3 * obs[2:3]))
-          if (sortobs23times3[1] %% 3 == 0) {
-            if (identical(sortobs23times3, c(0, 27))) {
+          if (sortobs23times3[1]%%3 == 0) {
+            if (all.equal(sortobs23times3, c(0, 27)) ==
+                TRUE) {
               p <- 0.000919
             }
-            else if (identical(sortobs23times3, c(3, 24))) {
+            else if (all.equal(sortobs23times3, c(3,
+                                                  24)) == TRUE) {
               p <- 0.0209
             }
-            else if (identical(sortobs23times3, c(6, 21))) {
+            else if (all.equal(sortobs23times3, c(6,
+                                                  21)) == TRUE) {
               p <- 0.103
             }
-            else if (identical(sortobs23times3, c(9, 18))) {
+            else if (all.equal(sortobs23times3, c(9,
+                                                  18)) == TRUE) {
               p <- 0.359
             }
-            else if (identical(sortobs23times3, c(12, 15))) {
+            else if (all.equal(sortobs23times3, c(12,
+                                                  15)) == TRUE) {
               p <- 0.79
             }
-            else if (identical(sortobs23times3, c(0, 24))) {
+            else if (all.equal(sortobs23times3, c(0,
+                                                  24)) == TRUE) {
               p <- 0.00191
             }
-            else if (identical(sortobs23times3, c(3, 21))) {
+            else if (all.equal(sortobs23times3, c(3,
+                                                  21)) == TRUE) {
               p <- 0.0397
             }
-            else if (identical(sortobs23times3, c(6, 18))) {
+            else if (all.equal(sortobs23times3, c(6,
+                                                  18)) == TRUE) {
               p <- 0.175
             }
-            else if (identical(sortobs23times3, c(9, 15))) {
+            else if (all.equal(sortobs23times3, c(9,
+                                                  15)) == TRUE) {
               p <- 0.523
             }
-            else if (identical(sortobs23times3, c(0, 21))) {
+            else if (all.equal(sortobs23times3, c(0,
+                                                  21)) == TRUE) {
               p <- 0.00416
             }
-            else if (identical(sortobs23times3, c(3, 18))) {
+            else if (all.equal(sortobs23times3, c(3,
+                                                  18)) == TRUE) {
               p <- 0.0763
             }
-            else if (identical(sortobs23times3, c(6, 15))) {
+            else if (all.equal(sortobs23times3, c(6,
+                                                  15)) == TRUE) {
               p <- 0.297
             }
-            else if (identical(sortobs23times3, c(9, 12))) {
+            else if (all.equal(sortobs23times3, c(9,
+                                                  12)) == TRUE) {
               p <- 0.768
             }
-            else if (identical(sortobs23times3, c(0, 18))) {
+            else if (all.equal(sortobs23times3, c(0,
+                                                  18)) == TRUE) {
               p <- 0.00871
             }
-            else if (identical(sortobs23times3, c(3, 15))) {
+            else if (all.equal(sortobs23times3, c(3,
+                                                  15)) == TRUE) {
               p <- 0.129
             }
-            else if (identical(sortobs23times3, c(6, 12))) {
+            else if (all.equal(sortobs23times3, c(6,
+                                                  12)) == TRUE) {
               p <- 0.476
             }
-            else if (identical(sortobs23times3, c(0, 15))) {
+            else if (all.equal(sortobs23times3, c(0,
+                                                  15)) == TRUE) {
               p <- 0.0183
             }
-            else if (identical(sortobs23times3, c(3, 12))) {
+            else if (all.equal(sortobs23times3, c(3,
+                                                  12)) == TRUE) {
               p <- 0.24
             }
-            else if (identical(sortobs23times3, c(6, 9))) {
+            else if (all.equal(sortobs23times3, c(6,
+                                                  9)) == TRUE) {
               p <- 0.737
             }
-            else if (identical(sortobs23times3, c(0, 12))) {
+            else if (all.equal(sortobs23times3, c(0,
+                                                  12)) == TRUE) {
               p <- 0.0393
             }
-            else if (identical(sortobs23times3, c(3, 9))) {
+            else if (all.equal(sortobs23times3, c(3,
+                                                  9)) == TRUE) {
               p <- 0.439
             }
-            else if (identical(sortobs23times3, c(0, 9))) {
+            else if (all.equal(sortobs23times3, c(0,
+                                                  9)) == TRUE) {
               p <- 0.086
             }
-            else if (identical(sortobs23times3, c(3, 6))) {
+            else if (all.equal(sortobs23times3, c(3,
+                                                  6)) == TRUE) {
               p <- 0.681
             }
-            else if (identical(sortobs23times3, c(0, 6))) {
+            else if (all.equal(sortobs23times3, c(0,
+                                                  6)) == TRUE) {
               p <- 0.197
             }
-            else if (identical(sortobs23times3, c(0, 3))) {
+            else if (all.equal(sortobs23times3, c(0,
+                                                  3)) == TRUE) {
               p <- 0.478
             }
           }
-          else if (sortobs23times3[1] %% 3 == 1) {
-            if (identical(sortobs23times3, c(1, 28))) {
+          else if (sortobs23times3[1]%%3 == 1) {
+            if (all.equal(sortobs23times3, c(1, 28)) ==
+                TRUE) {
               p <- 0.00222
             }
-            else if (identical(sortobs23times3, c(4, 25))) {
+            else if (all.equal(sortobs23times3, c(4,
+                                                  25)) == TRUE) {
               p <- 0.0237
             }
-            else if (identical(sortobs23times3, c(7, 22))) {
+            else if (all.equal(sortobs23times3, c(7,
+                                                  22)) == TRUE) {
               p <- 0.119
             }
-            else if (identical(sortobs23times3, c(10, 19))) {
+            else if (all.equal(sortobs23times3, c(10,
+                                                  19)) == TRUE) {
               p <- 0.358
             }
-            else if (identical(sortobs23times3, c(13, 16))) {
+            else if (all.equal(sortobs23times3, c(13,
+                                                  16)) == TRUE) {
               p <- 0.777
             }
-            else if (identical(sortobs23times3, c(1, 25))) {
+            else if (all.equal(sortobs23times3, c(1,
+                                                  25)) == TRUE) {
               p <- 0.00452
             }
-            else if (identical(sortobs23times3, c(4, 22))) {
+            else if (all.equal(sortobs23times3, c(4,
+                                                  22)) == TRUE) {
               p <- 0.0436
             }
-            else if (identical(sortobs23times3, c(7, 19))) {
+            else if (all.equal(sortobs23times3, c(7,
+                                                  19)) == TRUE) {
               p <- 0.203
             }
-            else if (identical(sortobs23times3, c(10, 16))) {
+            else if (all.equal(sortobs23times3, c(10,
+                                                  16)) == TRUE) {
               p <- 0.52
             }
-            else if (identical(sortobs23times3, c(1, 22))) {
+            else if (all.equal(sortobs23times3, c(1,
+                                                  22)) == TRUE) {
               p <- 0.0094
             }
-            else if (identical(sortobs23times3, c(4, 19))) {
+            else if (all.equal(sortobs23times3, c(4,
+                                                  19)) == TRUE) {
               p <- 0.0794
             }
-            else if (identical(sortobs23times3, c(7, 16))) {
+            else if (all.equal(sortobs23times3, c(7,
+                                                  16)) == TRUE) {
               p <- 0.295
             }
-            else if (identical(sortobs23times3, c(10, 13))) {
+            else if (all.equal(sortobs23times3, c(10,
+                                                  13)) == TRUE) {
               p <- 0.754
             }
-            else if (identical(sortobs23times3, c(1, 19))) {
+            else if (all.equal(sortobs23times3, c(1,
+                                                  19)) == TRUE) {
               p <- 0.0194
             }
-            else if (identical(sortobs23times3, c(4, 16))) {
+            else if (all.equal(sortobs23times3, c(4,
+                                                  16)) == TRUE) {
               p <- 0.143
             }
-            else if (identical(sortobs23times3, c(7, 13))) {
+            else if (all.equal(sortobs23times3, c(7,
+                                                  13)) == TRUE) {
               p <- 0.47
             }
-            else if (identical(sortobs23times3, c(1, 16))) {
+            else if (all.equal(sortobs23times3, c(1,
+                                                  16)) == TRUE) {
               p <- 0.0404
             }
-            else if (identical(sortobs23times3, c(4, 13))) {
+            else if (all.equal(sortobs23times3, c(4,
+                                                  13)) == TRUE) {
               p <- 0.233
             }
-            else if (identical(sortobs23times3, c(7, 10))) {
+            else if (all.equal(sortobs23times3, c(7,
+                                                  10)) == TRUE) {
               p <- 0.72
             }
-            else if (identical(sortobs23times3, c(1, 13))) {
+            else if (all.equal(sortobs23times3, c(1,
+                                                  13)) == TRUE) {
               p <- 0.085
             }
-            else if (identical(sortobs23times3, c(4, 10))) {
+            else if (all.equal(sortobs23times3, c(4,
+                                                  10)) == TRUE) {
               p <- 0.422
             }
-            else if (identical(sortobs23times3, c(1, 10))) {
+            else if (all.equal(sortobs23times3, c(1,
+                                                  10)) == TRUE) {
               p <- 0.113
             }
-            else if (identical(sortobs23times3, c(4, 7))) {
+            else if (all.equal(sortobs23times3, c(4,
+                                                  7)) == TRUE) {
               p <- 0.665
             }
-            else if (identical(sortobs23times3, c(1, 7))) {
+            else if (all.equal(sortobs23times3, c(1,
+                                                  7)) == TRUE) {
               p <- 0.237
             }
-            else if (identical(sortobs23times3, c(1, 4))) {
+            else if (all.equal(sortobs23times3, c(1,
+                                                  4)) == TRUE) {
               p <- 0.532
             }
           }
           else {
-            if (identical(sortobs23times3, c(2, 26))) {
+            if (all.equal(sortobs23times3, c(2, 26)) ==
+                TRUE) {
               p <- 0.00827
             }
-            else if (identical(sortobs23times3, c(5, 23))) {
+            else if (all.equal(sortobs23times3, c(5,
+                                                  23)) == TRUE) {
               p <- 0.0436
             }
-            else if (identical(sortobs23times3, c(8, 20))) {
+            else if (all.equal(sortobs23times3, c(8,
+                                                  20)) == TRUE) {
               p <- 0.199
             }
-            else if (identical(sortobs23times3, c(11, 17))) {
+            else if (all.equal(sortobs23times3, c(11,
+                                                  17)) == TRUE) {
               p <- 0.516
             }
-            else if (identical(sortobs23times3, c(2, 23))) {
+            else if (all.equal(sortobs23times3, c(2,
+                                                  23)) == TRUE) {
               p <- 0.0164
             }
-            else if (identical(sortobs23times3, c(5, 20))) {
+            else if (all.equal(sortobs23times3, c(5,
+                                                  20)) == TRUE) {
               p <- 0.0777
             }
-            else if (identical(sortobs23times3, c(8, 17))) {
+            else if (all.equal(sortobs23times3, c(8,
+                                                  17)) == TRUE) {
               p <- 0.298
             }
-            else if (identical(sortobs23times3, c(11, 14))) {
+            else if (all.equal(sortobs23times3, c(11,
+                                                  14)) == TRUE) {
               p <- 0.739
             }
-            else if (identical(sortobs23times3, c(2, 20))) {
+            else if (all.equal(sortobs23times3, c(2,
+                                                  20)) == TRUE) {
               p <- 0.0237
             }
-            else if (identical(sortobs23times3, c(5, 17))) {
+            else if (all.equal(sortobs23times3, c(5,
+                                                  17)) == TRUE) {
               p <- 0.146
             }
-            else if (identical(sortobs23times3, c(8, 14))) {
+            else if (all.equal(sortobs23times3, c(8,
+                                                  14)) == TRUE) {
               p <- 0.466
             }
-            else if (identical(sortobs23times3, c(2, 17))) {
+            else if (all.equal(sortobs23times3, c(2,
+                                                  17)) == TRUE) {
               p <- 0.0468
             }
-            else if (identical(sortobs23times3, c(5, 14))) {
+            else if (all.equal(sortobs23times3, c(5,
+                                                  14)) == TRUE) {
               p <- 0.238
             }
-            else if (identical(sortobs23times3, c(8, 11))) {
+            else if (all.equal(sortobs23times3, c(8,
+                                                  11)) == TRUE) {
               p <- 0.703
             }
-            else if (identical(sortobs23times3, c(2, 14))) {
+            else if (all.equal(sortobs23times3, c(2,
+                                                  14)) == TRUE) {
               p <- 0.0926
             }
-            else if (identical(sortobs23times3, c(5, 11))) {
+            else if (all.equal(sortobs23times3, c(5,
+                                                  11)) == TRUE) {
               p <- 0.409
             }
-            else if (identical(sortobs23times3, c(2, 11))) {
+            else if (all.equal(sortobs23times3, c(2,
+                                                  11)) == TRUE) {
               p <- 0.185
             }
-            else if (identical(sortobs23times3, c(5, 8))) {
+            else if (all.equal(sortobs23times3, c(5,
+                                                  8)) == TRUE) {
               p <- 0.645
             }
-            else if (identical(sortobs23times3, c(2, 8))) {
+            else if (all.equal(sortobs23times3, c(2,
+                                                  8)) == TRUE) {
               p <- 0.377
             }
-            else if (identical(sortobs23times3, c(2, 5))) {
+            else if (all.equal(sortobs23times3, c(2,
+                                                  5)) == TRUE) {
               p <- 0.525
             }
           }
@@ -695,28 +790,15 @@ quartetTreeTest <-
                  5) {
           if (method == "MLest") {
             if (model == "T3") {
-              p <- ifelse(stat == 0, 1, min(1, max(
-                0,
-                integrate(
-                  T3density,
-                  lower = stat,
-                  upper = Inf,
-                  mu0 = mu0unbiased,
-                  alpha0 = alpha0unbiased,
-                  beta0 = beta0unbiased
-                )$value
-              )))
+              p <- ifelse(stat == 0, 1, min(1, max(0,
+                                                   integrate(T3density, lower = stat, upper = Inf,
+                                                             mu0 = mu0unbiased, alpha0 = alpha0unbiased,
+                                                             beta0 = beta0unbiased)$value)))
             }
             else {
-              p <- ifelse(stat == 0, 1, min(1, max(
-                0,
-                integrate(
-                  T1density,
-                  lower = stat,
-                  upper = Inf,
-                  mu0 = mu0unbiased
-                )$value
-              )))
+              p <- ifelse(stat == 0, 1, min(1, max(0,
+                                                   integrate(T1density, lower = stat, upper = Inf,
+                                                             mu0 = mu0unbiased)$value)))
             }
           }
           else if (method == "conservative") {
@@ -746,25 +828,22 @@ quartetTreeTest <-
               }
               mu0lower <- max(0, mu0 + sqrt(2) * erf.inv(2 *
                                                            beta - 1))
-              p1 <- ifelse(stat == 0, 1, min(1, max(
-                0,
-                integrate(
-                  T1density,
-                  lower = stat,
-                  upper = Inf,
-                  mu0 = mu0lower
-                )$value
-              )))
-              p <- (length(q[q <= p1])) / length(q)
+              p1 <- ifelse(stat == 0, 1, min(1, max(0,
+                                                    integrate(T1density, lower = stat, upper = Inf,
+                                                              mu0 = mu0lower)$value)))
+              p <- (length(q[q <= p1]))/length(q)
             }
           }
         }
       }
-      output <- list(p, t)
-      names(output) <- c("p.value", "edgelength")
-      return(output)
     }
+    output <- list(p, t)
+    names(output) <- c("p.value", "edgelength")
+    return(output)
   }
+}
+
+
 
 
 #########################################################
@@ -785,7 +864,8 @@ quartetTreeTest <-
 #' models explained more fully by \insertCite{MAR19;textual}{MSCquartets}
 #' @param lambda power divergence statistic parameter (e.g., 0 for likelihood ratio statistic, 1 for Chi-squared statistic)
 #' @param method \code{"MLest"}, \code{"conservative"}, or \code{"bootstrap"}; see \code{quartetTreeTest} for explanation
-#' @param smallcounts \code{"bootstrap"} or \code{"approximate"}, method of obtaining p-value when some counts are small, so
+#' @param smallsample \code{"precomputed"} or \code{"bootstrap"}, method of obtaining p-value when sample is small (<30)
+#' @param smallcounts \code{"precomputed"} or \code{"bootstrap"}, method of obtaining p-value when some counts are small, so
 #' the chosen \code{method} is inappropriate
 #' @param bootstraps  number of samples for bootstrapping
 #' @param speciestree  species tree, in Newick as text, to determine quartet for T1 test; required for \code{model="T1"},
@@ -812,101 +892,105 @@ quartetTreeTest <-
 #'
 #' @importFrom ape unroot read.tree cophenetic.phylo
 #' @export
-quartetTreeTestInd <-
-  function(rqt,
-           model = "T3",
-           lambda = 0,
-           method = "MLest",
-           smallcounts = "approximate",
-           bootstraps = 10 ^ 4,
-           speciestree = NULL) {
-    if (is.vector(lambda) == FALSE ||
-        length(lambda) != 1 ||
-        smallcounts %in% c("bootstrap", "approximate") == FALSE ||
-        bootstraps <= 0 || bootstraps %% 1 != 0 ||
-        method %in% c("MLest", "conservative", "bootstrap") == FALSE) {
-      # Return an error and stop if arguments are misspecified.
-      stop(
-        'Invalid arguments: lambda must be real; smallcounts must be "bootstrap" or "approximate";
-      bootstraps must be a positive integer; method must be "MLest","conservative", or "bootstrap".'
-      )
-    }
-    colnames = colnames(rqt)
-    taxanames = setdiff(
-      colnames,
-      c(
-        "12|34",
-        "13|24",
-        "14|23",
-        "1234",
-        "p_cut",
-        "cutindex",
-        "p_star",
-        "p_T3",
-        "p_T1"
-      )
+quartetTreeTestInd <- function (rqt,
+                                model = "T3",
+                                lambda = 0,
+                                method = "MLest",
+                                smallsample = "precomputed",
+                                smallcounts = "precomputed",
+                                bootstraps = 10 ^ 4,
+                                speciestree = NULL)
+{
+  if (model %in% c("T1", "T3") ==
+      FALSE || is.numeric(lambda) == FALSE || is.vector(lambda) ==
+      FALSE ||
+      length(lambda) != 1 || smallsample %in% c("bootstrap", "precomputed") == FALSE ||
+      smallcounts %in% c("bootstrap", "precomputed") == FALSE ||
+      is.numeric(bootstraps) ==
+      FALSE ||
+      is.vector(bootstraps) == FALSE || length(bootstraps) !=
+      1 || bootstraps <= 0 || bootstraps %% 1 != 0 || method %in%
+      c("MLest", "conservative", "bootstrap") == FALSE) {
+    stop(
+      "Invalid arguments: lambda must be real; smallcounts must be \"bootstrap\" or \"approximate\";\n      bootstraps must be a positive integer; method must be \"MLest\",\"conservative\", or \"bootstrap\"."
     )
-
-    M = dim(rqt)[1] # number of quartets
-    n = length(taxanames) # number of taxa
-
-    if (model == "T3") {
-      pTable = cbind(rqt, p_T3 = 0) # create table for quartets, counts, and p-values
-      message("Applying hypothesis test for model T3 to ", M, " quartets.")
-      for (m in 1:M) {
-        # consider each quartet
-        obs = unname(rqt[m, c("12|34","13|24","14|23")])
-        pvec = quartetTreeTest(
-          obs,
-          model,
-          lambda = lambda,
-          smallcounts = smallcounts,
-          bootstraps = bootstraps,
-          method = method
-        )  #  compute p-value
-        pTable[m, "p_T3"] = pvec$p.value  # store p-value
+  }
+  colnames = colnames(rqt)
+  taxanames = setdiff(
+    colnames,
+    c(
+      "12|34",
+      "13|24",
+      "14|23",
+      "1234",
+      "p_cut",
+      "cutindex",
+      "p_star",
+      "p_T3",
+      "p_T1"
+    )
+  )
+  M = dim(rqt)[1]
+  n = length(taxanames)
+  if (model == "T3") {
+    pTable = cbind(rqt, p_T3 = 0)
+    message("Applying hypothesis test for model T3 to ", M, " quartets.")
+    for (m in 1:M) {
+      obs = unname(rqt[m, c("12|34", "13|24", "14|23")])
+      pvec = quartetTreeTest(
+        obs,
+        model,
+        lambda = lambda,
+        smallsample = smallsample,
+        smallcounts = smallcounts,
+        bootstraps = bootstraps,
+        method = method
+      )
+      pTable[m, "p_T3"] = pvec$p.value
+    }
+  }
+  else {
+    if (model != "T1") {
+      stop("Invalid model: must use 'T1' or 'T3'")
+    }
+    else {
+      if (is.null(speciestree)) {
+        stop("Species tree topology must be supplied for model T1")
       }
-    } else {
-      if (model != "T1") {
-        stop("Invalid model: must use 'T1' or 'T3'")
-      } else {
-        if (is.null(speciestree)) {
-          stop("Species tree topology must be supplied for model T1")
-        } else {
-          stree = unroot(read.tree(text = speciestree)) #unrooted species tree
-          nedges = dim(stree$edge)[1]# number of edges
-          stree$edge.length = rep(1, nedges)# reset edge lengths to 1
-          D = cophenetic.phylo(stree) # create distance table, for determining displayed quartets
-          D = D[order(rownames(D)), order(colnames(D))]# put taxa in sorted order
-          pTable = cbind(rqt, p_T1 = 0, qindex = 0) # create table for quartets, counts, p-values, index for quartet on species tree
-
-          message("Applying hypothesis test for model T1 to ", M, " quartets.")
-          for (m in 1:M) {
-            # consider each quartet
-            qnames = which(rqt[m, 1:n] == 1) # determine taxa to in this quartet
-            a = D[qnames[1], qnames[2]] + D[qnames[3], qnames[4]] # use four point condition on species tree
-            b = D[qnames[1], qnames[3]] + D[qnames[2], qnames[4]]
-            c = D[qnames[1], qnames[4]] + D[qnames[2], qnames[3]]
-            squartet = which.min(c(a, b, c)) #                      to determine quartet on species tree
-            qcounts = rqt[m, c("12|34","13|24","14|23")]
-            temp = qcounts[1]# interchange
-            qcounts[1] = qcounts[squartet]# to put quartet on species tree first
-            qcounts[squartet] = temp
-            pTable[m, "qindex"] = squartet # save index of quartet on species tree
-            pvec = quartetTreeTest(
-              unname(qcounts),
-              model,
-              lambda = lambda,
-              smallcounts = smallcounts,
-              bootstraps = bootstraps
-            )  #  compute p-value
-            pTable[m, "p_T1"] = pvec$p.value  # store p-value
-          }
+      else {
+        stree = unroot(read.tree(text = speciestree))
+        nedges = dim(stree$edge)[1]
+        stree$edge.length = rep(1, nedges)
+        D = cophenetic.phylo(stree)
+        D = D[order(rownames(D)), order(colnames(D))]
+        pTable = cbind(rqt, p_T1 = 0, qindex = 0)
+        message("Applying hypothesis test for model T1 to ", M, " quartets.")
+        for (m in 1:M) {
+          qnames = which(rqt[m, 1:n] == 1)
+          a = D[qnames[1], qnames[2]] + D[qnames[3], qnames[4]]
+          b = D[qnames[1], qnames[3]] + D[qnames[2], qnames[4]]
+          c = D[qnames[1], qnames[4]] + D[qnames[2], qnames[3]]
+          squartet = which.min(c(a, b, c))
+          qcounts = rqt[m, c("12|34", "13|24", "14|23")]
+          temp = qcounts[1]
+          qcounts[1] = qcounts[squartet]
+          qcounts[squartet] = temp
+          pTable[m, "qindex"] = squartet
+          pvec = quartetTreeTest(
+            unname(qcounts),
+            model,
+            lambda = lambda,
+            smallcounts = smallcounts,
+            bootstraps = bootstraps
+          )
+          pTable[m, "p_T1"] = pvec$p.value
         }
       }
     }
-    return(pTable)
   }
+  return(pTable)
+}
+
 
 #############################################################
 

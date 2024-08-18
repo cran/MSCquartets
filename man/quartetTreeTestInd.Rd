@@ -9,7 +9,8 @@ quartetTreeTestInd(
   model = "T3",
   lambda = 0,
   method = "MLest",
-  smallcounts = "approximate",
+  smallsample = "precomputed",
+  smallcounts = "precomputed",
   bootstraps = 10^4,
   speciestree = NULL
 )
@@ -24,7 +25,9 @@ models explained more fully by \insertCite{MAR19;textual}{MSCquartets}}
 
 \item{method}{\code{"MLest"}, \code{"conservative"}, or \code{"bootstrap"}; see \code{quartetTreeTest} for explanation}
 
-\item{smallcounts}{\code{"bootstrap"} or \code{"approximate"}, method of obtaining p-value when some counts are small, so
+\item{smallsample}{\code{"precomputed"} or \code{"bootstrap"}, method of obtaining p-value when sample is small (<30)}
+
+\item{smallcounts}{\code{"precomputed"} or \code{"bootstrap"}, method of obtaining p-value when some counts are small, so
 the chosen \code{method} is inappropriate}
 
 \item{bootstraps}{number of samples for bootstrapping}

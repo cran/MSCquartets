@@ -27,12 +27,9 @@ BQinference(pTable, C, Cn4, n, Bquartets, L1, lenL1, Nrule1, Nrule2, cuttops)
 
 \item{cuttops}{inferred cut topologies}
 }
-\value{
-a 0/1 vector indicating which sets of 4-taxa are B-quartets
-}
 \description{
-This is a C++ function, used in \code{TINNIKdist}, to
-infer B and T quartets. Doucumentation if for internal use only.
+This is a C++ function, called from \code{TINNIKdist}, to
+infer B and T quartets.
 }
 \seealso{
 \code{\link{quartetTable}}, \code{\link{quartetTableParallel}}

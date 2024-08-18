@@ -21,13 +21,9 @@ initBquartets(pTable, m, alpha, beta, colptest, colpstar, Bquartets)
 
 \item{Bquartets}{0/1 vector encoding initial B quartets}
 }
-\value{
-two lists, "Lout" with indices of initial B-quartets, "Bout" with TRUE/FALSE for all sets
-of 4 taxa indicating which are B-quartets
-}
 \description{
-This is a C++ function, used in \code{TINNIKdist}, to initialize for
-inference of B and T quartets. Doucumentation if for internal use only.
+This is a C++ function, called from \code{TINNIKdist}, to initialize for
+inference of B and T quartets.
 }
 \seealso{
 \code{\link{quartetTable}}, \code{\link{quartetTableParallel}}

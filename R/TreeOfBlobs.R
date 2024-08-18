@@ -88,7 +88,7 @@
 #'
 #' @examples
 #' data(pTableYeastRokas)
-#' out=TINNIK(pTableYeastRokas,test="T3",alpha=.01, beta=.05)
+#' out=TINNIK(pTableYeastRokas, alpha=.01, beta=.05)
 #'
 #' @importFrom ape di2multi nodelabels
 #' @importFrom Rcpp evalCpp
@@ -101,7 +101,7 @@ TINNIK = function(genedata,
                   alpha = .05,
                   beta = .95,
                   treemethod = fastme.bal,
-                  delta = 0,
+                  delta = 2,
                   taxanames = NULL,
                   plot = TRUE) {
   if (!(test %in% c("cut", "T3"))) {
@@ -1088,7 +1088,7 @@ TINNIKdist <- function(pTable,
 nodeGroups <- function(tree, nodeNum) {
   ntaxa = length(tree$tip.label)
 
-  if ((nodeNum <= ntaxa) | (nodeNum > (ntaxa + tree$Nnode))) {
+  if ((nodeNum <= ntaxa) || (nodeNum > (ntaxa + tree$Nnode))) {
     stop("Argument 'nodeNum' not in valid range.")
   }
 

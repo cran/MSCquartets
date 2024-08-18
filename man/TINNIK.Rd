@@ -12,7 +12,7 @@ TINNIK(
   alpha = 0.05,
   beta = 0.95,
   treemethod = fastme.bal,
-  delta = 0,
+  delta = 2,
   taxanames = NULL,
   plot = TRUE
 )
@@ -108,7 +108,7 @@ counting displayed quartets. See \code{\link{quartetTableParallel}}.
 }
 \examples{
 data(pTableYeastRokas)
-out=TINNIK(pTableYeastRokas,test="T3",alpha=.01, beta=.05)
+out=TINNIK(pTableYeastRokas, alpha=.01, beta=.05)
 
 }
 \references{

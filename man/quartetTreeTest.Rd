@@ -9,7 +9,8 @@ quartetTreeTest(
   model = "T3",
   lambda = 0,
   method = "MLest",
-  smallcounts = "approximate",
+  smallsample = "precomputed",
+  smallcounts = "precomputed",
   bootstraps = 10^4
 )
 }
@@ -22,7 +23,9 @@ quartetTreeTest(
 
 \item{method}{\code{"MLtest"},\code{"conservative"}, or \code{"bootstrap"}}
 
-\item{smallcounts}{\code{"bootstrap"} or \code{"approximate"}, method of obtaining p-value when some counts are small}
+\item{smallsample}{\code{"precomputed"} or \code{"bootstrap"}, method of obtaining p-value when sample is small (<30)}
+
+\item{smallcounts}{\code{"precomputed"} or \code{"bootstrap"}, method of obtaining p-value when some (but not all) counts are small}
 
 \item{bootstraps}{number of samples for bootstrapping}
 }
@@ -36,8 +39,8 @@ T1 is for a specific species quartet topology, and T3 for any species quartet to
 }
 \details{
 This function implements two of
-the versions of the test given by \insertCite{MAR19;textual}{MSCquartets} as well as parametric boostrapping,
-with other procedures for when some expected counts are small.
+the versions of the test given by \insertCite{MAR19;textual}{MSCquartets} as well as parametric
+bootstrapping, with other procedures for when some expected counts are small.
 When the topology and/or the internal
 quartet branch length is not specified by the null hypothesis these are more accurate tests than,
 say, a Chi-square with one degree of freedom, which is not theoretically
@@ -59,19 +62,20 @@ If \code{method="bootstrap"}, then parametric bootstrapping is performed, based 
 and internal edge length. The bootstrap sample size is given by the \code{bootstrap} argument.
 
 
-When some expected topology counts are small, the methods \code{"MLest"} and \code{"conservative"} are not appropriate.
-The argument \code{smallcounts} determines whether bootstrapping or a faster approximate method is used.
-These both involve estimates of the quartet topology and internal edge length. The approximate approach
-returns a precomputed p-value, found by replacing the largest observed count
-with 1e+6 and performing 1e+8 bootstraps for the model T3. When n is sufficiently large (at least 30) and
+When some or all expected topology counts are small, the methods \code{"MLest"} and \code{"conservative"} are not appropriate.
+The argument \code{smallsample} determines whether a precomputed bootstrap of 1e+8 samples, or actual boostrapping with the specified size,
+is used when the total sample is small (<30).
+The argument \code{smallcounts} determines whether bootstrapping or a faster approximate method is used when only some counts are small.
+The approximate approach returns a precomputed p-value, found by replacing the largest observed count
+with 1e+6 and performing 1e+8 bootstraps for the model T3. When n >30 and
 some expected counts are small, the quartet tree error probability is small and the bootstrap p-value is
 approximately independent of the choice of T3 or T1 and of the largest observed count.
 
 For model T1, the first entry of \code{obs} is treated as the count of gene quartets concordant with the species tree.
 
 The returned p-value should be taken with caution when there is a small sample size, e.g. less than 30 gene trees.
-The returned value of \code{bl} is a consistent estimator, but not the MLE, of the internal
-edge length in coalescent units. Although consistent, the MLE for t is biased.
+The returned value of \code{$edgelength} is a consistent estimator, but not the MLE, of the internal
+edge length in coalescent units. Although consistent, the MLE for this length is biased.
 Our consistent estimator is still biased, but with less bias than the MLE. See \insertCite{MAR19;textual}{MSCquartets}
 for more discussion on dealing with the bias of parameter estimates in the
 presence of boundaries and/or singularities of parameter spaces.
