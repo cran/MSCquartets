@@ -1,10 +1,10 @@
 %% This BibTeX bibliography file was created using BibDesk.
 %% https://bibdesk.sourceforge.io/
 
-%% Created for John Rhodes at 2024-03-25 10:05:56 -0800
+%% Created for John Rhodes at 2024-10-29 12:25:44 -0400 
 
 
-%% Saved with string encoding Unicode (UTF-8)
+%% Saved with string encoding Unicode (UTF-8) 
 
 
 
@@ -27,22 +27,24 @@
 	bdsk-url-1 = {https://doi.org/10.1007/s00285-022-01838-9}}
 
 @unpublished{ABRW24,
-	author = {Allman, E.S. and Ba\~{n}os, H.  and Rhodes, J.A. and Wicke, K.},
+	author = {Allman, E.S. and Ba\~{n}os, H. and Rhodes, J.A. and Wicke, K.},
+	date-modified = {2024-10-29 12:25:44 -0400},
 	note = {draft},
-	title = {Resolving the tree of blobs into a level-1 network (or TBD)},
+	title = {{NANUQ$^+$}: A divide-and-conquer approach to network estimation},
 	year = {2024}}
 
-	@article {ABMR24,
-	author = {Allman, E.S. and Ba{\~n}os, H. and Mitchell, J.D. and Rhodes, J.A.},
-	title = {TINNiK: Inference of the Tree of Blobs of a Species Network Under the Coalescent},
-	elocation-id = {2024.04.20.590418},
-	year = {2024},
-	doi = {10.1101/2024.04.20.590418},
-	publisher = {Cold Spring Harbor Laboratory},
+@article{ABMR24,
 	abstract = {The tree of blobs of a species network shows only the tree-like aspects of relationships of taxa on a network, omitting information on network substructures where hybridization or other types of lateral transfer of genetic information occur. By isolating such regions of a network, inference of the tree of blobs can serve as a starting point for a more detailed investigation, or indicate the limit of what may be inferrable without additional assumptions. Building on our theoretical work on the identifiability of the tree of blobs from gene quartet distributions under the Network Multispecies Coalescent model, we develop an algorithm, TINNiK, for statistically consistent tree of blobs inference. We provide examples of its application to both simulated and empirical datasets, utilizing an implementation in the MSCquartets 2.0 R package.MSC Classification 92D15, 92D20Competing Interest StatementThe authors have declared no competing interest.},
-	URL = {https://www.biorxiv.org/content/10.1101/2024.04.20.590418v1},
-	journal = {bioRxiv}
-}
+	author = {Allman, E.S. and Ba{\~n}os, H. and Mitchell, J.D. and Rhodes, J.A.},
+	doi = {10.1101/2024.04.20.590418},
+	elocation-id = {2024.04.20.590418},
+	journal = {bioRxiv},
+	publisher = {Cold Spring Harbor Laboratory},
+	title = {TINNiK: Inference of the Tree of Blobs of a Species Network Under the Coalescent},
+	url = {https://www.biorxiv.org/content/10.1101/2024.04.20.590418v1},
+	year = {2024},
+	bdsk-url-1 = {https://www.biorxiv.org/content/10.1101/2024.04.20.590418v1},
+	bdsk-url-2 = {https://doi.org/10.1101/2024.04.20.590418}}
 
 @article{Allman2011,
 	abstract = {Gene trees are evolutionary trees representing the ancestry of genes sampled from multiple populations. Species trees represent populations of individuals-each with many genes-splitting into new populations or species. The coalescent process, which models ancestry of gene copies within populations, is often used to model the probability distribution of gene trees given a fixed species tree. This multispecies coalescent model provides a framework for phylogeneticists to infer species trees from gene trees using maximum likelihood or Bayesian approaches. Because the coalescent models a branching process over time, all trees are typically assumed to be rooted in this setting. Often, however, gene trees inferred by traditional phylogenetic methods are unrooted. We investigate probabilities of unrooted gene trees under the multispecies coalescent model. We show that when there are four species with one gene sampled per species, the distribution of unrooted gene tree topologies identifies the unrooted species tree topology and some, but not all, information in the species tree edges (branch lengths). The location of the root on the species tree is not identifiable in this situation. However, for 5 or more species with one gene sampled per species, we show that the distribution of unrooted gene tree topologies identifies the rooted species tree topology and all its internal branch lengths. The length of any pendant branch leading to a leaf of the species tree is also identifiable for any species from which more than one gene is sampled.},
@@ -59,21 +61,20 @@
 	bdsk-url-1 = {https://dx.doi.org/10.1007/s00285-010-0355-7}}
 
 @article{AMR2020,
-    author = {Allman, E.S. and Mitchell, J.D. and Rhodes, J.A},
-    title = "{Gene Tree Discord, Simplex Plots, and Statistical Tests under the Coalescent}",
-    journal = {Systematic Biology},
-    volume = {71},
-    number = {4},
-    pages = {929-942},
-    year = {2021},
-    month = {02},
-    abstract = "{A simple graphical device, the simplex plot of quartet concordance factors, is introduced to aid in the exploration of a collection of gene trees on a common set of taxa. A single plot summarizes all gene tree discord and allows for visual comparison to the expected discord from the multispecies coalescent model (MSC) of incomplete lineage sorting on a species tree. A formal statistical procedure is described that can quantify the deviation from expectation for each subset of four taxa, suggesting when the data are not in accord with the MSC, and thus that either gene tree inference error is substantial or a more complex model such as that on a network may be required. If the collection of gene trees is in accord with the MSC, the plots reveal when substantial incomplete lineage sorting is present. Applications to both simulated and empirical multilocus data sets illustrate the insights provided. [Gene tree discordance; hypothesis test; multispecies coalescent model; quartet concordance factor; simplex plot; species tree].}",
-    issn = {1063-5157},
-    doi = {10.1093/sysbio/syab008},
-    url = {https://doi.org/10.1093/sysbio/syab008},
-    eprint = {https://academic.oup.com/sysbio/article-pdf/71/4/929/44114555/syab008.pdf},
-}
-
+	abstract = {{A simple graphical device, the simplex plot of quartet concordance factors, is introduced to aid in the exploration of a collection of gene trees on a common set of taxa. A single plot summarizes all gene tree discord and allows for visual comparison to the expected discord from the multispecies coalescent model (MSC) of incomplete lineage sorting on a species tree. A formal statistical procedure is described that can quantify the deviation from expectation for each subset of four taxa, suggesting when the data are not in accord with the MSC, and thus that either gene tree inference error is substantial or a more complex model such as that on a network may be required. If the collection of gene trees is in accord with the MSC, the plots reveal when substantial incomplete lineage sorting is present. Applications to both simulated and empirical multilocus data sets illustrate the insights provided. [Gene tree discordance; hypothesis test; multispecies coalescent model; quartet concordance factor; simplex plot; species tree].}},
+	author = {Allman, E.S. and Mitchell, J.D. and Rhodes, J.A},
+	doi = {10.1093/sysbio/syab008},
+	eprint = {https://academic.oup.com/sysbio/article-pdf/71/4/929/44114555/syab008.pdf},
+	issn = {1063-5157},
+	journal = {Systematic Biology},
+	month = {02},
+	number = {4},
+	pages = {929-942},
+	title = {{Gene Tree Discord, Simplex Plots, and Statistical Tests under the Coalescent}},
+	url = {https://doi.org/10.1093/sysbio/syab008},
+	volume = {71},
+	year = {2021},
+	bdsk-url-1 = {https://doi.org/10.1093/sysbio/syab008}}
 
 @article{RBMA2020,
 	author = {Rhodes, J.A. and Ba{\~n}os, H. and Mitchell, J.D. and Allman, E.S.},
@@ -207,14 +208,39 @@
 	bdsk-url-1 = {https://doi.org/10.1109/TCBB.2019.2917204}}
 
 @article{Vanderpool2020,
-    doi = {10.1371/journal.pbio.3000954},
-    author = {Vanderpool, D. and Minh, B.Q. and Lanfear, R. and Hughes, D. and Murali, S. and Harris, R.A. and Raveendran, M. and Muzny, D.M. and Hibbins, M.S. and Williamson, R.J. and Gibbs, R.A. AND Worley, K.C. and Rogers, J. and Hahn, M.W.},
-    journal = {PLOS Biology},
-    publisher = {Public Library of Science},
-    title = {Primate phylogenomics uncovers multiple rapid radiations and ancient interspecific introgression},
-    year = {2020},
-    month = {12},
-    volume = {18},
-    pages = {1-27},
-    number = {12},
-}
+	author = {Vanderpool, D. and Minh, B.Q. and Lanfear, R. and Hughes, D. and Murali, S. and Harris, R.A. and Raveendran, M. and Muzny, D.M. and Hibbins, M.S. and Williamson, R.J. and Gibbs, R.A. AND Worley, K.C. and Rogers, J. and Hahn, M.W.},
+	doi = {10.1371/journal.pbio.3000954},
+	journal = {PLOS Biology},
+	month = {12},
+	number = {12},
+	pages = {1-27},
+	publisher = {Public Library of Science},
+	title = {Primate phylogenomics uncovers multiple rapid radiations and ancient interspecific introgression},
+	volume = {18},
+	year = {2020},
+	bdsk-url-1 = {https://doi.org/10.1371/journal.pbio.3000954}}
+
+@article{Lescroart2023,
+	author = {Lescroart, Jonas and Bonilla-S{\'a}nchez, Alejandra and Napolitano, Constanza and Buitrago-Torres, Diana L and Ram{\'\i}rez-Chaves, H{\'e}ctor E and Pulido-Santacruz, Paola and Murphy, William J and Svardal, Hannes and Eizirik, Eduardo},
+	doi = {10.1093/molbev/msad255},
+	eprint = {https://academic.oup.com/mbe/article-pdf/40/12/msad255/56555032/msad255.pdf},
+	journal = {Molecular Biology and Evolution},
+	number = {12},
+	pages = {msad255},
+	title = {{Extensive Phylogenomic Discordance and the Complex Evolutionary History of the Neotropical Cat Genus Leopardus}},
+	volume = {40},
+	year = {2023},
+	bdsk-url-1 = {https://doi.org/10.1093/molbev/msad255}}
+
+@article{PhyloNetworks,
+	author = {Sol{\'\i}s-Lemus, Claudia and Bastide, Paul and An{\'e}, C{\'e}cile},
+	doi = {10.1093/molbev/msx235},
+	eprint = {https://academic.oup.com/mbe/article-pdf/34/12/3292/21946966/msx235.pdf},
+	journal = {Molecular Biology and Evolution},
+	month = {09},
+	number = {12},
+	pages = {3292-3298},
+	title = {{PhyloNetworks: A Package for Phylogenetic Networks}},
+	volume = {34},
+	year = {2017},
+	bdsk-url-1 = {https://doi.org/10.1093/molbev/msx235}}

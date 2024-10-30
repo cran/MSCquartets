@@ -12,7 +12,7 @@ HolmBonferroni(pTable, model, alpha = 0.05)
 
 \item{model}{one of \code{"T1"}, \code{"T3"}, or \code{"star"}, where \code{pTable} contains a column \code{p_model} of p-values}
 
-\item{alpha}{a critical value, for rejection of adjusted p-values less than or equal to \code{alpha}}
+\item{alpha}{test level, for rejection of adjusted p-values less than or equal to \code{alpha}}
 }
 \value{
 the same table, with rows reordered, and 2 new columns of 1) adjusted p-values,

@@ -420,7 +420,7 @@ quartetCutMLE <- function(qcCF) {
 #' in Section 3 of \insertCite{ABMR24;textual}{MSCquartets}, using the ML
 #' estimate of the generating parameter.
 #' As shown in simulations in that paper, the test is conservative when small
-#' critical values are used for rejection.
+#' levels are used for rejection.
 #' Although the test generally performs well in practice, it lacks a uniform
 #' asymptotic guarantee over the full parameter space.
 #'
@@ -926,8 +926,8 @@ quartetCutTestInd <-
 #' \code{quartetTableResolved}, with extra columns from
 #' both star hypothesis test, and either cut or T3 hypothesis tests
 #' @param test either "cut" or "T3"
-#' @param alpha critical value for cut or T3 test
-#' @param beta critical value for star test
+#' @param alpha level for cut or T3 test
+#' @param beta level for star test
 #'
 #' @return a distance table \code{output$dist} and
 #'    a vector \code{output$Bquartets} with TRUE/FALSE entries indicating B-quartets
@@ -1150,7 +1150,7 @@ quartetBTinferencePlot <- function(pTable,
                             beta,
                             cex=1) {
   if (!(is.numeric(alpha) && is.numeric(beta))) {
-    stop("Critical values alpha and beta must be numeric.")
+    stop("Test levels alpha and beta must be numeric.")
   }
 
   if ( !(test %in% c("T3","cut") ) ){ stop("Invalid test name.")}

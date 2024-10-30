@@ -324,7 +324,7 @@ quartetTreeTest <- function (obs, model = "T3", lambda = 0, method = "MLest", sm
     phi0 <- 3 * (n - expd[1])/(2 * n)
     mu0 <- max(0, sqrt(2 * n) * (1 - phi0)/sqrt(phi0 * (3 -
                                                           2 * phi0)))
-    if (min(expd) != 0) {
+    if (all.equal(min(expd), 0) != TRUE) {
       if (model == "T1") {
         if (mu0 <= 1/sqrt(2 * pi)) {
           mu0unbiased <- 0
@@ -453,8 +453,7 @@ quartetTreeTest <- function (obs, model = "T3", lambda = 0, method = "MLest", sm
             (method != "bootstrap" && min(expd) < 5 &&
              smallcounts != "bootstrap" && ((all.equal(sum(abs(obs *
                                                                3 - round(obs * 3))), 0) != TRUE) || (all.equal(sum(abs(obs *
-                                                                                                                       3 - round(obs * 3))), 0) == TRUE && var(obs -
-                                                                                                                                                               trunc(obs)) != 0)))) {
+                                                                                                                       3 - round(obs * 3))), 0) == TRUE && all.equal(var(obs - trunc(obs)), 0) != TRUE)))) {
           warning("Bootstrapping has been selected. p-values are approximate. Bootstrapping is only necessary when some expectations are small and approximate bootstrap p-values not available.")
           if (method == "bootstrap" && min(expd) < 5 &&
               smallcounts == "precomputed") {
@@ -463,8 +462,7 @@ quartetTreeTest <- function (obs, model = "T3", lambda = 0, method = "MLest", sm
           if (method != "bootstrap" && min(expd) < 5 &&
               smallcounts != "bootstrap" && ((all.equal(sum(abs(obs *
                                                                 3 - round(obs * 3))), 0) != TRUE) || (all.equal(sum(abs(obs *
-                                                                                                                        3 - round(obs * 3))), 0) == TRUE && var(obs -
-                                                                                                                                                                trunc(obs)) != 0))) {
+                                                                                                                        3 - round(obs * 3))), 0) == TRUE && all.equal(var(obs - trunc(obs)), 0) != TRUE))) {
             warning("Approximate bootstrap p-values not available when two expected counts are below 5 and observed counts are not all integers, all integers + 1/3 or all integers + 2/3.")
           }
           if (bootstraps == 0) {
@@ -496,8 +494,7 @@ quartetTreeTest <- function (obs, model = "T3", lambda = 0, method = "MLest", sm
         }
         else if (method != "bootstrap" && min(expd) <
                  5 && smallcounts == "precomputed" && (all.equal(sum(abs(obs *
-                                                                         3 - round(obs * 3))), 0) == TRUE) && var(obs -
-                                                                                                                  trunc(obs)) == 0) {
+                                                                         3 - round(obs * 3))), 0) == TRUE) && all.equal(var(obs - trunc(obs)), 0) == TRUE) {
           sortobs23times3 = sort(round(3 * obs[2:3]))
           if (sortobs23times3[1]%%3 == 0) {
             if (all.equal(sortobs23times3, c(0, 27)) ==
@@ -1010,8 +1007,8 @@ quartetTreeTestInd <- function (rqt,
 #' @param pTable table of quartets and p-values, as produced by \code{quartetTreeTestInd},
 #' \code{quartetStarTestInd}, or \code{NANUQ}
 #' @param test  model to use, for tree null hypothesis; options are \code{"T1"}, \code{"T3"}, \code{"cut"}, \code{"NANUQ"}
-#' @param alpha  significance level  for tree test with null hypothesis given by \code{test}
-#' @param beta  significance level for test with null hypothesis star tree;
+#' @param alpha level for tree test with null hypothesis given by \code{test}
+#' @param beta level for test with null hypothesis star tree;
 #' test results plotted only if \code{beta<1} and \code{"p_star"} column present in \code{pTable}
 #' @param cex scaling factor for size of plotted symbols
 #' @return NULL
@@ -1036,7 +1033,7 @@ quartetTestPlot <- function(pTable,
                             beta = 1,
                             cex = 1) {
   if (!(is.numeric(alpha) && is.numeric(beta))) {
-    stop("Critical values alpha and beta must be numeric.")
+    stop("Test levels alpha and beta must be numeric.")
   }
 
   lineWidth = 1.5
@@ -1338,7 +1335,7 @@ quartetTreeErrorProb <- function(obs,
 #' @param pTable a table of quartets with p-values, as computed by
 #' \code{quartetTreeTestInd} or \code{quartetStarTestInd}
 #' @param model one of \code{"T1"}, \code{"T3"}, or \code{"star"}, where \code{pTable} contains a column \code{p_model} of p-values
-#' @param alpha a critical value, for rejection of adjusted p-values less than or equal to \code{alpha}
+#' @param alpha test level, for rejection of adjusted p-values less than or equal to \code{alpha}
 #' @return the same table, with rows reordered, and 2 new columns of 1) adjusted p-values,
 #' and 2) "Y" or "N" for indicating "reject" or "fail to reject"
 #'

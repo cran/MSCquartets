@@ -13,9 +13,9 @@ both star hypothesis test, and either cut or T3 hypothesis tests}
 
 \item{test}{either "cut" or "T3"}
 
-\item{alpha}{critical value for cut or T3 test}
+\item{alpha}{level for cut or T3 test}
 
-\item{beta}{critical value for star test}
+\item{beta}{level for star test}
 }
 \value{
 a distance table \code{output$dist} and

@@ -12,9 +12,9 @@ quartetTestPlot(pTable, test, alpha = 0.05, beta = 1, cex = 1)
 
 \item{test}{model to use, for tree null hypothesis; options are \code{"T1"}, \code{"T3"}, \code{"cut"}, \code{"NANUQ"}}
 
-\item{alpha}{significance level  for tree test with null hypothesis given by \code{test}}
+\item{alpha}{level for tree test with null hypothesis given by \code{test}}
 
-\item{beta}{significance level for test with null hypothesis star tree;
+\item{beta}{level for test with null hypothesis star tree;
 test results plotted only if \code{beta<1} and \code{"p_star"} column present in \code{pTable}}
 
 \item{cex}{scaling factor for size of plotted symbols}

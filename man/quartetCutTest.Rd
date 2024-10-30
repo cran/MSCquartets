@@ -47,7 +47,7 @@ If \code{method="MLtest"}, this uses the test for the Cut model described
 in Section 3 of \insertCite{ABMR24;textual}{MSCquartets}, using the ML
 estimate of the generating parameter.
 As shown in simulations in that paper, the test is conservative when small
-critical values are used for rejection.
+levels are used for rejection.
 Although the test generally performs well in practice, it lacks a uniform
 asymptotic guarantee over the full parameter space.
 

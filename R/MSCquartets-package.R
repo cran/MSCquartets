@@ -17,6 +17,7 @@
 #' \item Infer a species tree using the qcCFs via the QDC and WQDC methods \insertCite{Rho19,YR19}{MSCquartets}.
 #' \item Infer a level-1 species network via the NANUQ method \insertCite{ABR19}{MSCquartets}.
 #' \item Infer the tree of blobs for a species network via the TINNiK method \insertCite{ABMR22}{MSCquartets},\insertCite{ABMR24}{MSCquartets}.
+#' \item Resolove multifurcations in a tree of blobs to cycles via NANUQ+ routines \insertCite{ABRW24}{MSCquartets}.
 #' }
 #'As discussed in the cited works, the inference methods for species trees and networks are
 #'statistically consistent under the MSC and Network MSC respectively.
@@ -48,6 +49,8 @@
 #' \insertRef{ABMR22}{MSCquartets}
 #'
 #' \insertRef{ABMR24}{MSCquartets}
+#'
+#' \insertRef{ABRW24}{MSCquartets}
 #'
 #' @importFrom graphics hist legend mtext par plot points segments text
 #' @importFrom stats chisq.test dmultinom pchisq qnorm var
@@ -117,36 +120,6 @@ NULL
 
 
 
-
-
-
-
-#' Heliconius gene tree dataset
-#'
-#' A text file dataset for Heliconius butterflies containing 2909 gene trees on 7 taxa, with 4 individuals sampled for each of 3 of the taxa, for a total of 16
-#' leaves per gene tree. This is a subset of the data of \insertCite{Martin2013;textual}{MSCquartets}.
-#'
-#' @references \insertRef{Martin2013}{MSCquartets}
-#'
-#' @docType data
-#'
-#' @name dataHeliconiusMartin
-#'
-#' @details File is accessed as \code{system.file("extdata","dataHeliconiusMartin",package="MSCquartets")}, for
-#' example via the \code{ape} command:
-#'
-#' \code{gts = read.tree(file=system.file("extdata","dataHeliconiusMartin",package="MSCquartets"))}
-#'
-#' @format A text file with 2909 metric Newick gene trees each with 16 leaves labelled:\cr
-#' chioneus.553, chioneus.560, chioneus.564, chioneus.565, \cr
-#' ethilla.67, hecale.273, melpomeneFG.13435, melpomeneFG.9315, \cr
-#' melpomeneFG.9316, melpomeneFG.9317, pardalinus.371, rosina.2071, \cr
-#' rosina.531, rosina.533, rosina.546, sergestus.202
-#'
-#' @source \doi{10.5061/dryad.dk712}
-#'
-NULL
-
 #' Papionini gene tree dataset
 #'
 #' A text file dataset for Papionini containing 1730 gene trees on 7 taxa. This is a subset of the data of \insertCite{Vanderpool2020;textual}{MSCquartets}.
@@ -196,3 +169,52 @@ NULL
 #' \insertRef{simphy}{MSCquartets}
 #'
 NULL
+
+
+
+#' Quartet table for Heliconius gene tree dataset
+#'
+#' An .rda file containing a quartet table summarizing the "Heleconius" gene trees
+#' of \insertCite{Martin2013;textual}{MSCquartets}. This table contains quartet counts
+#' from 2909 gene trees on 7 taxa, with 4 individuals sampled for each of 3 of the taxa,
+#' for a total of 16 leaves per gene tree.
+#'
+#' @docType data
+#'
+#' @name tableHeliconiusMartin
+#'
+#' @usage data(tableHeliconiusMartin)
+#'
+#' @references \insertRef{Martin2013}{MSCquartets}
+#'
+#' @details This table is provided rather than the original gene trees to save storage space.
+#' If used, please cite \insertCite{Martin2013;textual}{MSCquartets}.
+#'
+#' @source \doi{10.5061/dryad.dk712}
+#'
+#' @format an R data file
+"tableHeleconiusMartin"
+
+
+#' Quartet table for Leopardus dataset
+#'
+#' An .rda file containing a quartet table summarizing the "Leopardus" gene trees
+#' of \insertCite{Lescroart2023;textual}{MSCquartets}. This table contains quartet counts
+#' for 16,338 "gene" trees for 16 taxa, inferred from sliding widows across
+#' genomic sequences.
+#'
+#' @docType data
+#'
+#' @name tableLeopardusLescroart
+#'
+#' @usage data(tableLeopardusLescroart)
+#'
+#' @references \insertRef{Lescroart2023}{MSCquartets}
+#'
+#' @details This table is provided rather than the original gene trees to save storage space.
+#' If used, please cite \insertRef{Lescroart2023}{MSCquartets}.
+#'
+#' @format an R data file
+"tableLeopardusLescroart"
+
+
