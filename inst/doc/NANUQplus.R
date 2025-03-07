@@ -15,10 +15,10 @@ knitr::opts_chunk$set(fig.align = "center",
 library(MSCquartets)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  # read text file of gene trees and count quartets on them
-#  
-#  gts<-read.tree(file = 'genetreefile')
-#  tableLeopardusLescroart=quartetTable(gts)
+# # read text file of gene trees and count quartets on them
+# 
+# gts<-read.tree(file = 'genetreefile')
+# tableLeopardusLescroart=quartetTable(gts)
 
 ## -----------------------------------------------------------------------------
 # load data file containing quartet counts for Leopardus data set supplied with MSCquartets package

@@ -2,7 +2,7 @@
 title: "Inferring a Level-1 network with the NANUQ+ routines"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Inferring a Level-1 network with the NANUQplus routine}
+  %\VignetteIndexEntry{Inferring a Level-1 network with the NANUQ+ routines}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 bibliography:   vigREFS.bib

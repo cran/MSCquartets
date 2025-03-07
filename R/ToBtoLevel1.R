@@ -260,6 +260,7 @@ resolveCycle = function(ToB,
     nTips = length(groupt$tip.label)
     groupn = ape::evonet(groupt, from = nTips + TH1, to = nTips + H1)
     groupn$edge.length = rep(1, length(groupn$edge.length))
+    groupn=suppressNetBinaryNodes(groupn,addlength=FALSE)
 
     if (plot > 0)
     {
@@ -712,6 +713,7 @@ combineCycleResolutions = function(ToB,
       toNode = match(paste0("#H", 1:length(resols)), Net$node.label) + length(Net$tip.label)
 
       Net = ape::evonet(Net, from = fromNode, to = toNode)
+      Net=suppressNetBinaryNodes(Net,addlength=FALSE)
 
       if (plot > 0) {
         subtitle = "Network should be semidirected; Rooting is arbitrary"
@@ -722,18 +724,6 @@ combineCycleResolutions = function(ToB,
           maintitle = paste0("Inferred Level-1 Network, resolution ", ri)
         else
           maintitle = "Inferred Level-1 Network"
-
-       # plot(
-       #    Net,
-       #    show.node.label = T,
-       #    main = maintitle,
-       #    sub = subtitle
-       #  )
-       #  mtext(eval(bquote(.(titletext))),
-       #        side = 3,
-       #        line = 0,
-       #        cex = 1) # add rest of title text
-
 
         plot(
           Net,
