@@ -1,4 +1,4 @@
-e1a04fe2d130017f546093cefab6525a *DESCRIPTION
+d132474126ccaf31486a75e93ebe0a0d *DESCRIPTION
 5a093ae11743d5cacac89fe14759cbef *LICENSE
 766bf68db637f6f9dc78238dbdfe1d11 *NAMESPACE
 1a0a7cde7c457f0f338ad4c3fa35205e *R/ExpectedCFs.R
@@ -9,15 +9,15 @@ a10ee0667dc265f99975b9471e046404 *R/QuartetTally.R
 07cda84b9b5a43763ca484998355adbf *R/RcppExports.R
 a949b6fd8c332f150332bef1d9f33a59 *R/SimplexPlot.R
 4088163ef245765f4d3a24eea412c977 *R/StarQuartetHypTest.R
-e4f28f7e0751f7f71240d95bb5360cfb *R/ToBtoLevel1.R
+c616522c731ed1c65c9b079da353731b *R/ToBtoLevel1.R
 770b19380f56d3caf6a718f4f419d2ce *R/TreeOfBlobs.R
 fb462dce38c4aa1f5a2a0a97706b3828 *R/TreeQuartetDist.R
 a8962774b99cb22b211c801324d7a989 *R/TreeQuartetHypTest.R
 ab233fc3f4f623b55d27e4943b141ba0 *R/WQDCrecursive.R
-1c0c566fab92082eef1e38021619f5ab *R/evonetMisc.R
+4d502736bf504f7a14467a7d76b9a42c *R/evonetMisc.R
 7e2c1b9507edfa40a0055c7cedacd0f3 *R/pHist.R
 75bb904353bbe74d5e6511e47f1584a7 *R/sysdata.rda
-240dd15b58dfca2723250e4791d72999 *build/partial.rdb
+060fc30df947e8625859f5e6d906d7d1 *build/partial.rdb
 1e69fffdf45f4544289b4c6ef0bab49d *build/vignette.rds
 bd8b44f9dd127426cad7f0b830e6712c *data/pTableYeastRokas.rda
 918a03e0a84ba3b423e221f6517cf5a0 *data/tableHeliconiusMartin.rda
@@ -92,7 +92,7 @@ f5df1a579ec79554e88df2c34da9a689 *man/quartetTreeTest.Rd
 9a734b6e12125ce28e887800866242b9 *man/quartetTreeTestInd.Rd
 49841d20c2870a6e330158d03b7ce7be *man/quartetWeightedDist.Rd
 7c68e78129b30bbed7d2594f0a01c55d *man/resolveCycle.Rd
-680998934006037d6e48d78ca7fb6f44 *man/resolveLevel1.Rd
+75e3fa4ca49843f4806cebb2f910913b *man/resolveLevel1.Rd
 91c74baf8c53f25c1a0af4cfb785fa8c *man/simplexCoords.Rd
 b3bb01b1bf11e3166927b54aad936f53 *man/simplexLabels.Rd
 0b4a6bc9e8a42f44251a185a1199224e *man/simplexPoint.Rd

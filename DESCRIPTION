@@ -1,7 +1,7 @@
 Package: MSCquartets
 Type: Package
 Title: Analyzing Gene Tree Quartets under the Multi-Species Coalescent
-Version: 3.1
+Version: 3.2
 Authors@R: c(
      person("Elizabeth", "Allman", email = "esallman@alaska.edu",
                   role = "aut"),
@@ -37,7 +37,7 @@ RoxygenNote: 7.3.2
 NeedsCompilation: yes
 LinkingTo: Rcpp, RcppProgress
 Depends: R (>= 3.5.0), ape (>= 5.0), phangorn
-Packaged: 2025-03-07 18:35:42 UTC; jarhodes2
+Packaged: 2025-03-20 00:16:37 UTC; jarhodes2
 Author: Elizabeth Allman [aut],
   Hector Banos [aut],
   Jonathan Mitchell [aut],
@@ -47,4 +47,4 @@ Maintainer: John Rhodes <j.rhodes@alaska.edu>
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 Repository: CRAN
-Date/Publication: 2025-03-07 19:00:02 UTC
+Date/Publication: 2025-03-20 00:40:02 UTC

@@ -357,7 +357,7 @@ resolveCycle = function(ToB,
 #'@param hdegree resolve a multifurcation of this degree or larger by a heuristic
 #'method; must be at least 5
 #'@param plot if 0, no plots; if 1, plot only possible root locations on ToB and
-#'full resolution; if 2, include plots of each individual blob resolution, if 3
+#'full resolution; if 2 (default), include plots of each individual blob resolution, if 3
 #'include histograms of measure of fit for all hybrid/orders considered in choosing
 #'best
 #'@param delta cutoff for relative difference in squared residuals and smallest,
