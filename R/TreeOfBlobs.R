@@ -71,7 +71,7 @@
 #' @param treemethod a function implementing a method of tree inference from a distance table,
 #' e.g. the ape package's fastme.bal or nj
 #' @param delta a minimum edge length to retain in tree of blobs (see \insertCite{ABMR24}{MSCquartets} for related theory); shorter edges are collapsed
-#' @param taxanames if \code{genedata} is a file or a multiPhylo object, a vector of a subset
+#' @param taxonnames if \code{genedata} is a file or a multiPhylo object, a vector of a subset
 #' of the taxa names on the gene trees
 #' to be analyzed, if \code{NULL} all taxa on the first gene tree are used; if \code{genedata}
 #' is a quartet table, this argument is ignored and all taxa in the table are used
@@ -99,10 +99,10 @@ TINNIK = function(genedata,
                   epsilon = 0,
                   test = "T3",
                   alpha = .05,
-                  beta = .95,
+                  beta = .80,
                   treemethod = fastme.bal,
                   delta = 2,
-                  taxanames = NULL,
+                  taxonnames = NULL,
                   plot = TRUE) {
   if (!(test %in% c("cut", "T3"))) {
     stop("Argument 'test' must be 'cut' or 'T3'.")
@@ -120,25 +120,15 @@ TINNIK = function(genedata,
     pTable = genedata
     momit=missing(omit)
     mepsilon=missing(epsilon)
-    mtaxanames=missing(taxanames)
-    if (!momit | !mepsilon | !mtaxanames){
+    mtaxonnames=missing(taxonnames)
+    if (!momit | !mepsilon | !mtaxonnames){
       message(
-        "Since genedata supplied as quartet table, ignoring arguments 'omit', 'epsilon', 'taxanames'."
+        "Since genedata supplied as quartet table, ignoring arguments 'omit', 'epsilon', 'taxonnames'."
       )}
-    taxanames = setdiff(
-      colnames(pTable),
-      c(
-        "12|34",
-        "13|24",
-        "14|23",
-        "1234",
-        "p_cut",
-        "cutindex",
-        "p_star",
-        "p_T3",
-        "p_T1"
-      )
-    )
+    
+    cols=colnames(pTable)
+    n=match("12|34",cols) -1 # number of taxa
+    taxonnames = cols[1:n]
   } else {
     if ("multiPhylo" %in% class(genedata))  {
       genetrees = genedata
@@ -151,20 +141,20 @@ TINNIK = function(genedata,
       }
     }
 
-    if (is.null(taxanames)) {
+    if (is.null(taxonnames)) {
       # if no taxa names specified,
-      taxanames = genetrees[[1]]$tip.label   # ... get them from first tree
+      taxonnames = genetrees[[1]]$tip.label   # ... get them from first tree
     }
-    taxanames = sort(taxanames)
-    if (length(taxanames) <= 25) {
-      namelist = paste0(taxanames, collapse = ", ")
+    taxonnames = sort(taxonnames)
+    if (length(taxonnames) <= 25) {
+      namelist = paste0(taxonnames, collapse = ", ")
     } else {
-      namelist = paste0(paste0(taxanames[1:25], collapse = ", "),
+      namelist = paste0(paste0(taxonnames[1:25], collapse = ", "),
                         ",...(see output table for full list)")
     }
-    message("Analyzing ", length(taxanames), " taxa: ", namelist)
+    message("Analyzing ", length(taxonnames), " taxa: ", namelist)
 
-    pTable = quartetTable(genetrees, taxanames, epsilon = epsilon)   # tally quartets on gene trees
+    pTable = quartetTable(genetrees, taxonnames, epsilon = epsilon)   # tally quartets on gene trees
     pTable = quartetTableResolved(pTable, omit)   # treat unresolved quartets
   }
 
@@ -220,7 +210,7 @@ TINNIK = function(genedata,
           line = 0,
           cex = 1) # add rest of title text
 
-    ntaxa = length(taxanames)
+    ntaxa = length(taxonnames)
     intnodes = (ntaxa + 1):(ntaxa + ToB$Nnode)
 
     nodelabels(
@@ -469,6 +459,8 @@ quartetCutMLE <- function(qcCF) {
 #'
 #' \insertRef{ABMR24}{MSCquartets}
 #'
+#' \insertRef{ABRW25}{MSCquartets}
+#'
 #' \insertRef{MAR19}{MSCquartets}
 #'
 #'
@@ -496,7 +488,7 @@ quartetCutTest <-
       stop("Invalid arguments: obs must be a numeric non-negative vector of length 3 summing to a positive integer;\n      lambda must be a real number;\n      method must be \"MLest\", \"conservative\", or \"bootstrap\";\n      smallcounts must be \"bootstrap\" or \"approximate\";\n      bootstraps must be a positive integer.")
     }
     else {
-      n <- sum(obs)
+      n <- round(sum(obs))
       if (n < 30) {
         warning("The number of gene quartets is <30; p-value may be inaccurate.")
       }
@@ -540,12 +532,15 @@ quartetCutTest <-
                                                           round(obs * 3))), 0) == TRUE && var(obs - trunc(obs)) !=
                                         0))) {
           warning("Approximate bootstrap p-values not available when two expected counts are below 5 and observed counts are not all integers, all integers + 1/3 or all integers + 2/3.")
-        }
+          }
         if (bootstraps == 0) {
           bootstraps <- 10^4
         }
         count <- 0
-        sims <- rmultinom(bootstraps, n, prob = expd/n)
+
+
+        sims = rmultinom(bootstraps, n, prob = expd/n)
+
         for (i in 1:bootstraps) {
           dat <- sims[, i]
           expected <- n * quartetCutMLE(dat)[[2]]
@@ -863,23 +858,9 @@ quartetCutTestInd <-
     if (("p_cut" %in% colnames) | ("cutindex" %in% colnames)) {
       stop('Input table already has column to be appended.')
     }
-    taxanames = setdiff(
-      colnames,
-      c(
-        "12|34",
-        "13|24",
-        "14|23",
-        "1234",
-        "p_cut",
-        "cutindex",
-        "p_star",
-        "p_T3",
-        "p_T1"
-      )
-    )
-
+    n=match("12|34",colnames)-1 # number of taxa
+    taxonnames = colnames[1:n]
     M = dim(rqt)[1] # number of quartets
-    n = length(taxanames) # number of taxa
 
     pTable = cbind(rqt, p_cut = 0, cutindex = 0) # tack on columns for p-values, and cutindices
     message("Applying hypothesis test for Cut model to ", M, " quartets.")
@@ -953,22 +934,10 @@ TINNIKdist <- function(pTable,
     stop('Invalid test argument, or input table missing columns from tests.')
   }
 
-
-  taxanames = setdiff(
-    colnames(pTable),
-    c(
-      "12|34",
-      "13|24",
-      "14|23",
-      "1234",
-      "p_cut",
-      "cutindex",
-      "p_star",
-      "p_T3",
-      "p_T1"
-    )
-  )
-  n = length(taxanames)# number of taxa
+  
+  cols=colnames(pTable)
+  n=match("12|34",cols) -1 # number of taxa
+  taxonnames = cols[1:n]
   m = dim(pTable)[1]# number of 4-taxon sets in table
   if (m != choose(n, 4)) {
     stop("Dimensions of pTable not correct; must have row for each choice of 4 taxa.")# check number of rows is correct
@@ -1239,36 +1208,82 @@ simplexPrepare(model, maintitle = "TINNIK Inferred B-,T-quartets ", titletext =
 #' @param plot if TRUE (default), plot the tree of blobs.
 #'
 #'
-#'@return An object of class \code{phylo} containing the unrooted topological tree
+#' @return An object of class \code{phylo} containing the unrooted topological tree
 #' derived from the network by contracting all blobs.  All edge lengths are 1.
 #'
-#'@seealso \code{\link{TINNIK}}
+#' @seealso \code{\link{TINNIK}}
 #'
-#'@examples network = "(((a:1,d:1):1,(b:1)#H1:1):1,(#H1,c:1):2);"
+#' @examples network = "(((a:1,d:1):1,(b:1)#H1:1):1,(#H1,c:1):2);"
 #' plot(read.evonet(text=network))
 #' treeOfBlobs(network, plot=TRUE)
 #'
-#'@importFrom igraph as.igraph is_directed degree V E all_simple_paths difference intersection
-#'@importFrom igraph edge_attr distances
-#'@importFrom ape read.evonet .PlotPhyloEnv
-#'@importFrom utils combn
+#' @importFrom igraph as.igraph is_directed degree V E all_simple_paths difference intersection
+#' @importFrom igraph edge_attr distances
+#' @importFrom ape read.evonet .PlotPhyloEnv
+#' @importFrom utils combn
 #'
 #' @export
-treeOfBlobs = function(net, plot = FALSE) {
-  # convert network to igraph
+#'
+treeOfBlobs = function (net, plot = FALSE)  {
+  # convert Newick string to evonet if needed
   if (is(net, "character")) {
-    if (length(unlist(gregexpr('#', net)))<2  ) stop("Invalid network argument") # check for a hybrid node
-    net = read.evonet(text = net)
-    net = igraph::as.igraph(net)
-  } else {
-    if (is(net, "evonet")) {
-      net = igraph::as.igraph(net)
+    # read as tree if no reticulations
+    if ((regexpr('#', net)==-1)) {
+      net = read.tree(text = net)
+      print("Newick argument is for a tree, returning tree of blobs.")
+      return(net)
     } else {
-      if (!is(net, "igraph")) {
-        stop("Network argument must be a newick string, evonet, igraph.")
-      }
+      net = read.evonet(text=net)
     }
   }
+
+  if (!any(class(net) %in% c("evonet", "phylo", "igraph")))   stop("Network argument must be a newick string, evonet, or igraph.")
+
+  # return tree if net is tree.  Otherwise convert to igraph object and label internal nodes
+  if (any( class(net) %in% c("evonet", "phylo")) ) {
+    if (is.null(net$reticulation)) {
+      print("Network argument is a tree, so returning it as tree of blobs.")
+      return(net)
+    }
+  }
+
+  tmp <- nchar(net$tip.label)
+  if (any(tmp == 0)) {
+    newLabel <- net$tip.label
+    newLabel[tmp == 0] <- paste0("ROOT", 1:sum(tmp==0))
+    net$tip.label[tmp == 0] <- newLabel[tmp == 0]
+  }
+
+  # add internal labels if some are null.
+  # Ape's function read.tree did not read all labels, possible because of
+  # 3-cycle, possibly because of root node
+
+  # to add node.label attr
+  ## ESA
+  # net$node.label = NULL
+  #
+  # label hybrids if label missing
+  if (is.null(net$node.label)) {
+    net$node.label <- character(net$Nnode)
+
+    # avoid adding NAs by looping
+    nTax = Ntip(net)
+    for (nodeNum in net$reticulation[,2]) {
+      net$node.label[nodeNum-nTax] <- paste0("#H", as.character(nodeNum))
+    }
+  }
+
+  # try adding all internal node labels too since problem seems to be root
+  # if (!is.null(net$node.label)) {
+  #   tmp <- nchar(net$node.label)
+  #   if (any(tmp == 0)) {
+  #     newLabel <- paste0("n", (nTax+1):(nTax+net$Nnode))
+  #     net$node.label[tmp == 0] <- newLabel[tmp == 0]
+  #   }
+  # }
+
+  # read as igraph
+  net = igraph::as.igraph(net)
 
   if (!(igraph::is_directed(net))) {
     stop("Network must be rooted.")
@@ -1302,7 +1317,7 @@ treeOfBlobs = function(net, plot = FALSE) {
 
   dTable = igraph::distances(net,leaves,leaves)
   tob = nj(dTable) #construct tree
-  tob = di2multi(unroot(tob), tol = 1e-10) #unroot and suppress degree 2 nodes
+  tob = di2multi(unroot(tob), tol = 1e-10) # unroot and suppress degree 2 nodes
   tob$edge.length=rep(1,length(tob$edge.length)) # again make all edges length 1
 
   # plot tob
@@ -1316,6 +1331,7 @@ treeOfBlobs = function(net, plot = FALSE) {
   }
   return(tob)
 }
+
 
 ##################################################################
 #' Extract compatible splits
@@ -1332,7 +1348,7 @@ treeOfBlobs = function(net, plot = FALSE) {
 #'
 #'@examples
 #' data(pTableYeastRokas)
-#' dist=NANUQdist(pTableYeastRokas, alpha=.05, beta=.95,outfile=NULL)
+#' dist=NANUQdist(pTableYeastRokas, alpha=.05, beta=.80,outfile=NULL)
 #' nn=neighborNet(dist)
 #' plot(nn,"2D")
 #' tob=treeFromSplits(compatibleSplits(nn$splits),plot=TRUE) #produce tree of blobs of splits graph
@@ -1389,7 +1405,7 @@ compatibleSplits = function(sp, tol = 0, plot = FALSE) {
 #'
 #'@examples
 #' data(pTableYeastRokas)
-#' dist=NANUQdist(pTableYeastRokas, alpha=.05, beta=.95,outfile=NULL)
+#' dist=NANUQdist(pTableYeastRokas, alpha=.05, beta=.80,outfile=NULL)
 #' nn=neighborNet(dist)
 #' plot(nn,"2D")
 #' tob=treeFromSplits(compatibleSplits(nn$splits),plot=TRUE) #produce tree of blobs of splits graph

@@ -8,7 +8,7 @@
 an R data file
 }
 \source{
-\url{https://wiki.rice.edu/confluence/download/attachments/8898533/yeast.trees?version=1&modificationDate=1360603275797&api=v2}
+from L. Nakhleh's website at Rice U., link no longer available as of 2026
 }
 \usage{
 data(pTableYeastRokas)

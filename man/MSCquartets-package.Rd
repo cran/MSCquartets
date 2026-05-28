@@ -22,8 +22,8 @@ a species tree \insertCite{MAR19}{MSCquartets}.
 \item Produce simplex plots showing all estimated CFs as well as results of hypothesis tests \insertCite{AMR2020}{MSCquartets}.
 \item Infer a species tree using the qcCFs via the QDC and WQDC methods \insertCite{Rho19,YR19}{MSCquartets}.
 \item Infer a level-1 species network via the NANUQ method \insertCite{ABR19}{MSCquartets}.
-\item Infer the tree of blobs for a species network via the TINNiK method \insertCite{ABMR22}{MSCquartets},\insertCite{ABMR24}{MSCquartets}.
-\item Resolove multifurcations in a tree of blobs to cycles via NANUQ+ routines \insertCite{ABRW24}{MSCquartets}.
+\item Infer the tree of blobs for a species network via the TINNiK or ECToBlob methods \insertCite{ABMR22}{MSCquartets},\insertCite{ABMR24}{MSCquartets}\insertCite{ECTo2026}{MSCquartets}.
+\item Resolove multifurcations in a tree of blobs to cycles via NANUQ+ routines \insertCite{ABRW25}{MSCquartets}.
 }
 As discussed in the cited works, the inference methods for species trees and networks are
 statistically consistent under the MSC and Network MSC respectively.
@@ -55,7 +55,9 @@ appropriate paper(s) above developing the theory behind the routines you used.
 
 \insertRef{ABMR24}{MSCquartets}
 
-\insertRef{ABRW24}{MSCquartets}
+\insertRef{ABRW25}{MSCquartets}
+
+\insertRef{ECTo2026}{MSCquartets}
 }
 \author{
 \strong{Maintainer}: John Rhodes \email{j.rhodes@alaska.edu} (\href{https://orcid.org/0000-0001-9921-1091}{ORCID})

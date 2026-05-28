@@ -4,13 +4,7 @@
 \alias{NANUQdist}
 \title{Compute NANUQ distance and write to file}
 \usage{
-NANUQdist(
-  pTable,
-  outfile = "NANUQdist",
-  alpha = 0.05,
-  beta = 0.95,
-  plot = TRUE
-)
+NANUQdist(pTable, outfile = "NANUQdist", alpha = 0.05, beta = 0.8, plot = TRUE)
 }
 \arguments{
 \item{pTable}{a table of resolved quartets and p-values, as previously computed by \code{NANUQ}, or by both \code{quartetTreeTestInd} and
@@ -53,7 +47,7 @@ stochastic element of the algorithm.
 }
 \examples{
 data(pTableYeastRokas)
-dist=NANUQdist(pTableYeastRokas, alpha=.05, beta=.95, outfile = NULL)
+dist=NANUQdist(pTableYeastRokas, alpha=.05, beta=.80, outfile = NULL)
 
 }
 \references{

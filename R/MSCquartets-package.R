@@ -16,8 +16,8 @@
 #' \item Produce simplex plots showing all estimated CFs as well as results of hypothesis tests \insertCite{AMR2020}{MSCquartets}.
 #' \item Infer a species tree using the qcCFs via the QDC and WQDC methods \insertCite{Rho19,YR19}{MSCquartets}.
 #' \item Infer a level-1 species network via the NANUQ method \insertCite{ABR19}{MSCquartets}.
-#' \item Infer the tree of blobs for a species network via the TINNiK method \insertCite{ABMR22}{MSCquartets},\insertCite{ABMR24}{MSCquartets}.
-#' \item Resolove multifurcations in a tree of blobs to cycles via NANUQ+ routines \insertCite{ABRW24}{MSCquartets}.
+#' \item Infer the tree of blobs for a species network via the TINNiK or ECToBlob methods \insertCite{ABMR22}{MSCquartets},\insertCite{ABMR24}{MSCquartets}\insertCite{ECTo2026}{MSCquartets}.
+#' \item Resolove multifurcations in a tree of blobs to cycles via NANUQ+ routines \insertCite{ABRW25}{MSCquartets}.
 #' }
 #'As discussed in the cited works, the inference methods for species trees and networks are
 #'statistically consistent under the MSC and Network MSC respectively.
@@ -50,10 +50,12 @@
 #'
 #' \insertRef{ABMR24}{MSCquartets}
 #'
-#' \insertRef{ABRW24}{MSCquartets}
+#' \insertRef{ABRW25}{MSCquartets}
+#'
+#' \insertRef{ECTo2026}{MSCquartets}
 #'
 #' @importFrom graphics hist legend mtext par plot points segments text
-#' @importFrom stats chisq.test dmultinom pchisq qnorm var
+#' @importFrom stats chisq.test dmultinom pchisq qnorm var na.omit pcauchy
 #' @importFrom Rdpack reprompt
 #' @importFrom Rcpp sourceCpp
 #'
@@ -85,7 +87,7 @@ NULL
 #' @format A text file with 106 topological Newick gene trees on the taxa:
 #'  Sbay, Scas, Scer, Sklu, Skud, Smik, Spar, and Calb (outgroup).
 #'
-#' @source \url{https://wiki.rice.edu/confluence/download/attachments/8898533/yeast.trees?version=1&modificationDate=1360603275797&api=v2}
+#' @source from L. Nakhleh's website at Rice U., link no longer available as of 2026
 NULL
 
 #' pTable for Yeast dataset
@@ -115,7 +117,7 @@ NULL
 #' }
 #' @format an R data file
 #'
-#' @source \url{https://wiki.rice.edu/confluence/download/attachments/8898533/yeast.trees?version=1&modificationDate=1360603275797&api=v2}
+#' @source from L. Nakhleh's website at Rice U., link no longer available as of 2026
 "pTableYeastRokas"
 
 
@@ -174,7 +176,7 @@ NULL
 
 #' Quartet table for Heliconius gene tree dataset
 #'
-#' An .rda file containing a quartet table summarizing the "Heleconius" gene trees
+#' An .rda file containing a quartet table summarizing the "Heliconius" gene trees
 #' of \insertCite{Martin2013;textual}{MSCquartets}. This table contains quartet counts
 #' from 2909 gene trees on 7 taxa, with 4 individuals sampled for each of 3 of the taxa,
 #' for a total of 16 leaves per gene tree.
@@ -193,7 +195,7 @@ NULL
 #' @source \doi{10.5061/dryad.dk712}
 #'
 #' @format an R data file
-"tableHeleconiusMartin"
+"tableHeliconiusMartin"
 
 
 #' Quartet table for Leopardus dataset
@@ -217,4 +219,22 @@ NULL
 #' @format an R data file
 "tableLeopardusLescroart"
 
-
+#' ASTRAL tree for Leopardus dataset
+#'
+#' An .rda file containing the tree produced by ASTRAL from the "Leopardus" gene trees
+#' of \insertCite{Lescroart2023;textual}{MSCquartets}. By the theory of \insertCite{ECTo2026}{MSCquartets}, 
+#' this is a putative resolution of the tree of blobs for the unknown network, 
+#' and can be used by \code{ECToBlob} to infer the network's tree of blobs.
+#'
+#' @docType data
+#'
+#' @name ASTRALtreeLeopardusLescroart
+#'
+#' @usage data(ASTRALtreeLeopardusLescroart)
+#'
+#' @references \insertRef{Lescroart2023}{MSCquartets}, \insertRef{ECTo2026}{MSCquartets}
+#'
+#' @details If used for purposes other than learning software, please cite \insertRef{Lescroart2023}{MSCquartets}.
+#'
+#' @format an R data file
+"ASTRALtreeLeopardusLescroart"

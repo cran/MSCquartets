@@ -3,7 +3,6 @@
 \docType{data}
 \name{tableHeliconiusMartin}
 \alias{tableHeliconiusMartin}
-\alias{tableHeleconiusMartin}
 \title{Quartet table for Heliconius gene tree dataset}
 \format{
 an R data file
@@ -15,7 +14,7 @@ an R data file
 data(tableHeliconiusMartin)
 }
 \description{
-An .rda file containing a quartet table summarizing the "Heleconius" gene trees
+An .rda file containing a quartet table summarizing the "Heliconius" gene trees
 of \insertCite{Martin2013;textual}{MSCquartets}. This table contains quartet counts
 from 2909 gene trees on 7 taxa, with 4 individuals sampled for each of 3 of the taxa,
 for a total of 16 leaves per gene tree.

@@ -10,10 +10,10 @@ TINNIK(
   epsilon = 0,
   test = "T3",
   alpha = 0.05,
-  beta = 0.95,
+  beta = 0.8,
   treemethod = fastme.bal,
   delta = 2,
-  taxanames = NULL,
+  taxonnames = NULL,
   plot = TRUE
 )
 }
@@ -48,7 +48,7 @@ e.g. the ape package's fastme.bal or nj}
 
 \item{delta}{a minimum edge length to retain in tree of blobs (see \insertCite{ABMR24}{MSCquartets} for related theory); shorter edges are collapsed}
 
-\item{taxanames}{if \code{genedata} is a file or a multiPhylo object, a vector of a subset
+\item{taxonnames}{if \code{genedata} is a file or a multiPhylo object, a vector of a subset
 of the taxa names on the gene trees
 to be analyzed, if \code{NULL} all taxa on the first gene tree are used; if \code{genedata}
 is a quartet table, this argument is ignored and all taxa in the table are used}

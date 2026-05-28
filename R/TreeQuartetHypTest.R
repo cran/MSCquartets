@@ -100,12 +100,13 @@ erf.inv <- function(x) {
 #' Modified Struve function
 #'
 #' This function is used in computing the probability density for
-#' Model T1. The code is closely based on the \code{I0L0} function implemented in Python for the package
-#' RandomFieldUtils, which was previously on CRAN up to 12/2022).
+#' Model T1. The code is closely based on the \code{I0L0} function implemented
+#' in Python for the package
+#' RandomFieldUtils, which was available on CRAN until 12/2022.
 #'
 #'@param x  function argument
 #'
-#'@return value of negative modified Struve function function
+#'@return value of negative modified Struve function
 #'
 #'@export
 M0 <- function(x) {
@@ -997,24 +998,23 @@ quartetTreeTestInd <- function (rqt,
 #' indicate rejection or failure to reject for tests at specified levels.
 #'
 #' @details The first argument of this function is a table of quartets and p-values. The
-#' plot may show results of either the T1, T3, or 2-cut
+#' plot may show results of either the T1, T1-D, T3, or 2-cut
 #' test, with or without a star tree test (depending on whether a \code{"p_star"} column is in the table and/or \code{beta =1}).
 #' The p-values must be computed by previous calls to
-#' \code{quartetTreeTestInd} (for \code{"T1"} or \code{"T3"} p-values)
-#' and \code{quartetStarTestInd} (for \code{"star"} p-values). The \code{NANUQ} and \code{NANUQdist}
+#' \code{quartetTreeTestInd} (for \code{"T1"} or \code{"T3"} p-values), \code{quartetECtestInd} (for \code{"T1-D"} p-values)
+#' and \code{quartetStarTestInd} (for \code{"star"} p-values). The \code{NANUQ}, \code{NANUQdist}, and \code{ECToBlob}
 #' functions include calls to these tree test functions.
 #'
-#' @param pTable table of quartets and p-values, as produced by \code{quartetTreeTestInd},
-#' \code{quartetStarTestInd}, or \code{NANUQ}
-#' @param test  model to use, for tree null hypothesis; options are \code{"T1"}, \code{"T3"}, \code{"cut"}, \code{"NANUQ"}
+#' @param pTable table of quartets and p-values, as produced by the functions mentioned above
+#' @param test  model to use, for tree null hypothesis; options are \code{"T1"}, \code{"T3"}, \code{"cut"}, \code{"NANUQ"}, \code{"ECToBlob"}
 #' @param alpha level for tree test with null hypothesis given by \code{test}
 #' @param beta level for test with null hypothesis star tree;
 #' test results plotted only if \code{beta<1} and \code{"p_star"} column present in \code{pTable}
 #' @param cex scaling factor for size of plotted symbols
 #' @return NULL
 #'
-#' @seealso \code{\link{quartetTreeTestInd}}, \code{\link{quartetStarTestInd}},
-#' \code{\link{NANUQ}}, \code{\link{NANUQdist}}
+#' @seealso \code{\link{quartetTreeTestInd}}, \code{\link{quartetStarTestInd}}, \code{\link{quartetECtestInd}},
+#' \code{\link{NANUQ}}, \code{\link{NANUQdist}}, \code{\link{ECToBlob}}
 #'
 #' @examples
 #' gtrees=read.tree(file=system.file("extdata","dataGeneTreeSample",package="MSCquartets"))
@@ -1150,8 +1150,44 @@ quartetTestPlot <- function(pTable,
               legpch = c(2, 1, 0, 4)
               legcol = c(redColor, blueColor, yellowColor, orangeColor)
               model = "cut"
-            } else
-            stop("Invalid test name")
+            } else{
+              if ((test == "ECToBlob") & (beta == 1)) {
+              #  T1-D only
+                p_tree.small = (pTable[, "p_T1-D"] < alpha)
+                p_star.small = rep(TRUE, M)
+                titletext = bquote("ECToBlob Tree Model," ~ alpha * "=" * .(alpha))
+                legtext = c("reject tree", "fail to reject tree")
+                legpch = c(2, 1)
+                legcol = c(redColor, blueColor)
+                model = "T1"
+                for (i in 1:dim(pTable)[[1]] ) #switch order so tree index is first
+                { if (pTable[i,"qindex-D"]==2) pTable[i,c("12|34","13|24")]=pTable[i,c("13|24","12|34")]
+                  if (pTable[i,"qindex-D"]==3) pTable[i,c("12|34","14|23")]=pTable[i,c("14|23","12|34")]
+                }
+              } else {
+                if ((test == "ECToBlob") & (beta < 1)) {
+                  #  T1-D  and star
+                  p_tree.small = (pTable[, "p_T1-D"] < alpha)
+                  p_star.small = (pTable[, "p_star"] <= beta)
+                  titletext = bquote("ECToBlob Tree Model," ~ alpha * "=" * .(alpha) * "," ~ beta *
+                                       "=" * .(beta))
+                  legtext = c(
+                    "reject tree & star",
+                    "fail to reject tree/reject star",
+                    "fail to reject tree & star",
+                    "reject tree/fail to reject star"
+                  )
+                  legpch = c(2, 1, 0, 4)
+                  legcol = c(redColor, blueColor, yellowColor, orangeColor)
+                  model = "T1"
+                  for (i in 1:dim(pTable)[[1]] ) #switch order so tree index is first
+                  { if (pTable[i,"qindex-D"]==2) pTable[i,c("12|34","13|24")]=pTable[i,c("13|24","12|34")]
+                  if (pTable[i,"qindex-D"]==3) pTable[i,c("12|34","14|23")]=pTable[i,c("14|23","12|34")]
+                  }
+                } else
+                  stop("Invalid test name")
+              }
+            }
           }
         }
       }

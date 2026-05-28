@@ -71,7 +71,7 @@
 #' a null hypothesis of a star tree (polytomy) for each quartet vs. an alternative of anything else; a smaller value applies a less conservative
 #' test for a star tree (more polytomies), hence a stricter requirement for deciding in favor of a resolved tree or network;
 #' if vectors, \code{alpha} and \code{beta} must have the same length
-#' @param taxanames if \code{genedata} is a file or a multiPhylo object, a vector of a subset
+#' @param taxonnames if \code{genedata} is a file or a multiPhylo object, a vector of a subset
 #' of the taxa names on the gene trees
 #' to be analyzed, if \code{NULL} all taxa on the first gene tree are used; if \code{genedata}
 #' is a quartet table, this argument is ignored and all taxa in the table are used
@@ -89,7 +89,7 @@
 #'
 #' @examples
 #' data(pTableYeastRokas)
-#' out=NANUQ(pTableYeastRokas, alpha=.05, beta=.95, outfile = NULL)
+#' out=NANUQ(pTableYeastRokas, alpha=.05, beta=.80, outfile = NULL)
 #' # Specifying an outfile would write the distance table to it for opening in SplitsTree.
 #' # Alternately, to use the phangorn implementation of NeighborNet
 #' # within R, enter the following additional lines:
@@ -102,8 +102,8 @@ NANUQ = function( genedata,
                   omit = FALSE,
                   epsilon=0,
                   alpha = .05,
-                  beta = .95,
-                  taxanames = NULL,
+                  beta = .80,
+                  taxonnames = NULL,
                   plot = TRUE) {
 
   if (!(is.numeric(alpha) && is.numeric(beta))) {
@@ -115,12 +115,12 @@ NANUQ = function( genedata,
     pTable = genedata
     momit=missing(omit)
     mepsilon=missing(epsilon)
-    mtaxanames=missing(taxanames)
-    if (!momit | !mepsilon | !mtaxanames){
+    mtaxonnames=missing(taxonnames)
+    if (!momit | !mepsilon | !mtaxonnames){
       message(
-        "Since genedata supplied as quartet table, ignoring arguments 'omit', 'epsilon', 'taxanames'."
+        "Since genedata supplied as quartet table, ignoring arguments 'omit', 'epsilon', 'taxonnames'."
       )}
-      taxanames=NULL
+      taxonnames=NULL
     } else {
     if ("multiPhylo" %in% class(genedata))  {
       genetrees = genedata
@@ -133,20 +133,20 @@ NANUQ = function( genedata,
       }
     }
 
-    if (is.null(taxanames)) {
+    if (is.null(taxonnames)) {
       # if no taxa names specified,
-      taxanames = genetrees[[1]]$tip.label   # ... get them from first tree
+      taxonnames = genetrees[[1]]$tip.label   # ... get them from first tree
     }
-    taxanames = sort(taxanames)
-    if (length(taxanames) <= 25) {
-      namelist = paste0(taxanames, collapse = ", ")
+    taxonnames = sort(taxonnames)
+    if (length(taxonnames) <= 25) {
+      namelist = paste0(taxonnames, collapse = ", ")
     } else {
-      namelist = paste0(paste0(taxanames[1:25], collapse = ", "),
+      namelist = paste0(paste0(taxonnames[1:25], collapse = ", "),
                         ",...(see output table for full list)")
     }
-    message("Analyzing ", length(taxanames), " taxa: ", namelist)
+    message("Analyzing ", length(taxonnames), " taxa: ", namelist)
 
-    pTable = quartetTable(genetrees, taxanames, epsilon = epsilon)   # tally quartets on gene trees
+    pTable = quartetTable(genetrees, taxonnames, epsilon = epsilon)   # tally quartets on gene trees
     pTable = quartetTableResolved(pTable, omit)   # treat unresolved quartets
   }
 
@@ -207,13 +207,13 @@ NANUQ = function( genedata,
 #'
 #' @examples
 #' data(pTableYeastRokas)
-#' dist=NANUQdist(pTableYeastRokas, alpha=.05, beta=.95, outfile = NULL)
+#' dist=NANUQdist(pTableYeastRokas, alpha=.05, beta=.80, outfile = NULL)
 #'
 #' @export
 NANUQdist = function (pTable,
                       outfile = "NANUQdist",
                       alpha=.05,
-                      beta=.95,
+                      beta=.80,
                       plot = TRUE) {
   if (!(is.numeric(alpha) && is.numeric(beta))) {
     stop("Critical values alpha and beta must be numeric.")
@@ -267,20 +267,20 @@ NANUQdist = function (pTable,
 #' @export
 nexusDist = function(distMatrix,
                      outfilename) {
-  taxanames = colnames(distMatrix)
-  ntaxa = length(taxanames)
-  taxanames = matrix(taxanames, ntaxa, 1)
+  taxonnames = colnames(distMatrix)
+  ntaxa = length(taxonnames)
+  taxonnames = matrix(taxonnames, ntaxa, 1)
   sink(outfilename)
   cat("#nexus\n BEGIN Taxa;\n DIMENSIONS ntax=",
       ntaxa,
       ";\n TAXLABELS\n")
-  cat(paste(taxanames, "\n"))
+  cat(paste(taxonnames, "\n"))
   cat(
     ";\n END;\n \n BEGIN Distances; \n DIMENSIONS ntax=",
     ntaxa,
     "; \n FORMAT labels=left diagonal triangle=both;\n MATRIX\n"
   )
-  cat(t(cbind(taxanames, distMatrix)))
+  cat(t(cbind(taxonnames, distMatrix)))
   cat("; \n END;")
   sink()
  message("Distance table written to file: ", outfilename)
@@ -316,7 +316,7 @@ nexusDist = function(distMatrix,
 #'
 #' @examples
 #' data(pTableYeastRokas)
-#' dist=quartetNetworkDist(pTableYeastRokas, alpha=.05, beta=.95)
+#' dist=quartetNetworkDist(pTableYeastRokas, alpha=.05, beta=.80)
 #'
 #' @seealso \code{\link{NANUQ}}, \code{\link{NANUQdist}}
 #'
@@ -330,13 +330,13 @@ quartetNetworkDist = function(pTable,
   M = dim(pTable)[1] # number of quartet concordance factors
   ntaxa = which(colnames(pTable)=="12|34")-1 #number of taxa
 
-  taxanames = colnames(pTable)[1:ntaxa]  #names of taxa
+  taxonnames = colnames(pTable)[1:ntaxa]  #names of taxa
   qnames = c("12|34", "13|24", "14|23")
 
   quartetDist = matrix(0, ntaxa, ntaxa)
   #alocates space for dissimilarity matrix
-  rownames(quartetDist) = taxanames
-  colnames(quartetDist) = taxanames
+  rownames(quartetDist) = taxonnames
+  colnames(quartetDist) = taxonnames
 
   for (m in 1:M) {
     # consider each set of 4 taxa

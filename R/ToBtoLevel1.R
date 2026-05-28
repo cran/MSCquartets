@@ -45,7 +45,7 @@ labelIntNodes = function(tree, plot = TRUE, type = "unrooted")
 #' Given a Tree of Blobs and quartet Concordance Factor data, resolve a specific
 #' polytomy to a cycle. Resolution is performed by finding a least-squares
 #' best-fit of an empirical distance to an expected distance related to the cycle,
-#' as described in \insertCite{ABRW24;textual}{MSCquartets}.
+#' as described in \insertCite{ABRW25;textual}{MSCquartets}.
 #'
 #' Possible distances to use are the NANUQ distance and a modified NANUQ distance
 #' that weights quartet trees differently, but from which the cycle structure is
@@ -59,9 +59,9 @@ labelIntNodes = function(tree, plot = TRUE, type = "unrooted")
 #'
 #'
 #'@references
-#' \insertRef{ABRW24}{MSCquartets}
+#' \insertRef{ABRW25}{MSCquartets}
 #'
-#'@param ToB an unrooted tree of blobs (phylo object), as determined by TINNIK
+#'@param ToB an unrooted tree of blobs (phylo object), as determined by ECToBlob, TINNIK
 #'or another method, with multifurcations labelled by \code{labelIntNodes}
 #'@param node number of an internal node to be resolved
 #'@param pTable a table of qcCFs, with columns p_star and p_test
@@ -103,7 +103,7 @@ labelIntNodes = function(tree, plot = TRUE, type = "unrooted")
 #' ToB=labelIntNodes(out$ToB)
 #' resolveCycle(ToB, node=9, pTable=out$pTable, alpha=.01, beta=.05, distance="NANUQ")
 #'
-#'@seealso \code{\link{TINNIK}}, \code{\link{labelIntNodes}}, \code{\link{combineCycleResolutions}},
+#'@seealso \code{\link{ECToBlob}} \code{\link{TINNIK}}, \code{\link{labelIntNodes}}, \code{\link{combineCycleResolutions}},
 #' \code{\link{resolveLevel1}}
 #'
 #'@importFrom ape keep.tip evonet write.evonet root bind.tree
@@ -331,7 +331,7 @@ resolveCycle = function(ToB,
 #' Given a Tree of Blobs and qcCF information, resolve all multifurcations to
 #' cycles. Resolution is performed by finding a least-squares best-fit of an
 #' empirical distance to an expected distance related to the cycle, as described
-#' in \insertCite{ABRW24;textual}{MSCquartets}.
+#' in \insertCite{ABRW25;textual}{MSCquartets}.
 #'
 #' Possible distances to use are the NANUQ distance and a modified NANUQ distance
 #' that weights quartet trees differently, but from which the cycle structure is
@@ -344,9 +344,9 @@ resolveCycle = function(ToB,
 #' fitting applied only to those.
 #'
 #'@references
-#' \insertRef{ABRW24}{MSCquartets}
+#' \insertRef{ABRW25}{MSCquartets}
 #'
-#'@param ToB an unrooted tree of blobs (phylo object) as determined by TINNIK or
+#'@param ToB an unrooted tree of blobs (phylo object) as determined by ECToBlob, TINNIK or
 #'another method
 #'@param pTable a table of qcCFs, with columns p_star and p_test
 #'@param test either "T3" or "cut", indicating test to use for determining what
@@ -379,10 +379,9 @@ resolveCycle = function(ToB,
 #'@examples
 #' data(pTableYeastRokas)
 #' out=TINNIK(pTableYeastRokas, alpha=.01, beta=.05)
-#' ToB=labelIntNodes(out$ToB)
-#' resolveLevel1(ToB, pTable=out$pTable, alpha=.01, beta=.05, distance="NANUQ")
+#' resolveLevel1(out$ToB, pTable=out$pTable, alpha=.01, beta=.05, distance="NANUQ")
 #'
-#'@seealso \code{\link{TINNIK}}, \code{\link{labelIntNodes}}, \code{\link{resolveCycle}},
+#'@seealso \code{\link{ECToBlob}}, \code{\link{TINNIK}}, \code{\link{labelIntNodes}}, \code{\link{resolveCycle}},
 #' \code{\link{combineCycleResolutions}}
 #'
 #'@importFrom ape keep.tip evonet write.evonet root bind.tree
@@ -429,6 +428,7 @@ resolveLevel1 = function(ToB,
 
   if (npoly == 0) {
     message("No multifurcations on tree.")
+    resolutions=list(list(ToB))
   } else {
     if (npoly == 1) {
       message("1 multifurcation on tree, at node ",
@@ -505,7 +505,7 @@ resolveLevel1 = function(ToB,
 #' R10=resolveCycle(ToB, node=10, pTable=out$pTable, alpha=.01, beta=.05, distance="NANUQ")
 #' combineCycleResolutions(ToB, resolutions=list(R9,R10),plot=TRUE)
 #'
-#'@seealso \code{\link{TINNIK}}, \code{\link{labelIntNodes}}, \code{\link{resolveCycle}},
+#'@seealso \code{\link{ECToBlob}}, \code{\link{TINNIK}}, \code{\link{labelIntNodes}}, \code{\link{resolveCycle}},
 #'  \code{\link{resolveLevel1}}
 #'
 #' @export
@@ -1063,7 +1063,7 @@ expmodNANUQCycleDist = function(n) {
 #' minimum column sum of the distance matrix), then ordering nodes by distance
 #' from the hybrid, and for each consecutive pair picking  nodes in the cycle
 #' closest to the previous node. This constructs one or more orders since ties
-#' may occur. For more details, see \insertCite{ABRW24;textual}{MSCquartets}.
+#' may occur. For more details, see \insertCite{ABRW25;textual}{MSCquartets}.
 #'
 #' This function is used by NANUQ+ commands
 #' to resolve multifurcations in a tree of blobs of high degree.

@@ -1,7 +1,7 @@
 Package: MSCquartets
 Type: Package
 Title: Analyzing Gene Tree Quartets under the Multi-Species Coalescent
-Version: 3.2
+Version: 3.3
 Authors@R: c(
      person("Elizabeth", "Allman", email = "esallman@alaska.edu",
                   role = "aut"),
@@ -23,28 +23,30 @@ Description: Methods for analyzing and using quartets displayed on a collection
  Rhodes (2019) <doi:10.1007/s11538-020-00773-4>, the NANUQ algorithm for inference 
  of level-1 species networks of Allman et al. (2019) <doi:10.1186/s13015-019-0159-2>, 
  the TINNIK algorithm for inference of the tree of blobs of an arbitrary 
- network of Allman et al.(2022) <doi:10.1007/s00285-022-01838-9>, and
+ network of Allman et al.(2022) <doi:10.1007/s00285-022-01838-9>,
  NANUQ+ routines for resolving multifurcations in the tree of blobs to cycles as in
- Allman et al.(2024) (forthcoming). 
- Software announcement by Rhodes et al. (2020) <doi:10.1093/bioinformatics/btaa868>.
+ Rhodes et al.(2024) <doi:10.1186/s13015-025-00274-w>, and the ECToBlob algorithm for inference of a 
+ network with no anomalous quartets of Allman et al. (2026) (forthcoming).
+ Software announcement by Rhodes et al. (2020) <doi:10.1093/bioinformatics/btaa868>. 
 License: MIT + file LICENSE
 Imports: zipfR, graphics, stats, Rdpack, foreach, doParallel, methods,
         Rcpp (>= 1.0.10), igraph (>= 2.0.0)
 RdMacros: Rdpack
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.2
 NeedsCompilation: yes
 LinkingTo: Rcpp, RcppProgress
 Depends: R (>= 3.5.0), ape (>= 5.0), phangorn
-Packaged: 2025-03-20 00:16:37 UTC; jarhodes2
+Packaged: 2026-05-27 15:50:22 UTC; jarhodes2
 Author: Elizabeth Allman [aut],
   Hector Banos [aut],
   Jonathan Mitchell [aut],
   Kristina Wicke [aut],
-  John Rhodes [aut, cre] (<https://orcid.org/0000-0001-9921-1091>)
+  John Rhodes [aut, cre] (ORCID: <https://orcid.org/0000-0001-9921-1091>)
 Maintainer: John Rhodes <j.rhodes@alaska.edu>
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
+Config/roxygen2/version: 8.0.0
+RoxygenNote: 7.3.3
 Repository: CRAN
-Date/Publication: 2025-03-20 00:40:02 UTC
+Date/Publication: 2026-05-28 07:20:02 UTC

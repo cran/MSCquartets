@@ -33,7 +33,7 @@ stochastic element of the code, and its impact is usually negligible.
 }
 \examples{
 data(pTableYeastRokas)
-dist=quartetNetworkDist(pTableYeastRokas, alpha=.05, beta=.95)
+dist=quartetNetworkDist(pTableYeastRokas, alpha=.05, beta=.80)
 
 }
 \references{

@@ -1,0 +1,181 @@
+---
+title: "Inferring a Tree of Blobs with ECToBlob"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Inferring a Tree of Blobs with ECToBlob}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+ 
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>")
+ 
+knitr::opts_chunk$set(fig.align = "center",
+                      fig.show = "hold",
+                      out.width = "55%",
+                      fig.width = 7,  
+                      fig.height = 6)
+
+
+```
+
+```{r setup}
+library(MSCquartets)
+```
+ 
+## Why use ECToBlob?
+
+`ECToBlob` infers a tree of blobs under the network multispecies coalescent (NMSC) model. The resulting unrooted tree represents only the cut edges of the underlying species network, that is, edges whose removal disconnects the network.
+
+More complex structures, such as “blobs,” are collapsed into multifurcations (polytomies). In this way, the tree highlights where evolutionary relationships are tree-like and where they are not.
+
+This makes the tree of blobs useful for network inference. It isolates regions where reticulation has occurred. Researchers can then investigate each blob separately, possibly focusing on smaller subsets of taxa. While current methods may not be able to resolve complex blobs, `ECToBlob` is statistically consistent under the NMSC model, regardless of the unknown internal blob structure.
+
+## Preparing the input data
+
+`ECToBlob` requires two inputs:
+
+### (1) Gene trees (`genedata`)
+
+A collection of gene trees on a common set of taxa. These are typically obtained by:
+
+i) Aligning sequences for each locus  
+ii) Inferring gene trees using phylogenetic software (e.g., IQ-TREE, RAxML)  
+
+Although gene trees are themselves inferred, `ECToBlob` treats them as observed data. The root and branch lengths (if present) are ignored.
+
+Example:
+
+```{r eval=FALSE}
+# Read gene trees and compute quartet counts
+gts <- read.tree(file = "genetreefile")
+tableLeopardusLescroart <- quartetTable(gts)
+```
+
+### Notes on gene trees
+- The data can be provided in the function `ECToblob` either as a collection of gene trees in a phylo object or as the path and filename of a document containing gene trees in Newick format, with each gene tree on a separate row. Alternatively, the data may be supplied as a table obtained by tallying quartets and conducting statistical tests. Such a table can be generated from the output of several functions, including a previous run of `ECToBlob` (or  `NANUQ` or  `TINNIK`). Providing the latter is usually faster, as it avoids the need to again tally quartets and perform some statistical tests.
+- Missing taxa are allowed, but every set of 4 taxa must appear in at least one gene tree, and ideally many.
+- The initial statistical tests are applied per quartet, so the number of gene trees containing each quartet directly affects reliability.
+- Theoretical guarantees assume gene trees are sampled under the NMSC model. In practice, inferred trees may introduce error.
+
+
+### (2) A  tree (`tree`)
+
+A tree assumed to be a resolution of the true tree of blobs. Such a tree can be produced by  ASTRAL or TREE-QMC since, for sufficiently large datasets, trees inferred by these methods have been shown to be  resolutions of the true tree of blobs.
+
+`MSCquartets` contains the ASTRAL tree from the gene trees of Lescroart et al. (2023):
+
+```{r}
+AstralLeopard_tree <-   read.tree(text = ASTRALtreeLeopardusLescroart)
+```
+
+### Notes on the input tree
+
+If the user wants to explore the package but has not yet computed a suitable reference tree (for e.g., from ASTRAL or TOB-QMC), one can construct a tree for exploratory purposes using a quartet distance implemented in the MSCquartets package:
+
+```{r eval=FALSE}
+gts <- read.tree(file = "genetreefile")
+alternative_tree <- quartetDistTree(gtrees)
+```
+ 
+Note that,  while there is no guarantee that the tree obtained from the function `quartetDistTree` is a resolution of the tree of blobs, in practice, it often gives the same output as ASTRAL. We therefore suggest that the  `quartetDistTree` tree should only be used for exploratory purposes, and not for final analyses.
+ 
+## Initial analysis
+
+`ECToBlob` begins by counting quartet topologies across gene trees and applying hypothesis tests to each quartet. These tests evaluate fit to:
+
+- a star tree → `p_star`  
+- a resolved tree (as displayed on `tree`) → `p_T1`  
+
+A basic analysis is run by:
+
+```{r}
+out <- ECToBlob(tableLeopardusLescroart, AstralLeopard_tree, alpha = 0.05)
+
+pTable <- out$pTable
+```
+
+### Output plots
+
+The function produces several plots:
+
+1. The input tree → A plot of the input tree.
+2. The tree after collapsing internal edges deemed unresolved by the combined star test (`p_star`) → A plot of the input tree after collapsing those edges for which the data does not support a resolution. (This tree may be the same as the input tree.)
+3. Trees with progressively collapsed internal edges based on combined T1 test edge p-values → These trees are obtained by contracting edges in order from smallest to largest combined p-value. In case of ties, multiple edges will be contracted simultaneously.
+4. A final star tree → This tree always results from collapsing all internal edges.
+5. A plot of the number of edges contracted vs. \(-\log_{10}(p\text{-value})\), where the p-value is for the combined T1 test values for all edges remaining in the tree → This plot shows the relationship between the p-value for a null hypothesis of the tree's resolution (in the same order they appeared in the previous plots) and the number of edges contracted to obtain that tree. The y-axis is plotted on a logarithmic scale, and y-values typically decrease as more edges are contracted. The user may want to focus on trees where the p-value shows a sharp drop.
+
+### Note on computation
+
+For large datasets (many taxa or gene trees), computing the quartet table is the most time-consuming step. Saving `pTable` for reuse is recommended.
+ 
+## Combining quartet p-values
+
+Each edge in the input tree is assigned a p-value by combining the p-values of quartets that support it. The set of quartet p-values combined for a given edge can be determined in three ways:
+
+1) `"bi"`: bipartition quartets  
+2) `"quad"`: quadripartition quartets  
+3) `"mul"`: multipartition quartets (updated during contraction)  
+
+### Multiple testing correction
+
+Once the quartet p-values defining an edge have been determined, they can be combined in four different ways to account for multiple testing:
+
+1) **Bon (`Bonferroni`)**
+2) **Cauchy (`Cauchy`)**
+3) **BBC** (Bonferroni + Cauchy, combined via Bonferroni)
+4) **CBC** (Bonferroni + Cauchy, combined via Cauchy)
+ 
+### Examples
+
+Here we show examples of different choices of both multiple testing correction and quartet p-value selection.
+
+```{r}
+out_1 <- ECToBlob(pTable, AstralLeopard_tree, alpha=0.05, qType="mul",  testCorrection="Bon",    plot=0)
+out_2 <- ECToBlob(pTable, AstralLeopard_tree, alpha=0.05, qType="quad", testCorrection="Cauchy", plot=0)
+out_3 <- ECToBlob(pTable, AstralLeopard_tree, alpha=0.05, qType="bi",   testCorrection="BBC",    plot=0)
+out_4 <- ECToBlob(pTable, AstralLeopard_tree, alpha=0.05, qType="mul",  testCorrection="CBC",    plot=0)
+```
+
+These choices may yield different results and should be explored.
+
+ 
+## Selecting a tree using the $\alpha$ threshold
+
+The parameter $\alpha$ (`alpha`) determines which tree in the sequence will be selected. In contrast, the choice of $\beta$ (`beta`, test level for collapsing edges showing no resolution) influences which edges will initially be contracted as not consistent with any resolution. Succinctly,
+
+- $\alpha$ affects **which tree is selected** in the sequence
+- $\beta$ affects **which edges are collapsed initially**, influencing all downstream trees.
+
+To select a tree based on $\alpha$, one has two options, though often they will agree:
+
+1) **`indexEarly`**: first tree where the tree p-value exceeds $\alpha$  
+2) **`indexLate`**: first tree where the tree p-value and all later tree p-values exceeds $\alpha$
+
+One can extract the trees associated with these indices from the output as follows:
+
+```{r}
+early_tree <- out_2$treeList[[out_2$indexEarly]]$tree
+plot(read.tree(text = early_tree))
+```
+
+```{r eval=FALSE}
+late_tree <- out_2$treeList[[out_2$indexLate]]$tree
+plot(read.tree(text = late_tree))
+```
+ 
+### Reporting recommendations
+
+Any reported `ECToBlob` analysis should include:
+
+- $\alpha$ and $\beta$ values  
+- Quartet type (`qType`)  
+- Test correction method (`testCorrection`)  
+- Selected index: early (`$indexEarly`) or late (`$indexLate`).
+
+Exploring multiple parameter settings is strongly recommended.
+ 
+## References

@@ -18,7 +18,7 @@ resolveCycle(
 )
 }
 \arguments{
-\item{ToB}{an unrooted tree of blobs (phylo object), as determined by TINNIK
+\item{ToB}{an unrooted tree of blobs (phylo object), as determined by ECToBlob, TINNIK
 or another method, with multifurcations labelled by \code{labelIntNodes}}
 
 \item{node}{number of an internal node to be resolved}
@@ -67,7 +67,7 @@ needed to combine resolutions to form networks with multiple cycles using
 Given a Tree of Blobs and quartet Concordance Factor data, resolve a specific
 polytomy to a cycle. Resolution is performed by finding a least-squares
 best-fit of an empirical distance to an expected distance related to the cycle,
-as described in \insertCite{ABRW24;textual}{MSCquartets}.
+as described in \insertCite{ABRW25;textual}{MSCquartets}.
 }
 \details{
 Possible distances to use are the NANUQ distance and a modified NANUQ distance
@@ -88,9 +88,9 @@ resolveCycle(ToB, node=9, pTable=out$pTable, alpha=.01, beta=.05, distance="NANU
 
 }
 \references{
-\insertRef{ABRW24}{MSCquartets}
+\insertRef{ABRW25}{MSCquartets}
 }
 \seealso{
-\code{\link{TINNIK}}, \code{\link{labelIntNodes}}, \code{\link{combineCycleResolutions}},
+\code{\link{ECToBlob}} \code{\link{TINNIK}}, \code{\link{labelIntNodes}}, \code{\link{combineCycleResolutions}},
 \code{\link{resolveLevel1}}
 }

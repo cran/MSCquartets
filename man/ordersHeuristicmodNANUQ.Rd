@@ -23,7 +23,7 @@ Candidadte orders are obtained  by first picking the hybrid node (from the
 minimum column sum of the distance matrix), then ordering nodes by distance
 from the hybrid, and for each consecutive pair picking  nodes in the cycle
 closest to the previous node. This constructs one or more orders since ties
-may occur. For more details, see \insertCite{ABRW24;textual}{MSCquartets}.
+may occur. For more details, see \insertCite{ABRW25;textual}{MSCquartets}.
 
 This function is used by NANUQ+ commands
 to resolve multifurcations in a tree of blobs of high degree.

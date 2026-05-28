@@ -10,10 +10,11 @@ M0(x)
 \item{x}{function argument}
 }
 \value{
-value of negative modified Struve function function
+value of negative modified Struve function
 }
 \description{
 This function is used in computing the probability density for
-Model T1. The code is closely based on the \code{I0L0} function implemented in Python for the package
-RandomFieldUtils, which was previously on CRAN up to 12/2022).
+Model T1. The code is closely based on the \code{I0L0} function implemented
+in Python for the package
+RandomFieldUtils, which was available on CRAN until 12/2022.
 }

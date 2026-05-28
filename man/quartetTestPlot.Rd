@@ -7,10 +7,9 @@
 quartetTestPlot(pTable, test, alpha = 0.05, beta = 1, cex = 1)
 }
 \arguments{
-\item{pTable}{table of quartets and p-values, as produced by \code{quartetTreeTestInd},
-\code{quartetStarTestInd}, or \code{NANUQ}}
+\item{pTable}{table of quartets and p-values, as produced by the functions mentioned above}
 
-\item{test}{model to use, for tree null hypothesis; options are \code{"T1"}, \code{"T3"}, \code{"cut"}, \code{"NANUQ"}}
+\item{test}{model to use, for tree null hypothesis; options are \code{"T1"}, \code{"T3"}, \code{"cut"}, \code{"NANUQ"}, \code{"ECToBlob"}}
 
 \item{alpha}{level for tree test with null hypothesis given by \code{test}}
 
@@ -25,11 +24,11 @@ indicate rejection or failure to reject for tests at specified levels.
 }
 \details{
 The first argument of this function is a table of quartets and p-values. The
-plot may show results of either the T1, T3, or 2-cut
+plot may show results of either the T1, T1-D, T3, or 2-cut
 test, with or without a star tree test (depending on whether a \code{"p_star"} column is in the table and/or \code{beta =1}).
 The p-values must be computed by previous calls to
-\code{quartetTreeTestInd} (for \code{"T1"} or \code{"T3"} p-values)
-and \code{quartetStarTestInd} (for \code{"star"} p-values). The \code{NANUQ} and \code{NANUQdist}
+\code{quartetTreeTestInd} (for \code{"T1"} or \code{"T3"} p-values), \code{quartetECtestInd} (for \code{"T1-D"} p-values)
+and \code{quartetStarTestInd} (for \code{"star"} p-values). The \code{NANUQ}, \code{NANUQdist}, and \code{ECToBlob}
 functions include calls to these tree test functions.
 }
 \examples{
@@ -44,6 +43,6 @@ quartetTestPlot(pTable, "T1", alpha=.05, beta=.95)
 
 }
 \seealso{
-\code{\link{quartetTreeTestInd}}, \code{\link{quartetStarTestInd}},
-\code{\link{NANUQ}}, \code{\link{NANUQdist}}
+\code{\link{quartetTreeTestInd}}, \code{\link{quartetStarTestInd}}, \code{\link{quartetECtestInd}},
+\code{\link{NANUQ}}, \code{\link{NANUQdist}}, \code{\link{ECToBlob}}
 }

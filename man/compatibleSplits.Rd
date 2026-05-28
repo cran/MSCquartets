@@ -22,7 +22,7 @@ then further removes all remaining splits that are incompatible with any other r
 }
 \examples{
 data(pTableYeastRokas)
-dist=NANUQdist(pTableYeastRokas, alpha=.05, beta=.95,outfile=NULL)
+dist=NANUQdist(pTableYeastRokas, alpha=.05, beta=.80,outfile=NULL)
 nn=neighborNet(dist)
 plot(nn,"2D")
 tob=treeFromSplits(compatibleSplits(nn$splits),plot=TRUE) #produce tree of blobs of splits graph

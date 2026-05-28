@@ -18,7 +18,7 @@ resolveLevel1(
 )
 }
 \arguments{
-\item{ToB}{an unrooted tree of blobs (phylo object) as determined by TINNIK or
+\item{ToB}{an unrooted tree of blobs (phylo object) as determined by ECToBlob, TINNIK or
 another method}
 
 \item{pTable}{a table of qcCFs, with columns p_star and p_test}
@@ -61,7 +61,7 @@ each given as a list as output from \code{\link{resolveCycle}}.
 Given a Tree of Blobs and qcCF information, resolve all multifurcations to
 cycles. Resolution is performed by finding a least-squares best-fit of an
 empirical distance to an expected distance related to the cycle, as described
-in \insertCite{ABRW24;textual}{MSCquartets}.
+in \insertCite{ABRW25;textual}{MSCquartets}.
 }
 \details{
 Possible distances to use are the NANUQ distance and a modified NANUQ distance
@@ -77,14 +77,13 @@ fitting applied only to those.
 \examples{
 data(pTableYeastRokas)
 out=TINNIK(pTableYeastRokas, alpha=.01, beta=.05)
-ToB=labelIntNodes(out$ToB)
-resolveLevel1(ToB, pTable=out$pTable, alpha=.01, beta=.05, distance="NANUQ")
+resolveLevel1(out$ToB, pTable=out$pTable, alpha=.01, beta=.05, distance="NANUQ")
 
 }
 \references{
-\insertRef{ABRW24}{MSCquartets}
+\insertRef{ABRW25}{MSCquartets}
 }
 \seealso{
-\code{\link{TINNIK}}, \code{\link{labelIntNodes}}, \code{\link{resolveCycle}},
+\code{\link{ECToBlob}}, \code{\link{TINNIK}}, \code{\link{labelIntNodes}}, \code{\link{resolveCycle}},
 \code{\link{combineCycleResolutions}}
 }

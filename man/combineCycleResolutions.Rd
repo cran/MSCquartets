@@ -39,6 +39,6 @@ combineCycleResolutions(ToB, resolutions=list(R9,R10),plot=TRUE)
 
 }
 \seealso{
-\code{\link{TINNIK}}, \code{\link{labelIntNodes}}, \code{\link{resolveCycle}},
+\code{\link{ECToBlob}}, \code{\link{TINNIK}}, \code{\link{labelIntNodes}}, \code{\link{resolveCycle}},
  \code{\link{resolveLevel1}}
 }

@@ -10,8 +10,8 @@ NANUQ(
   omit = FALSE,
   epsilon = 0,
   alpha = 0.05,
-  beta = 0.95,
-  taxanames = NULL,
+  beta = 0.8,
+  taxonnames = NULL,
   plot = TRUE
 )
 }
@@ -44,7 +44,7 @@ a null hypothesis of a star tree (polytomy) for each quartet vs. an alternative 
 test for a star tree (more polytomies), hence a stricter requirement for deciding in favor of a resolved tree or network;
 if vectors, \code{alpha} and \code{beta} must have the same length}
 
-\item{taxanames}{if \code{genedata} is a file or a multiPhylo object, a vector of a subset
+\item{taxonnames}{if \code{genedata} is a file or a multiPhylo object, a vector of a subset
 of the taxa names on the gene trees
 to be analyzed, if \code{NULL} all taxa on the first gene tree are used; if \code{genedata}
 is a quartet table, this argument is ignored and all taxa in the table are used}
@@ -104,7 +104,7 @@ counting displayed quartets. See \code{\link{quartetTableParallel}}, where examp
 }
 \examples{
 data(pTableYeastRokas)
-out=NANUQ(pTableYeastRokas, alpha=.05, beta=.95, outfile = NULL)
+out=NANUQ(pTableYeastRokas, alpha=.05, beta=.80, outfile = NULL)
 # Specifying an outfile would write the distance table to it for opening in SplitsTree.
 # Alternately, to use the phangorn implementation of NeighborNet
 # within R, enter the following additional lines:
